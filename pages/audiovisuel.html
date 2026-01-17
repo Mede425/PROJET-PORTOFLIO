@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audiovisuel | Portfolio</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+
+    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.12.28/build/spline-viewer.js"></script>
+
+    <style>
+        :root {
+            --bg: #050505;
+            --text: #ffffff;
+            --accent: #00ff88;
+        }
+
+        /* ON CACHE LE CURSEUR PAR DÉFAUT PARTOUT... */
+        * { cursor: none; margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* ...SAUF SUR LES IFRAMES (VIDÉOS) POUR POUVOIR CLIQUER */
+        iframe { cursor: auto !important; }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+            overflow-x: hidden;
+            width: 100vw;
+        }
+
+        /* --- CURSEUR (MODIFIÉ POUR DISPARAITRE PROPREMENT) --- */
+        .cursor-dot, .cursor-outline {
+            position: fixed; top: 0; left: 0; transform: translate(-50%, -50%); border-radius: 50%; 
+            z-index: 10005; pointer-events: none;
+            /* Ajout d'une transition pour que la disparition soit fluide */
+            transition: width 0.2s, height 0.2s, opacity 0.2s;
+        }
+        .cursor-dot { width: 8px; height: 8px; background-color: var(--accent); }
+        .cursor-outline { width: 40px; height: 40px; border: 1px solid var(--accent); }
+
+        /* Classe pour cacher le curseur sur les vidéos */
+        .cursor-hidden { opacity: 0 !important; }
+
+        /* LAYERS */
+        .vignette-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2;
+            background: radial-gradient(circle at center, transparent 20%, var(--bg) 90%);
+        }
+        .lights-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3; opacity: 0.3;
+            background-image: radial-gradient(circle at 15% 25%, rgba(0, 255, 136, 0.4), transparent 40%), radial-gradient(circle at 85% 75%, rgba(112, 0, 255, 0.3), transparent 40%);
+            mix-blend-mode: screen; 
+        }
+        .spline-background {
+            position: fixed; top: -25vh; left: 0; width: 100%; height: 150vh; z-index: 1; opacity: 1; pointer-events: auto; background-color: var(--bg);
+        }
+        spline-viewer { width: 100%; height: 100%; }
+
+        a { text-decoration: none; color: white; }
+
+        /* HEADER */
+        header { padding: 4rem 10%; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
+        .back-link {
+            font-weight: bold; color: white; border: 1px solid rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 50px;
+            transition: 0.3s; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
+        }
+
+        /* TITRE */
+        .title-section {
+            padding: 0 10%; margin-bottom: 4rem; position: relative; z-index: 4; min-height: 50vh;
+            display: flex; flex-direction: column; justify-content: center; pointer-events: none;
+        }
+        .title-section * { pointer-events: auto; }
+        h1 { font-family: 'Syncopate', sans-serif; font-size: 6vw; text-transform: uppercase; margin: 0; line-height: 1; text-shadow: 0 0 40px rgba(0,0,0,0.9); }
+        p.intro {
+            max-width: 500px; font-size: 1.2rem; margin-top: 2rem; opacity: 1; background: rgba(5, 5, 5, 0.85); padding: 1.5rem;
+            border-radius: 15px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.08); border-left: 3px solid var(--accent);
+        }
+
+        /* GALERIE */
+        .gallery-section {
+            position: relative; z-index: 4;
+            background: linear-gradient(to bottom, transparent, var(--bg) 20%, var(--bg) 100%);
+            padding: 4rem 10%; margin-top: -10vh; min-height: 100vh;
+        }
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 3rem; }
+
+        .project-card {
+            position: relative; height: 400px; border-radius: 20px; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1); transition: 0.4s; background: #111; cursor: pointer;
+        }
+        .project-card:hover { transform: scale(1.02); border-color: var(--accent); }
+        .card-bg { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; opacity: 0.7; }
+        .project-card:hover .card-bg { opacity: 0.4; transform: scale(1.1); }
+        .card-content {
+            position: absolute; bottom: 0; left: 0; width: 100%; padding: 2rem;
+            background: linear-gradient(to top, black, transparent);
+        }
+        .card-meta { color: var(--accent); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; display: block; }
+        .card-title { font-family: 'Syncopate'; font-size: 2rem; margin: 0; line-height: 1; }
+        .btn-open { margin-top: 1rem; display: inline-block; border-bottom: 1px solid white; opacity: 0; transform: translateY(20px); transition: 0.3s; }
+        .project-card:hover .btn-open { opacity: 1; transform: translateY(0); }
+
+        /* OVERLAY MODAL */
+        .project-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #050505; z-index: 10000;
+            opacity: 0; visibility: hidden; pointer-events: none; transition: 0.5s;
+            overflow-y: auto; /* SCROLL ACTIVÉ */
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
+            /* On remet le curseur normal dans le modal au cas où */
+            cursor: auto; 
+        }
+        .project-overlay.active { opacity: 1; visibility: visible; pointer-events: auto; }
+
+        .modal-container {
+            min-height: 100vh; padding: 100px 10% 100px 10%; 
+            display: flex; flex-direction: column; align-items: center;
+            max-width: 1400px; margin: 0 auto;
+        }
+
+        .close-btn {
+            position: fixed; top: 30px; right: 30px; z-index: 10001;
+            font-family: 'Syncopate'; cursor: pointer; padding: 10px 20px;
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; background: rgba(0,0,0,0.8);
+            transition: 0.3s; color: white;
+        }
+        .close-btn:hover { background: var(--accent); color: black; }
+
+        .modal-header { text-align: center; margin-bottom: 3rem; width: 100%; max-width: 900px; }
+        .modal-meta { color: var(--accent); text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 10px; }
+        .modal-title { font-family: 'Syncopate'; font-size: 3rem; margin: 0; line-height: 1; text-shadow: 0 0 30px rgba(0,0,0,0.5); }
+
+        .video-block { width: 100%; max-width: 1000px; margin-bottom: 4rem; }
+        .video-wrapper {
+            position: relative; width: 100%; padding-bottom: 56.25%; background: #000;
+            border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 0 50px rgba(0, 255, 136, 0.1); overflow: hidden; margin-bottom: 2rem;
+        }
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+
+        .video-info h3 { font-family: 'Syncopate'; font-size: 1.5rem; margin-bottom: 1rem; color: white; border-left: 4px solid var(--accent); padding-left: 15px; }
+        .video-info p { font-size: 1.1rem; line-height: 1.6; opacity: 0.8; max-width: 800px; }
+
+        .motion-section { width: 100%; max-width: 1000px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 4rem; margin-top: 2rem; }
+
+        footer { position: relative; z-index: 4; padding: 6rem 10%; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); background: var(--bg); }
+    </style>
+</head>
+<body>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+    <div class="vignette-overlay"></div>
+    <div class="lights-overlay"></div>
+
+    <div class="spline-background">
+        <spline-viewer url="https://prod.spline.design/B1DrvFN4gNvYz6X7/scene.splinecode" events-target="global"></spline-viewer>
+    </div>
+
+    <header>
+        <a href="../index.html" class="back-link">← Retour</a>
+    </header>
+
+    <div class="title-section">
+        <h1>Audio <br> <span style="color: var(--accent);">Visuel</span></h1>
+        <p class="intro">
+            Capturer l'instant, rythmer l'émotion. <br>
+            Cliquez sur un projet pour voir l'étude de cas complète.
+        </p>
+    </div>
+
+    <div class="gallery-section">
+        <div class="cards-grid">
+            <div class="project-card" id="card-justice">
+                <img src="https://images.unsplash.com/photo-1595769816263-9b910be24d5f?q=80&w=2679&auto=format&fit=crop" class="card-bg" alt="Cover Justice">
+                <div class="card-content">
+                    <span class="card-meta">Court-Métrage & Motion</span>
+                    <h2 class="card-title">Justice & Vérité</h2>
+                    <span class="btn-open">Voir le dossier complet →</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="project-overlay" data-lenis-prevent>
+        <div class="close-btn">FERMER ✕</div>
+        
+        <div class="modal-container">
+            <div class="modal-header">
+                <span class="modal-meta">Court-Métrage MMI</span>
+                <h2 class="modal-title">Justice & Vérité</h2>
+            </div>
+
+            <div class="video-block">
+                <div class="video-wrapper">
+                    <iframe 
+                        src="https://www.youtube.com/embed/47lN1FvggAA" 
+                        title="YouTube video player" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        referrerpolicy="strict-origin-when-cross-origin" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+                <div class="video-info">
+                    <h3>Le Projet</h3>
+                    <p>
+                        Une parodie d'émission télévisée qui tourne mal. JusticeMan, super-héros de la vérité, affronte une mythomane qui déjoue tous ses pièges.
+                        <br><br>
+                        <strong>Mon rôle :</strong> Participation à l'écriture, assistance technique sur le plateau et acting (rôle secondaire).
+                    </p>
+                </div>
+            </div>
+
+            <div class="motion-section">
+                <div class="video-wrapper" style="border-color: #7000ff; box-shadow: 0 0 50px rgba(112, 0, 255, 0.15);">
+                    <iframe 
+                        src="https://www.youtube.com/embed/z2GUoF64qd8" 
+                        title="YouTube video player" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        referrerpolicy="strict-origin-when-cross-origin" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+                <div class="video-info">
+                    <h3 style="border-color: #7000ff; color: #b400ff;">Focus : Le Motion Design</h3>
+                    <p>
+                        Pour habiller l'émission fictive, j'ai <strong>entièrement réalisé</strong> le générique et les jingles de transition.
+                        <br><br>
+                        L'objectif était de créer une identité visuelle "TV Show" crédible mais décalée avec After Effects.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <h2 style="font-size: 4vw; margin-bottom: 2rem;">LET'S WORK TOGETHER</h2>
+        <p>Email: contact@monportfolio.mmi</p>
+        <div style="margin-top: 3rem; opacity: 0.5; font-size: 0.8rem;">
+            <a href="mentions.html" style="text-decoration: underline;">Mentions Légales</a>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        const lenis = new Lenis();
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
+
+        // GESTION MODAL
+        const cardJustice = document.getElementById('card-justice');
+        const overlay = document.querySelector('.project-overlay');
+        const closeBtn = document.querySelector('.close-btn');
+
+        cardJustice.addEventListener('click', () => {
+            overlay.classList.add('active');
+            lenis.stop(); 
+            document.body.style.overflow = 'hidden'; 
+        });
+
+        closeBtn.addEventListener('click', () => {
+            overlay.classList.remove('active');
+            lenis.start(); 
+            document.body.style.overflow = '';
+        });
+
+        // GESTION INTELLIGENTE DU CURSEUR (FIX POUR IFRAME)
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
+        
+        window.addEventListener('mousemove', (e) => {
+            gsap.to(cursorDot, { x: e.clientX, y: e.clientY, duration: 0 });
+            gsap.to(cursorOutline, { x: e.clientX, y: e.clientY, duration: 0.1 });
+        });
+
+        // Effets de survol
+        document.querySelectorAll('a, .project-card, .close-btn').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursorOutline.style.transform = 'translate(-50%, -50%) scale(2.5)';
+                cursorOutline.style.backgroundColor = 'rgba(0, 255, 136, 0.1)';
+            });
+            el.addEventListener('mouseleave', () => {
+                cursorOutline.style.transform = 'translate(-50%, -50%) scale(1)';
+                cursorOutline.style.backgroundColor = 'transparent';
+            });
+        });
+
+        // CACHER LE CURSEUR VERT QUAND ON SURVOLE UNE VIDÉO (POUR EVITER QU'IL BLOQUE)
+        document.querySelectorAll('.video-wrapper').forEach(video => {
+            video.addEventListener('mouseenter', () => {
+                cursorDot.classList.add('cursor-hidden');
+                cursorOutline.classList.add('cursor-hidden');
+            });
+            video.addEventListener('mouseleave', () => {
+                cursorDot.classList.remove('cursor-hidden');
+                cursorOutline.classList.remove('cursor-hidden');
+            });
+        });
+
+        // Animations Scroll
+        gsap.to(".spline-background", {
+            scrollTrigger: { trigger: "body", start: "top top", end: "bottom bottom", scrub: 1 },
+            yPercent: 15, ease: "none"
+        });
+
+        gsap.from("h1", { y: 100, opacity: 0, duration: 1.5, ease: "power4.out" });
+        gsap.from("p.intro", { x: -50, opacity: 0, duration: 1, delay: 0.5 });
+        gsap.from(".project-card", {
+            scrollTrigger: { trigger: ".gallery-section", start: "top 80%" },
+            y: 50, opacity: 0, duration: 1, ease: "power3.out"
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio MMI | Multivers Créatif</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #050505;
+            --text: #ffffff;
+            --accent: #00f0ff; /* Cyan par défaut */
+            --accent-sec: #7000ff;
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+            overflow-x: hidden;
+        }
+
+        a { text-decoration: none; color: white; }
+
+        /* --- CURSEUR --- */
+        .cursor-dot, .cursor-outline {
+            position: fixed;
+            top: 0; left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+        .cursor-dot {
+            width: 8px; height: 8px;
+            background-color: var(--accent);
+        }
+        .cursor-outline {
+            width: 40px; height: 40px;
+            border: 1px solid var(--accent);
+            transition: width 0.2s, height 0.2s;
+        }
+
+        /* --- HERO --- */
+        section {
+            min-height: 100vh;
+            padding: 4rem 10%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 6vw;
+            line-height: 1;
+            text-transform: uppercase;
+            mix-blend-mode: difference;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero span {
+            display: block;
+            background: linear-gradient(45deg, var(--accent), var(--accent-sec));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            opacity: 0.7;
+            animation: bounce 2s infinite;
+        }
+
+        /* --- BACKGROUND --- */
+        .gradient-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(112, 0, 255, 0.15), transparent 50%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* --- GRID DES PÔLES --- */
+        .poles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        /* CSS DES CARTES AVEC GESTION DES COULEURS DYNAMIQUES */
+        .card {
+            display: block; 
+            background: var(--glass);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            backdrop-filter: blur(10px);
+            transform-style: preserve-3d;
+            transform: perspective(1000px);
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Glow au survol basé sur la variable --rgb définie dans le HTML */
+        .card:hover {
+            box-shadow: 0 0 30px rgba(var(--rgb), 0.2); /* Ombre colorée */
+            border-color: rgb(var(--rgb)); /* Bordure colorée */
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            transform: translateZ(20px);
+            transition: color 0.3s;
+            /* CORRECTION : La couleur est appliquée par défaut, pas juste au survol */
+            color: rgb(var(--rgb)); 
+        }
+
+        .card p {
+            opacity: 0.7;
+            transform: translateZ(10px);
+            line-height: 1.6;
+        }
+
+        .card .tag {
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: 0.5rem 1rem;
+            /* CORRECTION : Les tags ont leur couleur par défaut */
+            border: 1px solid rgb(var(--rgb)); 
+            color: rgb(var(--rgb)); 
+            border-radius: 50px;
+            font-size: 0.8rem;
+            transform: translateZ(30px);
+            transition: 0.3s;
+        }
+
+        /* Effet remplissage tag au survol */
+        .card:hover .tag {
+            background: rgb(var(--rgb));
+            color: #000;
+            font-weight: bold;
+        }
+
+        /* CORRECTION : Bouton start game spécifique, plein par défaut */
+        .btn-start {
+            background: rgb(var(--rgb)) !important;
+            color: #000 !important;
+            font-weight: bold;
+            border: none !important;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            padding: 4rem 10%;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translate(-50%, 0); }
+            50% { transform: translate(-50%, 10px); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <div class="gradient-bg"></div>
+
+    <section class="hero">
+        <h1 class="reveal-text">
+            Créatif <br> 
+            <span>Multimédia</span> <br> 
+            Medelys SEUX
+        </h1>
+        <p style="margin-top: 2rem; font-size: 1.2rem; max-width: 600px; opacity: 0.8; line-height: 1.6;">
+            Étudiant MMI polyvalent. Je conçois des identités visuelles uniques, j'élabore des stratégies de contenu, et je fusionne le <strong>Design UI/UX avec le Code</strong> pour donner vie à des expériences web immersives.
+        </p>
+        <div class="scroll-indicator">SCROLL TO EXPLORE</div>
+    </section>
+
+    <section id="work">
+        <h2 style="font-family: 'Syncopate'; font-size: 3rem; margin-bottom: 2rem;">Mes Univers</h2>
+        <div class="poles-grid">
+            
+            <a href="pages/graphisme.html" class="card" data-tilt data-tilt-glare data-tilt-max-glare="0.5" style="--rgb: 255, 0, 85;">
+                <h3>Graphisme & Branding</h3>
+                <p>Création de logos, identités visuelles, illustrations et supports print.</p>
+                <span class="tag">Voir la Galerie</span>
+            </a>
+
+            <a href="pages/communication.html" class="card" data-tilt data-tilt-glare data-tilt-max-glare="0.5" style="--rgb: 180, 0, 255;">
+                <h3>Communication</h3>
+                <p>Stratégie digitale, gestion de réseaux sociaux et rédaction de contenus impactants.</p>
+                <span class="tag">Voir les Case Studies</span>
+            </a>
+
+            <a href="pages/audiovisuel.html" class="card" data-tilt data-tilt-glare data-tilt-max-glare="0.5" style="--rgb: 0, 255, 136;">
+                <h3>Audiovisuel</h3>
+                <p>Montage dynamique, Motion Design et réalisation de contenus vidéo engageants.</p>
+                <span class="tag">Voir le Showreel</span>
+            </a>
+
+            <a href="pages/dev.html" class="card" data-tilt data-tilt-glare data-tilt-max-glare="0.5" style="--rgb: 0, 240, 255;">
+                <h3>Creative Dev & UI/UX</h3>
+                <p>De la maquette Figma au code final. Conception d'interfaces et développement interactif.</p>
+                <span class="tag btn-start">START GAME ></span>
+            </a>
+
+        </div>
+    </section>
+
+    <footer>
+        <h2 style="font-size: 4vw; margin-bottom: 2rem;">TRAVAILLONS ENSEMBLE</h2>
+        <p>Email: contact@monportfolio.mmi</p>
+        
+        <div style="margin-top: 3rem; opacity: 0.5; font-size: 0.8rem;">
+            <a href="pages/mentions.html" style="text-decoration: underline;">Mentions Légales</a> - © 2025 Medelys Seux
+        </div>
+   
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+
+    <script>
+        // 1. GESTION DU CURSEUR
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
+
+        window.addEventListener('mousemove', (e) => {
+            const posX = e.clientX;
+            const posY = e.clientY;
+            cursorDot.style.left = `${posX}px`;
+            cursorDot.style.top = `${posY}px`;
+            cursorOutline.animate({
+                left: `${posX}px`,
+                top: `${posY}px`
+            }, { duration: 500, fill: "forwards" });
+        });
+
+        // Agrandir le curseur
+        document.querySelectorAll('a, .card').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursorOutline.style.transform = 'translate(-50%, -50%) scale(2.5)';
+                cursorOutline.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+            });
+            el.addEventListener('mouseleave', () => {
+                cursorOutline.style.transform = 'translate(-50%, -50%) scale(1)';
+                cursorOutline.style.backgroundColor = 'transparent';
+            });
+        });
+
+        // 2. SMOOTH SCROLL
+        const lenis = new Lenis();
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        // 3. ANIMATIONS D'ENTRÉE (GSAP)
+        gsap.registerPlugin(ScrollTrigger);
+
+        gsap.from(".hero h1", {
+            y: 100,
+            opacity: 0,
+            duration: 1.5,
+            ease: "power4.out",
+            stagger: 0.2
+        });
+
+        // Animation des cartes
+        gsap.utils.toArray('.card').forEach((card, i) => {
+            gsap.from(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: "top 85%",
+                },
+                y: 50,
+                opacity: 0,
+                duration: 1,
+                ease: "power3.out",
+                delay: i * 0.1
+            });
+        });
+
+        // 4. MOUVEMENT SOURIS FOND
+        window.addEventListener('mousemove', (e) => {
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            gsap.to('.gradient-bg', {
+                x: x * 50,
+                y: y * 50,
+                duration: 2,
+                ease: 'power2.out'
+            });
+        });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Communication | MMI TERMINAL</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&family=Syncopate:wght@400;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- 1. CORE & VARIABLES --- */
+        :root {
+            --bg-color: #030303;
+            --text-color: #e0e0e0;
+            --accent: #bc13fe;
+            --cyan: #00f3ff;
+            --font-display: 'Syncopate', sans-serif;
+            --font-body: 'Space Grotesk', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-body);
+            overflow-x: hidden; 
+            overflow-y: scroll; 
+            width: 100vw;
+        }
+
+        /* --- 2. BOOT SCREEN --- */
+        #boot-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 10000;
+            display: flex; flex-direction: column; justify-content: flex-end; padding: 50px;
+            font-family: var(--font-code); color: var(--accent); font-size: 0.9rem; line-height: 1.5;
+        }
+        .boot-line { opacity: 0; }
+        .boot-cursor { display: inline-block; width: 8px; height: 15px; background: var(--cyan); animation: blink 0.1s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* --- 3. SMOOTH WRAPPER --- */
+        #smooth-wrapper { position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; }
+        #smooth-content { position: absolute; top: 0; left: 0; width: 100%; will-change: transform; pointer-events: auto; }
+
+        /* --- 4. FX --- */
+        .crt-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%; pointer-events: none; z-index: 9991;
+        }
+        .vignette {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, transparent 50%, black 120%);
+            z-index: 9990; pointer-events: none;
+        }
+        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.6; }
+
+        /* --- 5. UI --- */
+        .cursor {
+            position: fixed; width: 20px; height: 20px; border: 2px solid var(--cyan); border-radius: 50%;
+            pointer-events: none; transform: translate(-50%, -50%); z-index: 9999;
+            transition: width 0.3s, height 0.3s, background 0.3s; mix-blend-mode: difference;
+        }
+        .cursor.active { width: 50px; height: 50px; background: var(--cyan); border: none; opacity: 0.5; }
+
+        /* BOUTON RETOUR MODIFIÉ (Style Graphisme) */
+        .back-btn {
+            position: fixed; top: 30px; left: 40px; z-index: 100;
+            pointer-events: auto; display: inline-block;
+            color: white; text-decoration: none; border: 1px solid rgba(255,255,255,0.3);
+            padding: 10px 20px; border-radius: 50px; transition: 0.3s;
+            font-family: 'Space Grotesk', sans-serif; font-size: 0.9rem; cursor: pointer;
+            mix-blend-mode: difference;
+        }
+        .back-btn:hover { background: white; color: black; border-color: white; }
+
+        /* --- 6. HERO --- */
+        .hero { height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; perspective: 1000px; }
+        .hero h1 { font-family: var(--font-display); font-size: clamp(3rem, 8vw, 8rem); line-height: 0.8; text-align: center; transform: translateZ(0); }
+        .hero p { margin-top: 20px; color: var(--cyan); letter-spacing: 0.5em; font-family: var(--font-code); font-size: 0.8rem; }
+
+        .manifesto {
+            padding: 100px 10%; text-align: center; font-family: var(--font-display); font-size: clamp(1.5rem, 4vw, 3rem);
+            line-height: 1.4; opacity: 0.2; transition: opacity 0.5s;
+        }
+        .manifesto.in-view { opacity: 1; }
+
+        /* --- 7. SKILLS TIMELINE --- */
+        .timeline-wrapper { position: relative; max-width: 1200px; margin: 0 auto; padding: 100px 20px; perspective: 1000px; }
+        .laser-core { position: absolute; left: 50%; top: 0; width: 1px; height: 0%; background: var(--accent); transform: translateX(-50%); z-index: 1; box-shadow: 0 0 20px var(--accent); }
+
+        .skill-row {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 20vh; opacity: 0;
+            transform: translateZ(-200px) scale(0.8) translateY(100px); transition: transform 0.1s linear, opacity 0.1s linear; will-change: transform, opacity;
+        }
+
+        .skill-content {
+            width: 45%; padding: 30px; background: rgba(10,10,10,0.9); border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(5px); position: relative; z-index: 2;
+        }
+        .skill-content:hover { border-color: var(--cyan); box-shadow: 0 0 30px rgba(0, 243, 255, 0.15); }
+
+        .skill-row:nth-child(even) { flex-direction: row-reverse; }
+        .skill-row:nth-child(even) .skill-content { text-align: right; }
+
+        .skill-header { font-family: var(--font-code); color: var(--accent); font-size: 0.8rem; margin-bottom: 10px; letter-spacing: 2px; }
+        .skill-title { font-family: var(--font-display); font-size: 2rem; color: #fff; margin-bottom: 15px; }
+        .skill-desc { font-size: 1rem; color: #aaa; line-height: 1.6; }
+        .skill-tags { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .skill-row:nth-child(even) .skill-tags { justify-content: flex-end; }
+        .tag { font-family: var(--font-code); font-size: 0.7rem; padding: 5px 10px; border: 1px solid #333; border-radius: 4px; color: var(--cyan); }
+
+        /* --- 8. PROJECT ARCHIVE (TREK) --- */
+        .archives-title { text-align: center; margin-bottom: 50px; font-family: var(--font-display); font-size: 1.5rem; color: var(--text-color); }
+        .archives { padding: 0 5% 100px 5%; display: flex; justify-content: center; perspective: 1000px; }
+
+        .archive-card {
+            width: 100%; max-width: 900px; background: #0a0a0a; border: 1px solid #333; padding: 60px 40px; text-align: center;
+            transition: 0.3s; transform: rotateX(20deg) scale(0.9); opacity: 0.5; position: relative; overflow: hidden; cursor: pointer;
+        }
+        .archive-card.in-view { transform: rotateX(0deg) scale(1); opacity: 1; }
+        
+        .archive-card:hover { border-color: var(--cyan); background: #0f0f0f; box-shadow: 0 0 50px rgba(0, 243, 255, 0.1); }
+        
+        .scan-line { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: var(--accent); opacity: 0; transition: 0.3s; box-shadow: 0 0 10px var(--accent); }
+        .archive-card:hover .scan-line { animation: scan 2s infinite linear; opacity: 1; }
+        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+
+        .btn-view { display: inline-block; margin-top: 30px; padding: 15px 40px; border: 1px solid var(--accent); color: var(--accent); font-family: var(--font-display); text-decoration: none; transition: 0.3s; font-size: 0.9rem; letter-spacing: 1px; }
+        .archive-card:hover .btn-view { background: var(--accent); color: #000; box-shadow: 0 0 20px var(--accent); }
+
+        /* --- 9. PDF READER MODAL --- */
+        .pdf-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #050505; z-index: 10001;
+            opacity: 0; visibility: hidden; pointer-events: none; transition: 0.5s;
+            overflow-y: auto; display: flex; flex-direction: column;
+        }
+        .pdf-overlay.active { opacity: 1; visibility: visible; pointer-events: auto; }
+
+        .pdf-header {
+            padding: 20px 40px; display: flex; justify-content: space-between; align-items: center;
+            background: rgba(10,10,10,0.9); border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 10;
+        }
+        .pdf-title-bar { font-family: var(--font-display); color: white; font-size: 1.2rem; }
+        .pdf-close { cursor: pointer; color: var(--accent); font-family: var(--font-code); font-weight: bold; padding: 10px 20px; border: 1px solid var(--accent); border-radius: 50px; transition: 0.3s; }
+        .pdf-close:hover { background: var(--accent); color: black; }
+
+        .pdf-body {
+            display: grid; grid-template-columns: 1fr 400px; gap: 40px; padding: 40px; max-width: 1600px; margin: 0 auto; width: 100%;
+        }
+
+        .pdf-viewer-container { width: 100%; height: 80vh; background: #111; border: 1px solid #333; }
+        embed { width: 100%; height: 100%; }
+
+        .pdf-info-panel { color: #ccc; font-family: var(--font-body); }
+        .pdf-info-title { font-family: var(--font-display); font-size: 2rem; color: #fff; margin-bottom: 10px; line-height: 1.1; }
+        .pdf-info-subtitle { color: var(--cyan); font-family: var(--font-code); margin-bottom: 30px; display: block; }
+        
+        .info-block { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #222; }
+        .info-block h4 { color: var(--accent); font-family: var(--font-display); margin-bottom: 10px; font-size: 1.1rem; }
+        .info-block p { font-size: 0.95rem; line-height: 1.6; opacity: 0.8; margin-bottom: 10px; }
+        .info-block ul { list-style: none; padding-left: 10px; }
+        .info-block li { margin-bottom: 5px; font-size: 0.9rem; }
+        .info-block li::before { content: "> "; color: var(--cyan); }
+
+        .download-btn {
+            display: block; width: 100%; text-align: center; padding: 15px; background: #111; color: white; border: 1px solid white; 
+            text-decoration: none; font-family: var(--font-code); transition: 0.3s; margin-top: 20px;
+        }
+        .download-btn:hover { background: white; color: black; }
+
+        @media (max-width: 1024px) {
+            .pdf-body { grid-template-columns: 1fr; }
+            .pdf-viewer-container { height: 50vh; order: 2; }
+            .pdf-info-panel { order: 1; }
+        }
+
+        footer { height: 20vh; display: flex; align-items: center; justify-content: center; font-family: var(--font-code); color: #555; }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 3rem; }
+            .skill-row { flex-direction: column !important; margin-bottom: 10vh; }
+            .skill-content { width: 90%; text-align: left !important; }
+            .skill-tags { justify-content: flex-start !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="boot-screen">
+        <div id="boot-text"></div>
+        <div class="boot-cursor"></div>
+    </div>
+
+    <div class="crt-overlay"></div>
+    <div class="vignette"></div>
+    <div class="cursor"></div>
+    <canvas id="bg-canvas"></canvas>
+
+    <a href="../index.html" class="back-btn">← Retour à l'accueil</a>
+
+    <div class="pdf-overlay" id="trek-overlay">
+        <div class="pdf-header">
+            <div class="pdf-title-bar">FICHIER: STRAT_TREK_BERBERE.PDF</div>
+            <div class="pdf-close" onclick="closePdf()">FERMER [X]</div>
+        </div>
+        <div class="pdf-body">
+            <div class="pdf-viewer-container">
+                <embed src="../assets/Stratégie de Communication Trek Berbere.pdf" type="application/pdf">
+            </div>
+            <div class="pdf-info-panel">
+                <h2 class="pdf-info-title">STRATÉGIE 360°<br>TREK BERBÈRE</h2>
+                <span class="pdf-info-subtitle">CLIENT: GUIDE HAUTE MONTAGNE // MAROC</span>
+
+                <div class="info-block">
+                    <h4>// LE CONTEXTE</h4>
+                    <p>Houssaïne est un guide expert avec 30 ans d'expérience, mais son site web obsolète ne reflétait pas son professionnalisme. Le marché est dominé par des agences "usines", et le principal frein à la réservation pour les familles est la <strong>sécurité</strong>.</p>
+                </div>
+
+                <div class="info-block">
+                    <h4>// MA MISSION</h4>
+                    <p>Concevoir une stratégie de communication complète pour moderniser l'image de marque et rassurer la cible principale : la "Maman Organisatrice" (Persona).</p>
+                </div>
+
+                <div class="info-block">
+                    <h4>// ACTIONS CLÉS RÉALISÉES</h4>
+                    <ul>
+                        <li>Audit SEO complet & Analyse concurrentielle</li>
+                        <li>Définition du Persona (CSP+, 35-45 ans, besoin de réassurance)</li>
+                        <li>Stratégie "Niche" sur Google Ads (Mots-clés longue traîne)</li>
+                        <li>Stratégie Social Media : Facebook comme vitrine de confiance</li>
+                    </ul>
+                </div>
+
+                <a href="../assets/pdf/Strategie_Trek_Berbere.pdf" download class="download-btn">
+                    ↓ TÉLÉCHARGER LE PDF
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div id="smooth-wrapper">
+        <div id="smooth-content">
+            
+            <section class="hero">
+                <p>> PROTOCOL: CONNECTED</p>
+                <h1 class="glitch-text" data-text="COMMUNICATION">COMMUNICATION</h1>
+                <p>STRATEGY // SOCIAL // CONTENT</p>
+            </section>
+
+            <section class="manifesto">
+                LA COMMUNICATION N'EST PAS JUSTE VISUELLE.<br>
+                C'EST UNE <span style="color:var(--accent)">DONNÉE</span> QUI DOIT<br>
+                ATTEINDRE SA CIBLE.
+            </section>
+
+            <div class="timeline-wrapper">
+                <div class="laser-core" id="laser"></div>
+
+                <div class="skill-row">
+                    <div class="skill-content">
+                        <div class="skill-header">// MODULE 01: STRATÉGIE</div>
+                        <h2 class="skill-title">PLAN DE COM'</h2>
+                        <p class="skill-desc">
+                            Analyse de l'existant, définition des cibles (Personas) et choix des canaux de diffusion. 
+                            Je conçois des stratégies globales pour positionner une marque sur son marché.
+                        </p>
+                        <div class="skill-tags">
+                            <span class="tag">SWOT</span>
+                            <span class="tag">Benchmark</span>
+                            <span class="tag">Positionnement</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="skill-row">
+                    <div class="skill-content">
+                        <div class="skill-header">// MODULE 02: SOCIAL MEDIA</div>
+                        <h2 class="skill-title">COMMUNITY MGMT</h2>
+                        <p class="skill-desc">
+                            Gestion et animation de communautés. Création de calendriers éditoriaux et rédaction de posts engageants pour Instagram, LinkedIn et TikTok.
+                        </p>
+                        <div class="skill-tags">
+                            <span class="tag">Planning</span>
+                            <span class="tag">Copywriting</span>
+                            <span class="tag">Modération</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="skill-row">
+                    <div class="skill-content">
+                        <div class="skill-header">// MODULE 03: VISIBILITÉ</div>
+                        <h2 class="skill-title">SEO & DATA</h2>
+                        <p class="skill-desc">
+                            Optimisation du référencement naturel. Choix des mots-clés pertinents et structuration du contenu web pour plaire aux algorithmes.
+                        </p>
+                        <div class="skill-tags">
+                            <span class="tag">Audit SEO</span>
+                            <span class="tag">Analytics</span>
+                            <span class="tag">Mots-clés</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <h2 class="archives-title">/// PROJET PHARE ///</h2>
+            <section class="archives">
+                <div class="archive-card" id="btn-open-trek">
+                    <div class="scan-line"></div>
+                    <div style="color:var(--cyan); font-family:var(--font-code); margin-bottom:15px;">[CASE STUDY: TOURISME]</div>
+                    
+                    <h3 style="color:#fff; font-family:var(--font-display); font-size:2.5rem; margin-bottom:20px;">
+                        TREK BERBÈRE
+                    </h3>
+                    
+                    <p style="font-size:1rem; color:#aaa; line-height:1.6; max-width:600px; margin:0 auto;">
+                        Refonte complète de la stratégie de communication pour un guide de haute montagne.
+                        <br><br>
+                        <strong>Mission :</strong> Moderniser l'image de marque et rassurer la clientèle "Famille" sur la sécurité.
+                    </p>
+
+                    <div class="btn-view">
+                        [ ACCÉDER AU DOSSIER ]
+                    </div>
+                </div>
+            </section>
+
+            <footer>
+                <p>SYSTEM END OF LINE _</p>
+            </footer>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+    <script>
+        // --- 1. BOOT SEQUENCE ---
+        const bootScreen = document.getElementById('boot-screen');
+        const bootText = document.getElementById('boot-text');
+        const lines = [
+            "INITIALIZING KERNEL...", "LOADING MMI_SKILLS_DATABASE...", "ACCESSING STRATEGY MODULE...",
+            "DECRYPTING FILES...", "CONNECTION ESTABLISHED."
+        ];
+        let lineIndex = 0; let charIndex = 0;
+
+        function typeWriter() {
+            if (lineIndex < lines.length) {
+                if (charIndex < lines[lineIndex].length) {
+                    if(charIndex === 0) {
+                        const div = document.createElement('div');
+                        div.className = 'boot-line'; div.style.opacity = 1; div.id = `line-${lineIndex}`;
+                        bootText.appendChild(div);
+                    }
+                    document.getElementById(`line-${lineIndex}`).innerHTML += lines[lineIndex].charAt(charIndex);
+                    charIndex++; setTimeout(typeWriter, 20);
+                } else {
+                    lineIndex++; charIndex = 0; setTimeout(typeWriter, 100);
+                }
+            } else {
+                setTimeout(() => {
+                    bootScreen.style.transition = "transform 0.5s ease-in-out";
+                    bootScreen.style.transform = "translateY(-100%)";
+                    initExperience();
+                }, 800);
+            }
+        }
+        window.addEventListener('load', typeWriter);
+
+        // --- 2. SMOOTH SCROLL ---
+        let current = 0; let target = 0; const ease = 0.075;
+        const smoothContent = document.getElementById('smooth-content');
+        const skillRows = document.querySelectorAll('.skill-row');
+        const manifest = document.querySelector('.manifesto');
+        const archiveCard = document.querySelector('.archive-card');
+        const laser = document.getElementById('laser');
+
+        function setHeight() { document.body.style.height = `${smoothContent.getBoundingClientRect().height}px`; }
+        window.addEventListener('scroll', () => { target = window.scrollY; });
+        window.addEventListener('resize', setHeight);
+
+        function initExperience() { setHeight(); animate(); }
+
+        function animate() {
+            if(document.body.style.overflow === 'hidden') {
+                requestAnimationFrame(animate);
+                return;
+            }
+
+            current += (target - current) * ease;
+            let t = Math.round(current * 100) / 100;
+            smoothContent.style.transform = `translate3d(0, -${t}px, 0)`;
+
+            const totalH = document.body.style.height.replace('px','') - window.innerHeight;
+            let progress = (current / totalH) * 100;
+            if(laser) laser.style.height = `${progress}%`;
+
+            skillRows.forEach((row) => {
+                const rect = row.getBoundingClientRect();
+                const absoluteTop = rect.top + current;
+                const distFromTop = absoluteTop - current;
+                const center = window.innerHeight / 2;
+                const distFromCenter = distFromTop - center;
+                let normalizedDist = distFromCenter / (window.innerHeight / 1.5);
+
+                if (distFromTop < window.innerHeight + 100 && distFromTop > -400) {
+                    let rotateX = normalizedDist * 10;
+                    let translateZ = Math.abs(normalizedDist) * -100;
+                    let opacity = 1 - Math.abs(normalizedDist * 0.5);
+                    row.style.transform = `perspective(1000px) rotateX(${rotateX}deg) translateZ(${translateZ}px)`;
+                    row.style.opacity = opacity;
+                }
+            });
+
+            if(manifest) {
+                const mRect = manifest.getBoundingClientRect();
+                if(mRect.top < window.innerHeight * 0.8) manifest.classList.add('in-view');
+            }
+
+            if(archiveCard) {
+                const aRect = archiveCard.getBoundingClientRect();
+                if(aRect.top < window.innerHeight * 0.85) archiveCard.classList.add('in-view');
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        // --- 3. MODAL PDF ---
+        const btnOpenTrek = document.getElementById('btn-open-trek');
+        const overlay = document.getElementById('trek-overlay');
+
+        btnOpenTrek.addEventListener('click', () => {
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden'; 
+        });
+
+        function closePdf() {
+            overlay.classList.remove('active');
+            document.body.style.overflow = 'scroll'; 
+        }
+
+        // --- 4. BACKGROUND STARS ---
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize); resize();
+
+        let stars = []; for(let i=0; i<100; i++) stars.push({x:Math.random()*width, y:Math.random()*height, z:Math.random()*2});
+
+        function drawStars() {
+            ctx.clearRect(0,0,width,height);
+            let speed = (target - current) * 0.1;
+            stars.forEach(s => {
+                s.y -= (0.2 + speed * s.z * 0.5);
+                if(s.y < 0) s.y = height; if(s.y > height) s.y = 0;
+                ctx.fillStyle = "rgba(188, 19, 254, 0.5)"; ctx.beginPath();
+                if(Math.abs(speed) > 2) ctx.rect(s.x, s.y, 1, Math.abs(speed*s.z));
+                else ctx.arc(s.x, s.y, s.z, 0, Math.PI*2);
+                ctx.fill();
+            });
+            requestAnimationFrame(drawStars);
+        }
+        drawStars();
+
+        // --- 5. CURSOR ---
+        const cursor = document.querySelector('.cursor');
+        window.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
+        });
+        document.querySelectorAll('a, .skill-content, .archive-card, .pdf-close, .download-btn, .back-btn').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('active'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+        });
+
+    </script>
+</body>
+</html>

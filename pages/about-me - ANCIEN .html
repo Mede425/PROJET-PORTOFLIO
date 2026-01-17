@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>À Propos | Medelys SEUX</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- VARIABLES IDENTIQUES ACCUEIL --- */
+        :root {
+            --bg: #050505;
+            --text: #ffffff;
+            --accent: #00f0ff; 
+            --accent-sec: #7000ff;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+            overflow-x: hidden;
+        }
+
+        a { text-decoration: none; color: white; }
+
+        /* --- CURSEUR --- */
+        .cursor-dot, .cursor-outline {
+            position: fixed;
+            top: 0; left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+        .cursor-dot { width: 8px; height: 8px; background-color: var(--accent); }
+        .cursor-outline { width: 40px; height: 40px; border: 1px solid var(--accent); transition: width 0.2s, height 0.2s; }
+
+        /* --- BACKGROUND --- */
+        .gradient-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(112, 0, 255, 0.15), transparent 60%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            padding: 2rem 10%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-btn {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            transition: 0.3s;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .back-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+        }
+
+        /* --- LAYOUT GLOBAL --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 10%;
+        }
+
+        .section-spacing {
+            margin-bottom: 8rem;
+        }
+
+        /* --- HEADER BIO --- */
+        h1 {
+            font-family: 'Syncopate', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+        }
+
+        h1 span {
+            background: linear-gradient(45deg, var(--accent), var(--accent-sec));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .bio-intro {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        .bio-text {
+            font-size: 1.15rem;
+            line-height: 1.7;
+            opacity: 0.9;
+            text-align: justify;
+            border-left: 3px solid var(--accent);
+            padding-left: 2rem;
+        }
+
+        .key-stats {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .stat-item h4 {
+            font-family: 'Syncopate';
+            font-size: 2.5rem;
+            color: var(--accent-sec);
+            margin-bottom: 0.5rem;
+        }
+        .stat-item p { font-size: 0.9rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* --- TITRES DE SECTION --- */
+        .section-title {
+            font-family: 'Syncopate';
+            font-size: 2rem;
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .section-title::before {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 2px;
+            background: var(--accent);
+        }
+
+        /* --- SECTION METHODOLOGIE (PROCESSUS) --- */
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .process-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            padding: 2.5rem;
+            border-radius: 4px;
+            position: relative;
+            transition: 0.3s;
+        }
+        
+        .process-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+        }
+
+        .step-number {
+            font-family: 'Syncopate';
+            font-size: 3rem;
+            opacity: 0.1;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .process-card h3 {
+            font-family: 'Syncopate';
+            color: var(--accent);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        /* --- SECTION EXPERTISE (GRID) --- */
+        .expertise-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 2 colonnes larges */
+            gap: 2rem;
+        }
+
+        .expertise-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.03), transparent);
+            border: 1px solid var(--border);
+            padding: 3rem;
+            border-radius: 20px;
+            transition: 0.3s;
+        }
+
+        .expertise-card:hover {
+            box-shadow: 0 0 40px rgba(112, 0, 255, 0.1);
+            border-color: var(--accent-sec);
+        }
+
+        .expertise-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .expertise-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .expertise-card li {
+            margin-bottom: 0.8rem;
+            padding-left: 1.5rem;
+            position: relative;
+            opacity: 0.8;
+        }
+
+        .expertise-card li::before {
+            content: '>';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        /* --- SOFTSKILLS --- */
+        .soft-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        .soft-item {
+            text-align: center;
+            padding: 2rem;
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            background: var(--glass);
+            transition: 0.3s;
+        }
+        .soft-item:hover {
+            background: var(--accent);
+            color: #000;
+            border-color: var(--accent);
+            font-weight: bold;
+        }
+
+        /* --- FOOTER CTA --- */
+        .footer-cta {
+            text-align: center;
+            padding: 6rem 0 4rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn-download {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 1.2rem 3.5rem;
+            background: var(--text);
+            color: var(--bg);
+            font-weight: bold;
+            font-family: 'Space Grotesk';
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 50px;
+            transition: 0.3s;
+        }
+        
+        .btn-download:hover {
+            background: var(--accent);
+            box-shadow: 0 0 30px var(--accent);
+            transform: scale(1.05);
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .bio-intro, .expertise-grid, .soft-grid { grid-template-columns: 1fr; }
+            .bio-text { border-left: none; padding-left: 0; border-top: 2px solid var(--accent); padding-top: 2rem; }
+            h1 { font-size: 2.5rem; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+    <div class="gradient-bg"></div>
+
+    <nav>
+        <a href="../index.html" class="back-btn">← RETOUR ACCUEIL</a>
+    </nav>
+
+    <div class="container">
+        
+        <section class="bio-intro section-spacing">
+            <div>
+                <h1 class="reveal">
+                    Stratège <br>
+                    <span>Multimédia</span>
+                </h1>
+                
+                <div class="bio-text reveal">
+                    <p>
+                        <strong>Je ne crée pas seulement du contenu, je conçois des solutions.</strong><br><br>
+                        Étudiant en MMI (Métiers du Multimédia et de l'Internet), je me positionne à l'intersection du <strong>Marketing Digital</strong>, du <strong>Design</strong> et de la <strong>Technique</strong>.<br><br>
+                        Dans un écosystème numérique saturé, l'esthétique seule ne suffit plus. Mon approche est analytique : chaque pixel, chaque ligne de code et chaque montage vidéo doit servir un objectif précis (conversion, image de marque, rétention). 
+                        Je transforme des idées complexes en expériences utilisateurs fluides et performantes.
+                    </p>
+                </div>
+            </div>
+
+            <div class="key-stats reveal">
+                <div class="stat-item">
+                    <h4>100%</h4>
+                    <p>Implication Projet</p>
+                </div>
+                <div class="stat-item">
+                    <h4>Polyvalent</h4>
+                    <p>Design & Code & Vidéo</p>
+                </div>
+                <div class="stat-item">
+                    <h4>Analytique</h4>
+                    <p>Approche Data-Driven</p>
+                </div>
+            </div>
+        </section>
+
+        <h2 class="section-title reveal">Ma Méthodologie</h2>
+        <div class="process-grid section-spacing">
+            
+            <div class="process-card reveal" data-tilt>
+                <span class="step-number">01</span>
+                <h3>Analyse & Stratégie</h3>
+                <p>Avant toute création, j'observe. J'analyse la cible, les tendances du marché et les besoins utilisateurs. Ma nature observatrice me permet de déceler les opportunités là où d'autres voient des contraintes.</p>
+            </div>
+
+            <div class="process-card reveal" data-tilt>
+                <span class="step-number">02</span>
+                <h3>Conception & Création</h3>
+                <p>C'est ici que ma dualité s'exprime. Je fusionne l'instinct créatif avec la rigueur technique. Que ce soit en design UI ou en montage vidéo, je cherche l'impact visuel immédiat et la cohérence de marque.</p>
+            </div>
+
+            <div class="process-card reveal" data-tilt>
+                <span class="step-number">03</span>
+                <h3>Optimisation & Rendu</h3>
+                <p>Le détail fait la différence. Je peaufine, je teste et j'optimise pour garantir que le produit final soit non seulement beau, mais fonctionnel, rapide et adapté aux objectifs fixés.</p>
+            </div>
+
+        </div>
+
+        <h2 class="section-title reveal">Pôles d'Expertise</h2>
+        <div class="expertise-grid section-spacing">
+            
+            <div class="expertise-card reveal" data-tilt>
+                <h3>Communication & Marketing</h3>
+                <ul>
+                    <li>Stratégie de contenu & Storytelling</li>
+                    <li>Gestion de l'image de marque (Branding)</li>
+                    <li>Rédaction web orientée SEO</li>
+                    <li>Analyse des KPI et optimisation</li>
+                </ul>
+            </div>
+
+            <div class="expertise-card reveal" data-tilt>
+                <h3>Graphisme & Branding</h3>
+                <ul>
+                    <li>Création de Logos & Identités Visuelles</li>
+                    <li>Supports de communication (Print & Web)</li>
+                    <li>Direction Artistique</li>
+                    <li>Illustration & Typographie</li>
+                </ul>
+            </div>
+
+            <div class="expertise-card reveal" data-tilt>
+                <h3>Audiovisuel</h3>
+                <ul>
+                    <li>Montage dynamique (Premiere Pro)</li>
+                    <li>Motion Design & Animation</li>
+                    <li>Scénarisation de formats courts (Reels/TikTok)</li>
+                    <li>Sound Design immersif</li>
+                </ul>
+            </div>
+
+            <div class="expertise-card reveal" data-tilt>
+                <h3>Creative Dev & UI/UX</h3>
+                <ul>
+                    <li>Conception d'interfaces (Figma)</li>
+                    <li>Intégration Front-End (HTML/CSS/JS)</li>
+                    <li>Expériences interactives & Animations</li>
+                    <li>Collaboration Design/Code (Pixel Perfect)</li>
+                </ul>
+            </div>
+
+        </div>
+
+        <h2 class="section-title reveal">Atouts Professionnels</h2>
+        <div class="soft-grid section-spacing">
+            <div class="soft-item reveal">Rigueur & Organisation</div>
+            <div class="soft-item reveal">Esprit d'Analyse</div>
+            <div class="soft-item reveal">Force de Proposition</div>
+            <div class="soft-item reveal">Autonomie</div>
+            <div class="soft-item reveal">Curiosité Tech</div>
+            <div class="soft-item reveal">Adaptabilité</div>
+        </div>
+
+        <div class="footer-cta reveal">
+            <h2 style="font-family: 'Syncopate'; font-size: 2rem; margin-bottom: 1rem;">Un projet en tête ?</h2>
+            <p style="opacity: 0.6; max-width: 600px; margin: 0 auto;">
+                Je suis actuellement à la recherche d'un <strong>stage</strong>. 
+                Pour apporter une vision neuve et stratégique à vos projets.
+            </p>
+            <a href="#" class="btn-download">TÉLÉCHARGER MON CV</a>
+        </div>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
+    
+    <script>
+        // CURSEUR
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
+
+        window.addEventListener('mousemove', (e) => {
+            const posX = e.clientX;
+            const posY = e.clientY;
+            cursorDot.style.left = `${posX}px`;
+            cursorDot.style.top = `${posY}px`;
+            cursorOutline.animate({ left: `${posX}px`, top: `${posY}px` }, { duration: 500, fill: "forwards" });
+        });
+
+        document.querySelectorAll('a, .process-card, .expertise-card, .soft-item').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursorOutline.style.transform = 'translate(-50%, -50%) scale(2.5)';
+                cursorOutline.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+            });
+            el.addEventListener('mouseleave', () => {
+                cursorOutline.style.transform = 'translate(-50%, -50%) scale(1)';
+                cursorOutline.style.backgroundColor = 'transparent';
+            });
+        });
+
+        // ANIMATIONS
+        gsap.registerPlugin(ScrollTrigger);
+
+        gsap.utils.toArray('.reveal').forEach((elem) => {
+            gsap.from(elem, {
+                scrollTrigger: {
+                    trigger: elem,
+                    start: "top 85%"
+                },
+                y: 30,
+                opacity: 0,
+                duration: 1,
+                ease: "power3.out"
+            });
+        });
+
+    </script>
+</body>
+</html>

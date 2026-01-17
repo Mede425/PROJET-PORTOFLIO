@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Communication | MMI TERMINAL</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&family=Syncopate:wght@400;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- 1. CORE & VARIABLES --- */
+        :root {
+            --bg-color: #030303;
+            --text-color: #e0e0e0;
+            --accent: #bc13fe;
+            --cyan: #00f3ff;
+            --font-display: 'Syncopate', sans-serif;
+            --font-body: 'Space Grotesk', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-body);
+            overflow-x: hidden; /* On cache l'horizontal mais on laisse le vertical */
+            overflow-y: scroll; /* Force l'apparition de la scrollbar */
+            width: 100vw;
+            /* La hauteur est définie dynamiquement par le JS */
+        }
+
+        /* --- 2. LOADER SYSTEM (BOOT SEQUENCE) --- */
+        #boot-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            z-index: 10000;
+            display: flex; flex-direction: column; justify-content: flex-end; padding: 50px;
+            font-family: var(--font-code);
+            color: var(--accent);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .boot-line { opacity: 0; }
+        .boot-cursor { display: inline-block; width: 8px; height: 15px; background: var(--cyan); animation: blink 0.1s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* --- 3. SMOOTH SCROLL CONTAINER --- */
+        #smooth-wrapper {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none; /* Permet de cliquer à travers si besoin, mais attention aux liens */
+        }
+        
+        #smooth-content {
+            position: absolute;
+            top: 0; left: 0; width: 100%;
+            will-change: transform;
+            pointer-events: auto; /* Réactive les événements souris sur le contenu */
+        }
+
+        /* --- 4. VISUAL FX --- */
+        .crt-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none; z-index: 9991;
+        }
+        
+        .vignette {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, transparent 50%, black 120%);
+            z-index: 9990; pointer-events: none;
+        }
+
+        #bg-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; opacity: 0.6;
+        }
+
+        /* --- 5. UI ELEMENTS --- */
+        .cursor {
+            position: fixed; width: 20px; height: 20px;
+            border: 2px solid var(--cyan); border-radius: 50%;
+            pointer-events: none; transform: translate(-50%, -50%);
+            z-index: 9999; transition: width 0.3s, height 0.3s, background 0.3s;
+            mix-blend-mode: difference;
+        }
+        .cursor.active { width: 50px; height: 50px; background: var(--cyan); border: none; opacity: 0.5; }
+
+        .nav-back {
+            position: fixed; top: 30px; left: 40px; z-index: 100;
+            text-decoration: none; color: #fff;
+            font-family: var(--font-display); font-size: 0.8rem;
+            mix-blend-mode: difference;
+        }
+
+        /* --- 6. CONTENT STYLING --- */
+        .hero {
+            height: 80vh; display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            perspective: 1000px; /* Crucial pour la 3D */
+        }
+
+        .hero h1 {
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 8vw, 8rem);
+            line-height: 0.8; text-align: center;
+            transform-style: preserve-3d;
+            transform: translateZ(0);
+        }
+
+        .hero p {
+            margin-top: 20px; color: var(--cyan); letter-spacing: 0.5em;
+            font-family: var(--font-code); font-size: 0.8rem;
+        }
+
+        .manifesto {
+            padding: 100px 10%; text-align: center;
+            font-family: var(--font-display); font-size: clamp(1.5rem, 4vw, 3rem);
+            line-height: 1.4;
+            opacity: 0.2; transition: opacity 0.5s;
+        }
+        .manifesto.in-view { opacity: 1; }
+
+        /* --- 7. 3D PROJECTS TIMELINE --- */
+        .timeline-wrapper {
+            position: relative; max-width: 1400px; margin: 0 auto;
+            padding: 100px 20px;
+            perspective: 1000px; /* La magie 3D opère ici */
+        }
+
+        .laser-core {
+            position: absolute; left: 50%; top: 0; width: 1px; height: 0%;
+            background: var(--accent); transform: translateX(-50%);
+            z-index: 1;
+            box-shadow: 0 0 20px var(--accent);
+        }
+
+        .project-row {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 30vh; /* Espace pour le scroll */
+            opacity: 0;
+            /* État initial : Loin au fond et petit */
+            transform: translateZ(-200px) scale(0.8) translateY(100px); 
+            transition: transform 0.1s linear, opacity 0.1s linear; /* Géré par JS */
+            will-change: transform, opacity;
+        }
+
+        .project-visual {
+            width: 55%; height: 400px;
+            position: relative; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .project-visual img {
+            width: 100%; height: 100%; object-fit: cover;
+            filter: grayscale(100%) contrast(1.2);
+            transition: 0.5s;
+        }
+        
+        .project-row:hover .project-visual img {
+            filter: grayscale(0%) contrast(1);
+            transform: scale(1.05);
+        }
+
+        .project-info {
+            width: 35%; padding: 40px;
+            background: rgba(10,10,10,0.8);
+            backdrop-filter: blur(10px);
+            border-left: 2px solid var(--accent);
+            transform: translateZ(50px); /* Le texte flotte devant l'image */
+        }
+
+        .project-row:nth-child(even) { flex-direction: row-reverse; }
+        .project-row:nth-child(even) .project-info { border-left: none; border-right: 2px solid var(--accent); text-align: right; }
+
+        .project-title {
+            font-family: var(--font-display); font-size: 2.5rem;
+            margin-bottom: 10px; color: #fff;
+        }
+
+        /* --- 8. ARCHIVES --- */
+        .archives {
+            padding: 100px 5%;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+            perspective: 1000px;
+        }
+
+        .archive-card {
+            background: #0a0a0a; border: 1px solid #333;
+            padding: 40px 20px; text-align: center;
+            transition: 0.3s;
+            transform: rotateX(20deg) scale(0.9); /* Effet "couché" initial */
+            transform-origin: center bottom;
+            opacity: 0.5;
+        }
+        
+        .archive-card.in-view {
+            transform: rotateX(0deg) scale(1);
+            opacity: 1;
+        }
+
+        .archive-card:hover {
+            border-color: var(--cyan);
+            background: #0f0f0f;
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.1);
+        }
+
+        footer {
+            height: 30vh; display: flex; align-items: center; justify-content: center;
+            font-family: var(--font-code); color: #555;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 3rem; }
+            .project-row { flex-direction: column !important; margin-bottom: 15vh; }
+            .project-visual, .project-info { width: 100%; }
+            .project-visual { height: 250px; }
+            .project-info { margin-top: -50px; width: 90%; }
+            .archives { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BOOT SEQUENCE OVERLAY -->
+    <div id="boot-screen">
+        <div id="boot-text"></div>
+        <div class="boot-cursor"></div>
+    </div>
+
+    <!-- FX -->
+    <div class="crt-overlay"></div>
+    <div class="vignette"></div>
+    <div class="cursor"></div>
+    <canvas id="bg-canvas"></canvas>
+
+    <a href="../index.html" class="nav-back"><span>&lt; REBOOT SYSTEM</span></a>
+
+    <!-- SCROLL WRAPPER (Smooth Scroll) -->
+    <div id="smooth-wrapper">
+        <div id="smooth-content">
+            
+            <section class="hero">
+                <p>> PROTOCOL: CONNECTED</p>
+                <h1 class="glitch-text" data-text="COMMUNICATION">COMMUNICATION</h1>
+                <p>DIGITAL STRATEGY // DATA // VISUALS</p>
+            </section>
+
+            <section class="manifesto">
+                NOUS NE CRÉONS PAS DU CONTENU.<br>
+                NOUS GÉNÉRONS DU <span style="color:var(--accent)">SIGNAL</span><br>
+                DANS LE BRUIT.
+            </section>
+
+            <div class="timeline-wrapper">
+                <div class="laser-core" id="laser"></div>
+
+                <!-- PROJECT 1 -->
+                <div class="project-row">
+                    <div class="project-visual">
+                        <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop" alt="Red Bull">
+                    </div>
+                    <div class="project-info">
+                        <div style="color:var(--cyan); font-family:var(--font-code); margin-bottom:10px;">// CLIENT: RED BULL</div>
+                        <h2 class="project-title">GAMING OPS</h2>
+                        <p>Activation Twitch massive. Création d'un écosystème viral. ROI +300%.</p>
+                    </div>
+                </div>
+
+                <!-- PROJECT 2 -->
+                <div class="project-row">
+                    <div class="project-visual">
+                        <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=2070&auto=format&fit=crop" alt="Tech">
+                    </div>
+                    <div class="project-info">
+                        <div style="color:var(--cyan); font-family:var(--font-code); margin-bottom:10px;">// CLIENT: CYBERDYNE</div>
+                        <h2 class="project-title">SEO ARCHITECT</h2>
+                        <p>Domination sémantique totale. Optimisation technique Core Web Vitals.</p>
+                    </div>
+                </div>
+
+                <!-- PROJECT 3 -->
+                <div class="project-row">
+                    <div class="project-visual">
+                        <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop" alt="Neon">
+                    </div>
+                    <div class="project-info">
+                        <div style="color:var(--cyan); font-family:var(--font-code); margin-bottom:10px;">// CLIENT: NEON FLUX</div>
+                        <h2 class="project-title">REBRANDING</h2>
+                        <p>Refonte UX/UI complète. Création d'un langage visuel modulaire.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <section class="archives">
+                <div class="archive-card">
+                    <h3 style="color:#fff; margin-bottom:10px; font-family:var(--font-display)">AUDIT.PDF</h3>
+                    <p style="font-size:0.8rem; color:#666">SIZE: 12MB // ENCRYPTED</p>
+                </div>
+                <div class="archive-card">
+                    <h3 style="color:#fff; margin-bottom:10px; font-family:var(--font-display)">BRAND_KIT.ZIP</h3>
+                    <p style="font-size:0.8rem; color:#666">SIZE: 450MB // ASSETS</p>
+                </div>
+                <div class="archive-card">
+                    <h3 style="color:#fff; margin-bottom:10px; font-family:var(--font-display)">STRAT_2025.DOC</h3>
+                    <p style="font-size:0.8rem; color:#666">SIZE: 2MB // CONFIDENTIAL</p>
+                </div>
+            </section>
+
+            <footer>
+                <p>SYSTEM END OF LINE _</p>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. BOOT SEQUENCE (Intro Hacker) ---
+        const bootScreen = document.getElementById('boot-screen');
+        const bootText = document.getElementById('boot-text');
+        const lines = [
+            "INITIALIZING KERNEL...",
+            "LOADING MODULES: [VISUALS] [AUDIO] [DATA]...",
+            "BYPASSING SECURITY PROTOCOLS...",
+            "OPTIMIZING NEURAL NETWORK...",
+            "CONNECTION ESTABLISHED.",
+            "WELCOME USER."
+        ];
+
+        let lineIndex = 0;
+        let charIndex = 0;
+
+        function typeWriter() {
+            if (lineIndex < lines.length) {
+                if (charIndex < lines[lineIndex].length) {
+                    // Si c'est le premier caractère de la ligne, on ajoute un div
+                    if(charIndex === 0) {
+                        const div = document.createElement('div');
+                        div.className = 'boot-line';
+                        div.style.opacity = 1;
+                        div.id = `line-${lineIndex}`;
+                        bootText.appendChild(div);
+                    }
+                    document.getElementById(`line-${lineIndex}`).innerHTML += lines[lineIndex].charAt(charIndex);
+                    charIndex++;
+                    setTimeout(typeWriter, Math.random() * 30 + 10); // Vitesse de frappe aléatoire
+                } else {
+                    lineIndex++;
+                    charIndex = 0;
+                    setTimeout(typeWriter, 100); // Pause entre les lignes
+                }
+            } else {
+                // Fin de la séquence
+                setTimeout(() => {
+                    bootScreen.style.transition = "transform 0.5s ease-in-out";
+                    bootScreen.style.transform = "translateY(-100%)";
+                    initExperience(); // Lance le reste du site
+                }, 800);
+            }
+        }
+        
+        // Démarrer la séquence
+        window.addEventListener('load', typeWriter);
+
+
+        // --- 2. SMOOTH SCROLL & 3D ANIMATION LOOP ---
+        let current = 0;
+        let target = 0;
+        let ease = 0.075; // Fluidité (plus bas = plus lourd)
+        
+        const smoothWrapper = document.getElementById('smooth-wrapper');
+        const smoothContent = document.getElementById('smooth-content');
+        const projectRows = document.querySelectorAll('.project-row');
+        const manifest = document.querySelector('.manifesto');
+        const archiveCards = document.querySelectorAll('.archive-card');
+        const laser = document.getElementById('laser');
+
+        // Calcul de la hauteur totale
+        function setHeight() {
+            document.body.style.height = `${smoothContent.getBoundingClientRect().height}px`;
+        }
+        
+        // Mettre à jour la cible de scroll
+        window.addEventListener('scroll', () => {
+            target = window.scrollY;
+        });
+
+        window.addEventListener('resize', setHeight);
+
+        // Cette fonction sera appelée quand le Boot est fini
+        function initExperience() {
+            setHeight();
+            animate();
+        }
+
+        function animate() {
+            // Interpolation linéaire (Lerp) pour le smooth scroll
+            current += (target - current) * ease;
+            
+            // Appliquer la translation au conteneur
+            // On arrondit à 2 décimales pour la perf
+            let t = Math.round(current * 100) / 100;
+            smoothContent.style.transform = `translate3d(0, -${t}px, 0)`;
+
+            // --- ANIMATIONS PARALLAX & 3D (C'est là que ça claque) ---
+            
+            // 1. Gestion du Laser (progression)
+            const totalH = document.body.style.height.replace('px','') - window.innerHeight;
+            let progress = (current / totalH) * 100;
+            if(laser) laser.style.height = `${progress}%`;
+
+            // 2. Gestion des Projets (Zoom Caméra)
+            projectRows.forEach((row, index) => {
+                // Position de l'élément par rapport au viewport (corrigé du scroll virtuel)
+                const rect = row.getBoundingClientRect();
+                const absoluteTop = rect.top + current; // Position absolue dans le doc
+                const distFromTop = absoluteTop - current; // Position relative à l'écran
+                
+                // Centre de l'écran
+                const center = window.innerHeight / 2;
+                const distFromCenter = distFromTop - center;
+
+                // Calcul de l'effet 3D
+                // Plus on est proche du centre, plus l'échelle est proche de 1 et Z proche de 0
+                // Plus on est loin, plus on recule (Z négatif) et on floute
+                
+                // On normalise la distance (0 = centre, 1 = bord)
+                let normalizedDist = distFromCenter / (window.innerHeight / 1.5);
+                
+                // On clamp les valeurs
+                if (distFromTop < window.innerHeight + 100 && distFromTop > -400) {
+                    // L'élément est visible (ou presque)
+                    
+                    // Rotation légère en fonction de la position (bascule avant/arrière)
+                    let rotateX = normalizedDist * 15; // Max 15 degrés
+                    
+                    // Profondeur : On recule les éléments qui ne sont pas au centre
+                    let translateZ = Math.abs(normalizedDist) * -150; 
+                    
+                    // Opacité : fade in/out
+                    let opacity = 1 - Math.abs(normalizedDist);
+                    if(opacity < 0) opacity = 0;
+                    
+                    row.style.transform = `perspective(1000px) rotateX(${rotateX}deg) translateZ(${translateZ}px)`;
+                    row.style.opacity = opacity + 0.2; // Garder un peu visible
+                }
+            });
+
+            // 3. Manifesto Reveal
+            if(manifest) {
+                const mRect = manifest.getBoundingClientRect();
+                if(mRect.top < window.innerHeight * 0.8) manifest.classList.add('in-view');
+            }
+
+            // 4. Archives Reveal (Cascade)
+            archiveCards.forEach((card, i) => {
+                const cRect = card.getBoundingClientRect();
+                if(cRect.top < window.innerHeight * 0.85) {
+                    // Petit délai en cascade basé sur l'index
+                    setTimeout(() => {
+                        card.classList.add('in-view');
+                    }, i * 100);
+                }
+            });
+
+            // Boucle d'animation
+            requestAnimationFrame(animate);
+        }
+
+        // --- 3. CANVAS STARS (WARP EFFECT) ---
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let canvasWidth, canvasHeight;
+        
+        function resizeCanvas() { canvasWidth = canvas.width = window.innerWidth; canvasHeight = canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        let stars = [];
+        for(let i=0; i<150; i++) stars.push({
+            x: Math.random() * canvasWidth,
+            y: Math.random() * canvasHeight,
+            z: Math.random() * 2, // Profondeur
+            o: Math.random()
+        });
+
+        function drawStars() {
+            ctx.clearRect(0,0,canvasWidth,canvasHeight);
+            
+            // La vitesse des étoiles dépend de la vitesse du scroll !
+            // (target - current) donne la vélocité instantanée
+            let speed = (target - current) * 0.1;
+            
+            stars.forEach(s => {
+                // Effet de traînée quand on scroll vite
+                let length = Math.max(1, Math.abs(speed * s.z));
+                
+                ctx.fillStyle = `rgba(180, 0, 255, ${s.o})`;
+                
+                // Déplacement vertical
+                s.y -= (0.2 + speed * s.z * 0.5); 
+                
+                // Reset si sort de l'écran
+                if(s.y < 0) s.y = canvasHeight;
+                if(s.y > canvasHeight) s.y = 0;
+
+                // Dessin (cercle étiré si rapide)
+                ctx.beginPath();
+                if(Math.abs(speed) > 2) {
+                    ctx.rect(s.x, s.y, 1.5 * s.z, length + 2); // Mode Warp
+                } else {
+                    ctx.arc(s.x, s.y, s.z, 0, Math.PI*2); // Mode Calme
+                }
+                ctx.fill();
+            });
+            requestAnimationFrame(drawStars);
+        }
+        drawStars();
+
+        // --- 4. CURSOR ---
+        const cursor = document.querySelector('.cursor');
+        document.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+        document.querySelectorAll('a, .project-row, .archive-card').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('active'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+        });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Espace Développement - Projets Interactifs</title>
+    <style>
+        body {
+            margin: 0;
+            overflow-x: hidden; /* Empêche le scroll horizontal */
+            overflow-y: auto;   /* Autorise le scroll vertical */
+            background-color: #050505;
+            font-family: 'Courier New', Courier, monospace;
+            color: white;
+            /* user-select: none;  Retiré pour permettre de sélectionner le texte en bas */
+            -webkit-user-select: none; /* Gardé pour le mobile, à ajuster si besoin */
+            touch-action: pan-y; /* Permet le scroll tactile */
+        }
+        
+        /* SCROLLBAR STYLISÉE */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00ffcc; }
+
+        #canvas-container {
+            position: fixed; /* Fixé en arrière-plan */
+            top: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: block;
+            outline: none;
+            z-index: 0;
+        }
+        
+        /* --- UI LAYER (HUD) --- */
+        #ui-layer {
+            position: fixed; /* Reste fixe par dessus le jeu */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%; /* Prend toute la hauteur mais laisse passer les clics */
+            pointer-events: none; /* Laisse passer les clics vers le contenu */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+            box-sizing: border-box;
+            z-index: 10;
+        }
+
+        .hud-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 100%;
+            pointer-events: auto;
+        }
+
+        /* --- LEFT PANEL (BACK BTN + LOGO) --- */
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+            pointer-events: auto;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 15px;
+            border-radius: 4px;
+            color: #ccc;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            backdrop-filter: blur(4px);
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            background: #fff;
+            color: #000;
+            border-color: #fff;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+            transform: translateX(5px);
+        }
+        .back-icon { width: 14px; height: 14px; fill: currentColor; }
+
+        /* --- LOGO --- */
+        .logo {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px 25px;
+            border-left: 4px solid #00ffcc;
+            border-radius: 0 8px 8px 0;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.1);
+        }
+        .logo h1 { margin: 0; font-size: 1.4rem; color: #00ffcc; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px #00ffcc; }
+        .logo p { margin: 5px 0 0 0; font-size: 0.75rem; color: #aaa; }
+
+        /* --- SYNC BAR (QUEST) --- */
+        .sync-container {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            pointer-events: auto;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
+        .sync-label { font-size: 0.8rem; letter-spacing: 2px; color: #888; margin-bottom: 5px; display: block; }
+        .sync-track {
+            width: 100%; height: 6px; background: #222;
+            border-radius: 3px; overflow: hidden;
+            position: relative;
+        }
+        .sync-fill {
+            width: 0%; height: 100%; background: #00ffcc;
+            box-shadow: 0 0 10px #00ffcc;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .sync-complete-msg {
+            position: absolute; top: 100%; left: 0; width: 100%;
+            color: #00ffcc; font-weight: bold; font-size: 0.9rem;
+            margin-top: 5px; opacity: 0; transition: opacity 0.5s;
+            text-shadow: 0 0 10px #00ffcc;
+        }
+
+        /* --- DROITE : CONTROLS + AUDIO --- */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+            pointer-events: auto;
+        }
+
+        .controls-hint {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: right;
+            border-right: 4px solid #ff00ff;
+            backdrop-filter: blur(4px);
+            display: block;
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.1);
+        }
+
+        /* --- AUDIO BUTTON (STYLISE) --- */
+        .audio-wrapper {
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-right: 4px solid #00ffcc;
+            border-radius: 8px;
+            padding: 8px 15px;
+            backdrop-filter: blur(4px);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .audio-wrapper:hover {
+            background: rgba(0, 255, 204, 0.1);
+            border-color: #00ffcc;
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
+            transform: translateX(-5px);
+        }
+        .audio-text {
+            font-size: 0.8rem;
+            margin-right: 10px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: #ccc;
+        }
+        .audio-icon { 
+            width: 24px; height: 24px; 
+            fill: #00ffcc;
+            filter: drop-shadow(0 0 2px #00ffcc);
+        }
+        .audio-wrapper.muted { border-right-color: #555; }
+        .audio-wrapper.muted .audio-icon { fill: #777; filter: none; }
+        .audio-wrapper.muted .audio-text { color: #777; }
+
+        @media (max-width: 768px) {
+            .controls-hint { display: none; }
+            .logo h1 { font-size: 1rem; }
+            .logo { padding: 10px 15px; }
+            .sync-container { width: 200px; top: 10px; }
+        }
+
+        .key {
+            display: inline-block;
+            border: 1px solid #fff;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-size: 0.8rem;
+            margin: 0 2px;
+            background: rgba(255,255,255,0.1);
+            font-weight: bold;
+        }
+
+        /* --- CARTE CONTENU (PROJET) --- */
+        #content-card {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(150%);
+            width: 85%;
+            max-width: 450px;
+            background: rgba(5, 5, 10, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #00ffcc;
+            border-radius: 12px;
+            padding: 30px;
+            transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            text-align: center;
+            pointer-events: auto;
+            box-shadow: 0 0 50px rgba(0,0,0,0.9);
+            backdrop-filter: blur(10px);
+        }
+
+        #content-card.active { transform: translateX(-50%) translateY(0); }
+
+        #content-card h2 { margin-top: 0; font-size: 1.6rem; text-transform: uppercase; letter-spacing: 1px; color: white; text-shadow: 0 0 10px currentColor; }
+        #content-card .badge { 
+            display: inline-block; padding: 4px 12px; 
+            background: #111; border-radius: 4px; 
+            font-size: 0.7rem; margin-bottom: 15px; 
+            font-weight: bold; text-transform: uppercase; letter-spacing: 1px;
+            color: #888; border: 1px solid #333;
+        }
+        
+        .btn-action {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 12px 35px;
+            background: white;
+            color: black;
+            text-decoration: none;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            border-radius: 2px;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .btn-action:hover { 
+            transform: translateY(-2px); 
+            background: #00ffcc; 
+            box-shadow: 0 0 30px rgba(0, 255, 204, 0.6); 
+        }
+
+        /* --- JOYSTICK VIRTUEL (MOBILE) --- */
+        #joystick-zone {
+            position: absolute;
+            bottom: 40px; left: 40px; width: 120px; height: 120px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            pointer-events: auto;
+            display: none; touch-action: none;
+        }
+        #joystick-knob {
+            position: absolute; top: 50%; left: 50%; width: 50px; height: 50px;
+            background: rgba(0, 255, 204, 0.5);
+            border-radius: 50%; transform: translate(-50%, -50%);
+            pointer-events: none;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
+        }
+
+        @media (hover: none) and (pointer: coarse) {
+            #joystick-zone { display: block; }
+            #content-card { bottom: 10px; width: 90%; padding: 20px; }
+        }
+
+        /* --- FULLSCREEN MODAL --- */
+        #project-modal {
+            position: fixed; /* Fixed to cover screen */
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            display: none; 
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: auto;
+        }
+        #project-modal.open {
+            display: flex;
+            opacity: 1;
+        }
+        .modal-content {
+            width: 90%;
+            max-width: 1200px;
+            height: 85%;
+            background: #080808;
+            border: 1px solid #333;
+            border-top: 4px solid #00ffcc;
+            border-radius: 10px;
+            box-shadow: 0 0 50px rgba(0, 255, 204, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #222;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #111;
+        }
+        .modal-header h2 { margin: 0; color: #00ffcc; text-transform: uppercase; letter-spacing: 2px; }
+        .close-btn {
+            background: none; border: 1px solid #444; color: #fff;
+            width: 30px; height: 30px; border-radius: 50%;
+            cursor: pointer; font-size: 1.2rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .close-btn:hover { background: #f00; border-color: #f00; }
+
+        .modal-body {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .modal-column {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        .gallery-img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #333;
+            transition: transform 0.2s;
+        }
+        .gallery-img:hover { transform: scale(1.02); border-color: #00ffcc; }
+        
+        .iframe-wrapper {
+            flex: 2; 
+            min-width: 300px;
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+        .iframe-placeholder {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            color: #444; pointer-events: none;
+        }
+        iframe {
+            position: absolute; 
+            top: 0; left: 0;
+            width: 100%; height: 100%; 
+            border: none;
+            background: #fff;
+            transform-origin: 0 0;
+        }
+
+        /* --- LOADER --- */
+        #loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #020202;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 1000; transition: opacity 0.8s ease-out;
+        }
+        .loader-content { width: 300px; text-align: center; }
+        .progress-container {
+            width: 100%; height: 2px; background: #111;
+            margin-top: 20px; overflow: hidden;
+        }
+        .progress-bar {
+            width: 0%; height: 100%; background: #00ffcc;
+            transition: width 0.2s;
+            box-shadow: 0 0 20px #00ffcc;
+        }
+        .glitch-text {
+            color: white; font-size: 1.5rem; letter-spacing: 5px;
+            animation: glitch 1s linear infinite;
+        }
+        @keyframes glitch {
+            2%, 64% { transform: translate(2px,0) skew(0deg); }
+            4%, 60% { transform: translate(-2px,0) skew(0deg); }
+            62% { transform: translate(0,0) skew(5deg); }
+        }
+    </style>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <div id="loader">
+        <div class="loader-content">
+            <h2 class="glitch-text">INITIALISATION</h2>
+            <p style="color: #444; font-size: 0.7rem; margin-top: 10px;">CHARGEMENT DE L'ENVIRONNEMENT VIRTUEL</p>
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="ui-layer">
+        <div class="hud-top">
+            <!-- LEFT PANEL: Back & Logo -->
+            <div class="left-panel">
+                <!-- CORRECTION DU LIEN POUR REMONTER D'UN DOSSIER -->
+                <a href="../index.html" class="back-btn">
+                    <svg class="back-icon" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                    RETOUR ACCUEIL
+                </a>
+                <div class="logo">
+                    <h1>DEV.ZONE</h1>
+                    <p>Système v2.0 // En Ligne</p>
+                </div>
+            </div>
+
+            <!-- QUEST BAR -->
+            <div class="sync-container">
+                <span class="sync-label">DATA SYNCHRONIZATION</span>
+                <div class="sync-track">
+                    <div class="sync-fill" id="sync-fill"></div>
+                </div>
+                <div class="sync-complete-msg" id="sync-msg">ACCÈS COMPLET AUTORISÉ</div>
+            </div>
+
+            <!-- RIGHT PANEL: Controls & Audio -->
+            <div class="right-panel">
+                <div class="controls-hint">
+                    <p><span class="key">Z</span><span class="key">Q</span><span class="key">S</span><span class="key">D</span> Mouvement</p>
+                    <p><span class="key">SOURIS</span> Orbitale</p>
+                    <p><span class="key">SHIFT</span> Turbo</p>
+                </div>
+                
+                <div class="audio-wrapper muted" id="audio-toggle" title="Activer/Désactiver le son">
+                    <span class="audio-text" id="audio-label">AUDIO OFF</span>
+                    <svg class="audio-icon" id="icon-sound" style="display:none;" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                    <svg class="audio-icon" id="icon-mute" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+                </div>
+            </div>
+        </div>
+        
+        <div id="joystick-zone"><div id="joystick-knob"></div></div>
+        <div id="content-card">
+            <span class="badge" id="card-badge">Stack</span>
+            <h2 id="card-title">Projet</h2>
+            <p id="card-desc" style="color: #aaa; line-height: 1.5; font-size: 0.9rem;">...</p>
+            <button class="btn-action" id="card-link">ACCÉDER</button>
+        </div>
+    </div>
+
+    <!-- NOUVEAU: PROJECT MODAL OVERLAY -->
+    <div id="project-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">TITRE DU PROJET</h2>
+                <button class="close-btn" id="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Colonne Gauche: Infos & Maquettes -->
+                <div class="modal-column" style="flex: 1;">
+                    <h3 style="color: #888; border-bottom: 1px solid #333; padding-bottom: 5px;">MAQUETTES</h3>
+                    <div id="modal-gallery" class="gallery-grid">
+                        <!-- Images injectées via JS -->
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <h3 style="color: #888; border-bottom: 1px solid #333; padding-bottom: 5px;">DESCRIPTION</h3>
+                        <p id="modal-long-desc" style="color: #ccc; line-height: 1.6; font-size: 0.9rem;">
+                            Description détaillée...
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Colonne Droite: Site Live -->
+                <div class="iframe-wrapper">
+                    <div class="iframe-placeholder">CHARGEMENT DU FLUX...</div>
+                    <iframe id="modal-iframe" src="" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOUVELLE SECTION DE CONTENU (SCROLL) -->
+    <div id="scroll-content">
+        <div class="content-section">
+            <div class="cyber-block">
+                <h2>À PROPOS</h2>
+                <p>
+                    Bienvenue dans mon interface personnelle. Je suis un développeur passionné par la création d'expériences web immersives et interactives.
+                    <br><br>
+                    Ce portfolio "Sandbox" a été conçu pour démontrer mes compétences en Three.js, React et Design System. Naviguez dans l'arène pour découvrir mes projets ou scrollez ici pour plus de détails.
+                </p>
+            </div>
+
+            <div class="cyber-block">
+                <h2>COMPÉTENCES TECHNIQUES</h2>
+                <p>Mon stack technique principal s'oriente autour de l'écosystème JavaScript moderne.</p>
+                <div class="skill-grid">
+                    <div class="skill-item">JAVASCRIPT / TYPESCRIPT</div>
+                    <div class="skill-item">REACT / NEXT.JS</div>
+                    <div class="skill-item">THREE.JS / WEBGL</div>
+                    <div class="skill-item">NODE.JS / EXPRESS</div>
+                    <div class="skill-item">SQL / MONGODB</div>
+                    <div class="skill-item">DOCKER / AWS</div>
+                </div>
+            </div>
+
+            <div class="cyber-block" style="border-left-color: #ff00ff;">
+                <h2>CONTACT</h2>
+                <p>
+                    Vous avez un projet ou une idée folle ? Discutons-en.
+                    <br><br>
+                    <a href="mailto:contact@exemple.com" style="color: #ff00ff; text-decoration: none; font-weight: bold; font-size: 1.2rem;">CONTACT@EXEMPLE.COM</a>
+                </p>
+            </div>
+            
+            <footer style="text-align: center; margin-top: 100px; color: #555; font-size: 0.8rem;">
+                © 2024 DEV.ZONE SYSTEM - ALL RIGHTS RESERVED
+            </footer>
+        </div>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+        
+        // --- POST PROCESSING IMPORTS ---
+        import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+        import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+        import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+        import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+        // --- CUSTOM GAME CONTROLS ---
+        class GameControls {
+            constructor(camera, domElement) {
+                this.camera = camera;
+                this.domElement = domElement;
+                this.target = new THREE.Vector3();
+                this.enabled = true; // Pour désactiver quand la modale est ouverte
+                
+                this.minDistance = 1.5; 
+                this.maxDistance = 5.0; 
+                this.rotateSpeed = 0.005; 
+                this.zoomSpeed = 0.05;
+                this.enableDamping = true;
+                this.dampingFactor = 0.1;
+                this.maxPolarAngle = Math.PI / 2.5; 
+                this.minPolarAngle = 0.1; 
+
+                this.spherical = new THREE.Spherical();
+                this.sphericalDelta = new THREE.Spherical();
+                this.scale = 1;
+                this.isDragging = false;
+                this.previousMousePosition = { x: 0, y: 0 };
+
+                this.update();
+
+                this.domElement.addEventListener('mousedown', this.onMouseDown.bind(this));
+                document.addEventListener('mousemove', this.onMouseMove.bind(this));
+                document.addEventListener('mouseup', this.onMouseUp.bind(this));
+                // MODIFICATION : Désactivation du zoom molette pour laisser le scroll de page
+                // this.domElement.addEventListener('wheel', this.onMouseWheel.bind(this), { passive: false });
+            }
+
+            onMouseDown(e) {
+                if (!this.enabled || e.button !== 0) return;
+                this.isDragging = true;
+                this.previousMousePosition = { x: e.clientX, y: e.clientY };
+            }
+
+            onMouseMove(e) {
+                if (!this.isDragging || !this.enabled) return;
+                const deltaX = e.clientX - this.previousMousePosition.x;
+                const deltaY = e.clientY - this.previousMousePosition.y;
+                this.previousMousePosition = { x: e.clientX, y: e.clientY };
+                this.sphericalDelta.theta -= deltaX * this.rotateSpeed;
+                this.sphericalDelta.phi -= deltaY * this.rotateSpeed;
+            }
+
+            onMouseUp() { this.isDragging = false; }
+
+            // ZOOM DÉSACTIVÉ POUR PERMETTRE LE SCROLL PAGE
+            onMouseWheel(e) {
+                // e.preventDefault();
+                // if (!this.enabled) return;
+                // if (e.deltaY > 0) this.scale *= (1 + this.zoomSpeed);
+                // else this.scale /= (1 + this.zoomSpeed);
+            }
+
+            update() {
+                const offset = new THREE.Vector3().copy(this.camera.position).sub(this.target);
+                this.spherical.setFromVector3(offset);
+
+                if (this.enableDamping) {
+                    this.spherical.theta += this.sphericalDelta.theta * this.dampingFactor;
+                    this.spherical.phi += this.sphericalDelta.phi * this.dampingFactor;
+                } else {
+                    this.spherical.theta += this.sphericalDelta.theta;
+                    this.spherical.phi += this.sphericalDelta.phi;
+                }
+
+                this.spherical.radius *= this.scale;
+                this.spherical.radius = Math.max(this.minDistance, Math.min(this.maxDistance, this.spherical.radius));
+                this.spherical.phi = Math.max(this.minPolarAngle, Math.min(this.maxPolarAngle, this.spherical.phi));
+
+                this.spherical.makeSafe();
+                offset.setFromSpherical(this.spherical);
+
+                this.camera.position.copy(this.target).add(offset);
+                this.camera.lookAt(this.target);
+
+                if (this.enableDamping) {
+                    this.sphericalDelta.theta *= (1 - this.dampingFactor);
+                    this.sphericalDelta.phi *= (1 - this.dampingFactor);
+                } else {
+                    this.sphericalDelta.set(0, 0, 0);
+                }
+                this.scale = 1;
+            }
+
+            getAzimuthalAngle() { return this.spherical.theta; }
+        }
+
+        // --- DONNÉES PROJETS ---
+        const myProjects = [
+            {
+                id: 1,
+                title: "TREK BERBERE",
+                desc: "Site de voyage et trekking au Maroc.",
+                tech: "WORDPRESS • CSS",
+                color: 0xffaa00, // Orange
+                link: "https://trek-berbere.com",
+                pos: { x: 0, z: -15 },
+                visited: false,
+                details: {
+                    iframe: "https://trek-berbere.com",
+                    images: [
+                        "https://placehold.co/600x400/222/00ffcc?text=Maquette+Desktop",
+                        "https://placehold.co/400x600/222/00ffcc?text=Mobile+View"
+                    ],
+                    longDesc: "Réalisation complète d'un site vitrine pour une agence de voyage. Intégration d'un système de réservation et optimisation SEO pour le marché francophone."
+                }
+            },
+            {
+                id: 2,
+                title: "E-SHOP",
+                desc: "Plateforme e-commerce fullstack.",
+                tech: "NEXT.JS • STRIPE",
+                color: 0xff00ff,
+                link: "#",
+                pos: { x: -20, z: 5 },
+                visited: false,
+                details: {
+                    iframe: "", // Pas d'iframe pour celui-ci (exemple)
+                    images: ["https://placehold.co/600x400/222/ff00ff?text=Dashboard"],
+                    longDesc: "Développement d'une marketplace complète avec gestion des stocks et paiements sécurisés."
+                }
+            },
+            {
+                id: 3,
+                title: "PORTFOLIO V1",
+                desc: "Ancienne version du portfolio.",
+                tech: "HTML • SASS",
+                color: 0x00ffcc,
+                link: "#",
+                pos: { x: 20, z: 5 },
+                visited: false,
+                details: {
+                    iframe: "",
+                    images: ["https://placehold.co/600x400/222/00ffcc?text=Old+Design"],
+                    longDesc: "Mon tout premier site personnel réalisé lors de ma première année."
+                }
+            },
+            {
+                id: 4,
+                title: "MOBILE APP",
+                desc: "App native de tracking.",
+                tech: "REACT NATIVE",
+                color: 0x0088ff,
+                link: "#",
+                pos: { x: 0, z: 20 },
+                visited: false,
+                details: {
+                    iframe: "",
+                    images: ["https://placehold.co/300x600/222/0088ff?text=App+Screen"],
+                    longDesc: "Application mobile cross-platform utilisant le GPS et l'accéléromètre."
+                }
+            }
+        ];
+
+        const CONFIG = {
+            walkSpeed: 5.0,
+            runSpeed: 10.0,
+            rotationSpeed: 8.0,
+            worldLimit: 90
+        };
+
+        // --- AUDIO MANAGER ---
+        class AudioManager {
+            constructor() {
+                this.ctx = null;
+                this.masterGain = null;
+                this.isMuted = true;
+                this.ambienceNodes = [];
+            }
+
+            init() {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                this.ctx = new AudioContext();
+                this.masterGain = this.ctx.createGain();
+                this.masterGain.gain.value = 0; // Start muted
+                this.masterGain.connect(this.ctx.destination);
+                this.startAmbience();
+            }
+
+            toggleMute() {
+                if (!this.ctx) this.init();
+                if (this.ctx.state === 'suspended') this.ctx.resume();
+
+                this.isMuted = !this.isMuted;
+                const targetVol = this.isMuted ? 0 : 0.4; 
+                this.masterGain.gain.setTargetAtTime(targetVol, this.ctx.currentTime, 0.5);
+
+                const btn = document.getElementById('audio-toggle');
+                const label = document.getElementById('audio-label');
+                const iconMute = document.getElementById('icon-mute');
+                const iconSound = document.getElementById('icon-sound');
+
+                if(this.isMuted) {
+                    btn.classList.add('muted');
+                    label.innerText = "AUDIO OFF";
+                    iconMute.style.display = 'block';
+                    iconSound.style.display = 'none';
+                } else {
+                    btn.classList.remove('muted');
+                    label.innerText = "AUDIO ON";
+                    iconMute.style.display = 'none';
+                    iconSound.style.display = 'block';
+                }
+            }
+
+            startAmbience() {
+                const osc1 = this.ctx.createOscillator();
+                osc1.type = 'sine'; osc1.frequency.value = 60; 
+                const osc2 = this.ctx.createOscillator();
+                osc2.type = 'sine'; osc2.frequency.value = 62; 
+                const gainOsc = this.ctx.createGain();
+                gainOsc.gain.value = 0.15; 
+                osc1.connect(gainOsc); osc2.connect(gainOsc); gainOsc.connect(this.masterGain);
+                osc1.start(); osc2.start();
+                this.ambienceNodes.push(osc1, osc2);
+
+                const bufferSize = this.ctx.sampleRate * 2; 
+                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1; 
+                const noise = this.ctx.createBufferSource();
+                noise.buffer = buffer; noise.loop = true;
+                const noiseFilter = this.ctx.createBiquadFilter();
+                noiseFilter.type = 'lowpass'; noiseFilter.frequency.value = 600; 
+                const gainNoise = this.ctx.createGain();
+                gainNoise.gain.value = 0.06; 
+                noise.connect(noiseFilter); noiseFilter.connect(gainNoise); gainNoise.connect(this.masterGain);
+                noise.start();
+                this.ambienceNodes.push(noise);
+            }
+
+            playSuccess() {
+                if (this.isMuted || !this.ctx) return;
+                const now = this.ctx.currentTime;
+                const notes = [440, 554, 659, 880]; 
+                notes.forEach((freq, i) => {
+                    const osc = this.ctx.createOscillator();
+                    osc.type = 'sine'; osc.frequency.value = freq;
+                    const gain = this.ctx.createGain();
+                    gain.gain.setValueAtTime(0, now + i*0.1);
+                    gain.gain.linearRampToValueAtTime(0.2, now + i*0.1 + 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + i*0.1 + 0.4);
+                    osc.connect(gain); gain.connect(this.masterGain);
+                    osc.start(now + i*0.1); osc.stop(now + i*0.1 + 0.5);
+                });
+            }
+
+            playHover() {
+                if (this.isMuted || !this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1200, this.ctx.currentTime + 0.1);
+                const gain = this.ctx.createGain();
+                gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.1);
+                osc.connect(gain); gain.connect(this.masterGain);
+                osc.start(); osc.stop(this.ctx.currentTime + 0.1);
+            }
+
+            // AJOUT: Son de pas procédural
+            playFootstep() {
+                if (this.isMuted || !this.ctx) return;
+
+                const t = this.ctx.currentTime;
+                
+                // Bruit court
+                const bufferSize = this.ctx.sampleRate * 0.1; // 0.1s
+                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+
+                const noise = this.ctx.createBufferSource();
+                noise.buffer = buffer;
+
+                // Filtre pour simuler un sol "dur" (béton/métal)
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'bandpass';
+                filter.frequency.value = 200 + Math.random() * 100; // Légère variation
+
+                const gain = this.ctx.createGain();
+                // Enveloppe percussive rapide
+                gain.gain.setValueAtTime(0.2, t); 
+                gain.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
+
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.masterGain);
+
+                noise.start(t);
+                noise.stop(t + 0.1);
+            }
+        }
+
+        // --- GLOBALES ---
+        let scene, camera, renderer, clock, controls, composer;
+        let playerObj, playerMesh, mixer;
+        let actions = {}; 
+        let activeAction, previousAction;
+        let zones = [];
+        let currentZone = null;
+        let holograms = []; 
+        let modalOpen = false; // Etat de la modale
+
+        const keys = { w: false, a: false, s: false, d: false, shift: false };
+        const joystick = { active: false, x: 0, y: 0 };
+        let isLoaded = false;
+        
+        // Timer pour les pas
+        let lastStepTime = 0;
+
+        const audioManager = new AudioManager();
+
+        function init() {
+            clock = new THREE.Clock();
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x020205); 
+            scene.fog = new THREE.FogExp2(0x020205, 0.02);
+
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 3, 2.5);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.toneMapping = THREE.ReinhardToneMapping;
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            const renderScene = new RenderPass(scene, camera);
+            const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+            bloomPass.threshold = 0.15; bloomPass.strength = 0.5; bloomPass.radius = 0.2;     
+            const outputPass = new OutputPass();
+            composer = new EffectComposer(renderer);
+            composer.addPass(renderScene); composer.addPass(bloomPass); composer.addPass(outputPass);
+
+            controls = new GameControls(camera, renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.1); scene.add(ambientLight);
+            const hemiLight = new THREE.HemisphereLight(0x0000ff, 0x000000, 0.2); scene.add(hemiLight);
+
+            createEnvironment();
+            loadPlayerModel();
+
+            window.addEventListener('resize', onWindowResize);
+            document.addEventListener('keydown', (e) => onKey(e, true));
+            document.addEventListener('keyup', (e) => onKey(e, false));
+            initJoystick();
+
+            document.getElementById('audio-toggle').addEventListener('click', () => { audioManager.toggleMute(); });
+            
+            // MODAL EVENTS
+            document.getElementById('card-link').addEventListener('click', openModal);
+            document.getElementById('modal-close').addEventListener('click', closeModal);
+
+            animate();
+        }
+
+        // --- LOGIQUE MODALE ---
+        function openModal() {
+            if (!currentZone) return;
+            
+            modalOpen = true;
+            controls.enabled = false; // Désactiver la caméra
+            
+            const data = currentZone.data;
+            document.getElementById('modal-title').innerText = data.title;
+            document.getElementById('modal-long-desc').innerText = data.details.longDesc;
+            
+            // Galerie
+            const gallery = document.getElementById('modal-gallery');
+            gallery.innerHTML = '';
+            data.details.images.forEach(imgSrc => {
+                const img = document.createElement('img');
+                img.src = imgSrc;
+                img.className = 'gallery-img';
+                gallery.appendChild(img);
+            });
+
+            // Iframe avec Auto-Scale
+            const iframe = document.getElementById('modal-iframe');
+            const wrapper = document.querySelector('.iframe-wrapper');
+
+            if (data.details.iframe) {
+                iframe.style.display = 'block';
+                document.querySelector('.iframe-placeholder').style.display = 'none';
+                iframe.src = data.details.iframe;
+
+                // --- SCALING AUTOMATIQUE ---
+                // Simule une vue Desktop (1280px) et réduit pour tenir dans la fenêtre
+                // Cela élimine les scrollbars horizontales et donne une vue d'ensemble propre
+                requestAnimationFrame(() => {
+                    const w = wrapper.clientWidth;
+                    const h = wrapper.clientHeight;
+                    const baseWidth = 1280; // Largeur virtuelle du site
+                    const scale = w / baseWidth;
+
+                    iframe.style.width = `${baseWidth}px`;
+                    iframe.style.height = `${h / scale}px`; // Hauteur compensée
+                    iframe.style.transform = `scale(${scale})`;
+                });
+
+            } else {
+                iframe.src = "";
+                iframe.style.display = 'none';
+                document.querySelector('.iframe-placeholder').style.display = 'flex';
+                document.querySelector('.iframe-placeholder').innerText = "PAS DE PRÉVISUALISATION LIVE";
+            }
+
+            const modal = document.getElementById('project-modal');
+            modal.classList.add('open');
+        }
+
+        function closeModal() {
+            modalOpen = false;
+            controls.enabled = true; // Réactiver la caméra
+            document.getElementById('project-modal').classList.remove('open');
+            
+            // Reset iframe
+            const iframe = document.getElementById('modal-iframe');
+            iframe.src = ""; 
+            iframe.style.transform = "none";
+            iframe.style.width = "100%";
+            iframe.style.height = "100%";
+        }
+
+        function createEnvironment() {
+            const gridLimit = 200; const gridDivisions = 100;
+            const gridHelper = new THREE.GridHelper(gridLimit, gridDivisions, 0x00ffcc, 0x111111);
+            gridHelper.position.y = 0.01; scene.add(gridHelper);
+            const planeGeo = new THREE.PlaneGeometry(gridLimit, gridLimit);
+            const planeMat = new THREE.MeshStandardMaterial({ color: 0x050505, roughness: 0.1, metalness: 0.8 });
+            const plane = new THREE.Mesh(planeGeo, planeMat);
+            plane.rotation.x = -Math.PI / 2; plane.receiveShadow = true; scene.add(plane);
+
+            myProjects.forEach(proj => createHologram(proj));
+
+            const particlesGeo = new THREE.BufferGeometry();
+            const particlesCount = 400;
+            const posArray = new Float32Array(particlesCount * 3);
+            for(let i=0; i<particlesCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 80;
+                if(i % 3 === 1) posArray[i] = Math.random() * 10;
+            }
+            particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            const particlesMat = new THREE.PointsMaterial({ size: 0.15, color: 0x00ffff, transparent: true, opacity: 0.6 });
+            const particles = new THREE.Points(particlesGeo, particlesMat);
+            scene.add(particles);
+        }
+
+        function createHologram(data) {
+            const grp = new THREE.Group();
+            grp.position.set(data.pos.x, 0, data.pos.z);
+            grp.userData = { projectId: data.id };
+
+            const baseGeo = new THREE.CylinderGeometry(2.5, 3, 0.5, 6);
+            const baseMat = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.9, roughness: 0.2 });
+            const base = new THREE.Mesh(baseGeo, baseMat);
+            base.castShadow = true; base.receiveShadow = true; grp.add(base);
+
+            const ringGeo = new THREE.TorusGeometry(2.8, 0.05, 16, 100);
+            const ringMat = new THREE.MeshBasicMaterial({ color: data.color });
+            const ring = new THREE.Mesh(ringGeo, ringMat);
+            ring.rotation.x = Math.PI / 2; ring.position.y = 0.3; grp.add(ring);
+
+            const beamGeo = new THREE.CylinderGeometry(0.1, 0.1, 20, 8);
+            const beamMat = new THREE.MeshBasicMaterial({ color: data.color, transparent: true, opacity: 0.15, blending: THREE.AdditiveBlending });
+            const beam = new THREE.Mesh(beamGeo, beamMat);
+            beam.position.y = 10; grp.add(beam);
+
+            const holoGroup = new THREE.Group();
+            holoGroup.position.y = 2.5;
+            const t1 = new THREE.TorusGeometry(1.2, 0.02, 16, 100);
+            const m1 = new THREE.MeshBasicMaterial({ color: data.color });
+            const ring1 = new THREE.Mesh(t1, m1); holoGroup.add(ring1);
+            const t2 = new THREE.TorusGeometry(1.5, 0.03, 16, 3);
+            const m2 = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true });
+            const ring2 = new THREE.Mesh(t2, m2); ring2.rotation.x = Math.PI / 4; holoGroup.add(ring2);
+            const coreGeo = new THREE.OctahedronGeometry(0.5);
+            const coreMat = new THREE.MeshBasicMaterial({ color: data.color, wireframe: true });
+            const core = new THREE.Mesh(coreGeo, coreMat); holoGroup.add(core);
+            grp.add(holoGroup);
+
+            const canvas = document.createElement('canvas'); canvas.width = 512; canvas.height = 128;
+            const ctx = canvas.getContext('2d'); ctx.fillStyle = `rgba(0,0,0,0)`; ctx.fillRect(0, 0, 512, 128);
+            ctx.font = "bold 60px Courier New"; ctx.fillStyle = "white"; ctx.textAlign = "center";
+            ctx.fillText(data.title, 256, 80); ctx.strokeStyle = '#' + new THREE.Color(data.color).getHexString();
+            ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(100, 90); ctx.lineTo(412, 90); ctx.stroke();
+            const tex = new THREE.CanvasTexture(canvas);
+            const spriteMat = new THREE.SpriteMaterial({ map: tex, transparent: true, opacity: 0.9 });
+            const sprite = new THREE.Sprite(spriteMat); sprite.scale.set(6, 1.5, 1); sprite.position.y = 4.5; grp.add(sprite);
+
+            const pLight = new THREE.PointLight(data.color, 3, 10); pLight.position.y = 3; grp.add(pLight);
+            scene.add(grp);
+
+            holograms.push({
+                id: data.id, group: holoGroup, rings: [ring1, ring2], core: core, beam: beam,
+                ringMat: ringMat, m1: m1, coreMat: coreMat, pLight: pLight, sprite: sprite,
+                speed: Math.random() * 0.5 + 0.5
+            });
+            zones.push({ pos: grp.position.clone(), radius: 4, data: data });
+        }
+
+        function markProjectAsVisited(projData) {
+            const index = myProjects.findIndex(p => p.id === projData.id);
+            if (myProjects[index].visited) return;
+            myProjects[index].visited = true;
+            audioManager.playSuccess();
+            const holo = holograms.find(h => h.id === projData.id);
+            if (holo) {
+                const validColor = 0x00ff00; 
+                holo.beam.material.color.setHex(validColor); holo.beam.material.opacity = 0.4;
+                holo.ringMat.color.setHex(validColor); holo.m1.color.setHex(validColor);
+                holo.coreMat.color.setHex(validColor); holo.pLight.color.setHex(validColor);
+                holo.core.scale.set(1.5, 1.5, 1.5); setTimeout(() => holo.core.scale.set(1, 1, 1), 300);
+            }
+            updateQuestUI();
+        }
+
+        function updateQuestUI() {
+            const visitedCount = myProjects.filter(p => p.visited).length;
+            const total = myProjects.length;
+            const percent = (visitedCount / total) * 100;
+            document.getElementById('sync-fill').style.width = percent + '%';
+            if (percent === 100) document.getElementById('sync-msg').style.opacity = 1;
+        }
+
+        function onKey(e, pressed) {
+            switch(e.code) {
+                case 'KeyW': case 'ArrowUp': keys.w = pressed; break;
+                case 'KeyS': case 'ArrowDown': keys.s = pressed; break;
+                case 'KeyA': case 'ArrowLeft': keys.a = pressed; break;
+                case 'KeyD': case 'ArrowRight': keys.d = pressed; break;
+                case 'ShiftLeft': case 'ShiftRight': keys.shift = pressed; break;
+            }
+        }
+
+        function initJoystick() {
+            const zone = document.getElementById('joystick-zone');
+            const knob = document.getElementById('joystick-knob');
+            const maxDist = 35;
+            const handleMove = (clientX, clientY) => {
+                const rect = zone.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                let dx = clientX - centerX;
+                let dy = clientY - centerY;
+                const dist = Math.min(Math.sqrt(dx*dx + dy*dy), maxDist);
+                const angle = Math.atan2(dy, dx);
+                dx = Math.cos(angle) * dist; dy = Math.sin(angle) * dist;
+                knob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+                joystick.x = dx / maxDist; joystick.y = dy / maxDist;
+            };
+            zone.addEventListener('touchstart', (e) => { e.preventDefault(); joystick.active = true; handleMove(e.touches[0].clientX, e.touches[0].clientY); }, {passive:false});
+            zone.addEventListener('touchmove', (e) => { e.preventDefault(); if(joystick.active) handleMove(e.touches[0].clientX, e.touches[0].clientY); }, {passive:false});
+            const end = (e) => { e.preventDefault(); joystick.active = false; joystick.x=0; joystick.y=0; knob.style.transform = `translate(-50%, -50%)`; };
+            zone.addEventListener('touchend', end); zone.addEventListener('touchcancel', end);
+        }
+
+        function loadPlayerModel() {
+            playerObj = new THREE.Group();
+            scene.add(playerObj);
+            const shadowGeo = new THREE.CircleGeometry(0.8, 32);
+            const shadowMat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.7 });
+            const shadow = new THREE.Mesh(shadowGeo, shadowMat);
+            shadow.rotation.x = -Math.PI/2; shadow.position.y = 0.05; playerObj.add(shadow);
+            const charLight = new THREE.PointLight(0xaaccff, 2, 8); charLight.position.set(0, 2, 2); playerObj.add(charLight);
+            const loader = new GLTFLoader();
+            loader.load('https://threejs.org/examples/models/gltf/Soldier.glb', (gltf) => {
+                playerMesh = gltf.scene;
+                playerMesh.traverse(c => { if(c.isMesh) { c.castShadow = true; c.receiveShadow = true; }});
+                playerMesh.scale.set(1.5, 1.5, 1.5); playerObj.add(playerMesh);
+                mixer = new THREE.AnimationMixer(playerMesh);
+                actions['Idle'] = mixer.clipAction(gltf.animations[0]);
+                actions['Run'] = mixer.clipAction(gltf.animations[1]);
+                actions['Walk'] = mixer.clipAction(gltf.animations[3]);
+                activeAction = actions['Idle']; activeAction.play();
+                isLoaded = true; document.getElementById('loader').style.display = 'none';
+            });
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const delta = clock.getDelta();
+            const time = clock.elapsedTime;
+
+            // BLOQUER LES CONTROLES SI MODALE OUVERTE
+            if (modalOpen) {
+                // On met quand même à jour l'animation idle mais pas le mouvement
+                if (mixer) mixer.update(delta);
+                composer.render();
+                return;
+            }
+
+            if (isLoaded && playerObj && mixer) {
+                let moveX = 0, moveZ = 0;
+                if (keys.w) moveZ = -1; if (keys.s) moveZ = 1;
+                if (keys.a) moveX = -1; if (keys.d) moveX = 1;
+                if (joystick.active) { moveX = joystick.x; moveZ = joystick.y; }
+
+                const moving = Math.abs(moveX) > 0.1 || Math.abs(moveZ) > 0.1;
+                const running = keys.shift || (joystick.active && Math.abs(moveZ) > 0.8);
+
+                let targetAction = moving ? (running ? actions['Run'] : actions['Walk']) : actions['Idle'];
+                if (targetAction !== activeAction) {
+                    previousAction = activeAction; activeAction = targetAction;
+                    previousAction.fadeOut(0.2); activeAction.reset().fadeIn(0.2).play();
+                }
+                mixer.update(delta);
+
+                if (moving) {
+                    let angle = Math.atan2(moveX, moveZ);
+                    const camAngle = controls.getAzimuthalAngle();
+                    const effectiveAngle = angle + camAngle;
+                    const targetRotation = effectiveAngle + Math.PI;
+
+                    let rotDiff = targetRotation - playerObj.rotation.y;
+                    while (rotDiff > Math.PI) rotDiff -= Math.PI * 2;
+                    while (rotDiff < -Math.PI) rotDiff += Math.PI * 2;
+                    playerObj.rotation.y += rotDiff * (CONFIG.rotationSpeed * delta);
+
+                    const speed = running ? CONFIG.runSpeed : CONFIG.walkSpeed;
+                    let nextX = playerObj.position.x + Math.sin(targetRotation - Math.PI) * speed * delta;
+                    let nextZ = playerObj.position.z + Math.cos(targetRotation - Math.PI) * speed * delta;
+
+                    if (nextX > CONFIG.worldLimit) nextX = CONFIG.worldLimit;
+                    if (nextX < -CONFIG.worldLimit) nextX = -CONFIG.worldLimit;
+                    if (nextZ > CONFIG.worldLimit) nextZ = CONFIG.worldLimit;
+                    if (nextZ < -CONFIG.worldLimit) nextZ = -CONFIG.worldLimit;
+
+                    playerObj.position.x = nextX;
+                    playerObj.position.z = nextZ;
+
+                    // AJOUT: Son de pas
+                    const stepFreq = running ? 0.35 : 0.6; // Fréquence des pas
+                    if (time - lastStepTime > stepFreq) {
+                        audioManager.playFootstep();
+                        lastStepTime = time;
+                    }
+                }
+
+                const targetPos = playerObj.position.clone();
+                targetPos.y += 1.5;
+                controls.target.copy(targetPos);
+                controls.update();
+
+                checkZones();
+            }
+
+            holograms.forEach(holo => {
+                holo.rings[0].rotation.z = time * holo.speed;
+                holo.rings[0].rotation.x = time * holo.speed * 0.5;
+                holo.rings[1].rotation.y = -time * holo.speed * 0.8;
+                holo.core.rotation.y = time;
+                holo.core.position.y = Math.sin(time * 2) * 0.2;
+                holo.sprite.lookAt(camera.position);
+            });
+
+            composer.render();
+        }
+
+        function checkZones() {
+            let nearby = null;
+            zones.forEach(z => {
+                if (playerObj.position.distanceTo(z.pos) < z.radius) nearby = z;
+            });
+
+            const card = document.getElementById('content-card');
+            const title = document.getElementById('card-title');
+            
+            if (nearby) {
+                if (!nearby.data.visited) markProjectAsVisited(nearby.data);
+
+                if (currentZone !== nearby) {
+                    audioManager.playHover();
+                    currentZone = nearby;
+                    const data = nearby.data;
+
+                    title.innerText = data.title;
+                    title.style.textShadow = `0 0 15px #${new THREE.Color(data.color).getHexString()}`;
+                    title.style.color = "white";
+
+                    document.getElementById('card-desc').innerText = data.desc;
+                    document.getElementById('card-badge').innerText = data.tech;
+                    document.getElementById('card-badge').style.borderColor = '#' + new THREE.Color(data.color).getHexString();
+                    document.getElementById('card-badge').style.color = '#fff';
+                    
+                    card.style.borderTopColor = '#' + new THREE.Color(data.color).getHexString();
+                    const btn = document.getElementById('card-link');
+                    // btn.href = data.link; // REMOVED: Now handled by modal click
+                    btn.style.background = 'white'; 
+                    btn.onmouseenter = () => { btn.style.background = '#' + new THREE.Color(data.color).getHexString(); };
+                    btn.onmouseleave = () => { btn.style.background = 'white'; };
+
+                    card.classList.add('active');
+                }
+            } else {
+                if (currentZone) {
+                    card.classList.remove('active');
+                    currentZone = null;
+                }
+            }
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            composer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        init();
+    </script>
+</body>
+</html>
