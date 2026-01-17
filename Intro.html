@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Access - Medelys</title>
+    <style>
+        /* Import des polices */
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;600&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #050505; /* Noir profond */
+            background-image: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #000000 60%);
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            user-select: none; /* Empêche la sélection de texte pendant le drag */
+        }
+
+        /* --- UI DU "BUREAU" (Fond grille) --- */
+        .grid-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-size: 50px 50px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* --- ZONE DE DROP (Le Lecteur en bas) --- */
+        .system-loader {
+            position: absolute;
+            bottom: 20%;
+            width: 320px;
+            max-width: 90%; /* Sécurité responsive */
+            height: 100px;
+            border: 2px dashed #333;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s ease;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(5px);
+            z-index: 1;
+        }
+
+        .system-loader.active {
+            border-color: #00f0ff; /* Cyan néon au survol */
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+            background: rgba(0, 240, 255, 0.05);
+            transform: scale(1.05);
+        }
+
+        .loader-text {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.9rem;
+            pointer-events: none;
+            transition: color 0.3s;
+            text-align: center;
+        }
+
+        /* --- LE DOSSIER (L'objet à glisser) --- */
+        .data-folder {
+            width: 140px;
+            height: 100px;
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            position: absolute;
+            top: 25%; /* Position de départ en haut */
+            left: calc(50% - 70px); /* Centré horizontalement */
+            cursor: grab;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: transform 0.1s linear, box-shadow 0.3s; /* Transition fluide pour le drag */
+        }
+
+        .data-folder:hover {
+            border-color: #00f0ff;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+        }
+
+        .data-folder:active {
+            cursor: grabbing;
+            transform: scale(1.05);
+        }
+
+        /* Design de l'icône dossier en CSS pur */
+        .folder-icon {
+            width: 40px;
+            height: 30px;
+            background: linear-gradient(135deg, #00f0ff, #4e4eff);
+            border-radius: 4px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        .folder-icon::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: 0;
+            width: 15px;
+            height: 5px;
+            background: #00f0ff;
+            border-radius: 4px 4px 0 0;
+            opacity: 0.8;
+        }
+
+        .folder-label {
+            font-size: 0.75rem;
+            color: #fff;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- L'ANIMATION GUIDE (La souris fantôme) --- */
+        .ghost-cursor {
+            position: absolute;
+            top: 25%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            /* SVG d'un curseur simple */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' stroke='black' stroke-width='2'%3E%3Cpath d='M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            pointer-events: none;
+            z-index: 5;
+            opacity: 0;
+            /* Animation qui tourne en boucle */
+            animation: guideMotion 3s infinite ease-in-out;
+        }
+
+        /* Les étapes de l'animation du fantôme */
+        @keyframes guideMotion {
+            0% { opacity: 0; transform: translate(10px, 10px); }
+            20% { opacity: 1; transform: translate(10px, 10px); } /* Apparaît sur le dossier */
+            60% { opacity: 1; transform: translate(10px, 350px); } /* Descend vers la zone */
+            80% { opacity: 0; transform: translate(10px, 350px); } /* Disparaît en bas */
+            100% { opacity: 0; transform: translate(10px, 10px); } /* Reset */
+        }
+
+        /* --- ECRAN DE TRANSITION FINAL --- */
+        .welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            /* Masqué au départ par un petit cercle en bas */
+            clip-path: circle(0% at 50% 80%); 
+            /* Animation d'ouverture lente et stylée */
+            transition: clip-path 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        /* Classe ajoutée en JS pour déclencher l'ouverture */
+        .welcome-overlay.reveal {
+            clip-path: circle(150% at 50% 80%);
+        }
+
+        /* Style du texte principal "MEDELYS SEUX" */
+        .welcome-text {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 4rem; /* Taille PC normale */
+            text-transform: uppercase;
+            color: transparent;
+            -webkit-text-stroke: 2px white; /* Effet contour au début */
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.5s ease 0.4s; /* Délai pour attendre l'ouverture du cercle */
+            text-align: center;
+        }
+        
+        /* Style du sous-titre */
+        .welcome-sub {
+            font-family: 'Inter', sans-serif;
+            margin-top: 10px;
+            color: #00f0ff;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease 0.6s; /* Délai un peu plus long */
+        }
+
+        /* État final du texte une fois l'animation jouée */
+        .welcome-overlay.reveal .welcome-text,
+        .welcome-overlay.reveal .welcome-sub {
+            opacity: 1;
+            transform: translateY(0);
+            -webkit-text-stroke: 0; /* On enlève le contour */
+            color: white; /* On remplit en blanc */
+        }
+
+        /* Le dégradé sur "SEUX" */
+        .gradient-text {
+            background: linear-gradient(90deg, #00f0ff, #4e4eff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* =========================================
+           CORRECTION RESPONSIVE MOBILE UNIQUEMENT
+        ========================================= */
+        @media (max-width: 768px) {
+            /* On réduit la taille du texte uniquement sur les petits écrans */
+            .welcome-text {
+                font-size: 2.2rem; /* Beaucoup plus petit que les 4rem du PC */
+                padding: 0 20px;   /* Marges de sécurité sur les côtés */
+                line-height: 1.2;  /* Espacement si jamais ça passe sur deux lignes (rare) */
+            }
+            .welcome-sub {
+                font-size: 1rem;
+            }
+             /* Ajustement de l'animation guide sur mobile si besoin */
+            @keyframes guideMotion {
+                0% { opacity: 0; transform: translate(10px, 10px); }
+                20% { opacity: 1; transform: translate(10px, 10px); }
+                60% { opacity: 1; transform: translate(10px, 250px); } /* Moins bas sur mobile */
+                80% { opacity: 0; transform: translate(10px, 250px); }
+                100% { opacity: 0; transform: translate(10px, 10px); }
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="grid-bg"></div>
+
+    <div class="data-folder" id="draggable">
+        <div class="folder-icon"></div>
+        <div class="folder-label">PORTFOLIO</div>
+    </div>
+
+    <div class="ghost-cursor" id="guide"></div>
+
+    <div class="system-loader" id="dropZone">
+        <span class="loader-text">/// INITIALISER LE SYSTÈME ///</span>
+    </div>
+
+    <div class="welcome-overlay" id="transitionScreen">
+        <h1 class="welcome-text">MEDELYS <span class="gradient-text">SEUX</span></h1>
+        <p class="welcome-sub">Bienvenue dans l'expérience</p>
+    </div>
+
+    <script>
+        // Récupération des éléments HTML
+        const draggable = document.getElementById('draggable');
+        const dropZone = document.getElementById('dropZone');
+        const guide = document.getElementById('guide');
+        const transitionScreen = document.getElementById('transitionScreen');
+        const loaderText = document.querySelector('.loader-text');
+
+        let isDragging = false;
+        let startX, startY;
+
+        // --- Écouteurs d'événements (Souris + Tactile) ---
+        
+        // Début du drag
+        draggable.addEventListener('mousedown', startDrag);
+        draggable.addEventListener('touchstart', startDrag, {passive: false});
+
+        // Pendant le drag
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('touchmove', drag, {passive: false});
+
+        // Fin du drag (relâchement)
+        document.addEventListener('mouseup', endDrag);
+        document.addEventListener('touchend', endDrag);
+
+        // --- Fonctions ---
+
+        function startDrag(e) {
+            isDragging = true;
+            // On cache le guide fantôme dès que l'utilisateur interagit
+            guide.style.display = 'none';
+
+            // Obtenir les coordonnées (souris ou touch)
+            const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+            const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+            
+            // Calculer l'offset pour attraper l'objet là où on a cliqué
+            const rect = draggable.getBoundingClientRect();
+            startX = clientX - rect.left;
+            startY = clientY - rect.top;
+
+            // Feedback visuel
+            draggable.style.cursor = 'grabbing';
+            dropZone.classList.add('active');
+            loaderText.style.color = "#00f0ff";
+            loaderText.innerText = "PRÊT POUR UPLOAD";
+            
+            // Enlever temporairement la transition de retour pour que le drag soit immédiat
+            draggable.style.transition = "box-shadow 0.3s";
+        }
+
+        function drag(e) {
+            if (!isDragging) return;
+            e.preventDefault(); // Empêche le scroll sur mobile pendant le drag
+
+            const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+            const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+
+            // Déplacer l'élément
+            draggable.style.left = (clientX - startX) + 'px';
+            draggable.style.top = (clientY - startY) + 'px';
+
+            // Vérifier si on est au-dessus de la zone
+            checkCollision();
+        }
+
+        function endDrag() {
+            if (!isDragging) return;
+            isDragging = false;
+            draggable.style.cursor = 'grab';
+
+            if (checkCollision()) {
+                // SUCCÈS : L'utilisateur a relâché dans la bonne zone
+                launchSequence();
+            } else {
+                // ÉCHEC : Reset de l'interface
+                dropZone.classList.remove('active');
+                dropZone.style.background = "rgba(255, 255, 255, 0.02)";
+                loaderText.style.color = "#555";
+                loaderText.innerText = "/// INITIALISER LE SYSTÈME ///";
+                
+                // Animation de retour à la position de départ
+                draggable.style.transition = "all 0.5s ease";
+                draggable.style.top = "25%";
+                draggable.style.left = "calc(50% - 70px)";
+            }
+        }
+
+        // Fonction pour détecter si le dossier touche la zone
+        function checkCollision() {
+            const r1 = draggable.getBoundingClientRect();
+            const r2 = dropZone.getBoundingClientRect();
+
+            // Logique de collision (AABB bounding box)
+            const isInside = !(r1.right < r2.left || 
+                             r1.left > r2.right || 
+                             r1.bottom < r2.top || 
+                             r1.top > r2.bottom);
+
+            if (isInside) {
+                // Feedback positif quand on survole la zone
+                dropZone.style.background = "rgba(0, 240, 255, 0.2)";
+                loaderText.innerText = "RELÂCHER POUR OUVRIR";
+                return true;
+            } else {
+                // Reset du feedback si on sort de la zone pendant le drag
+                dropZone.style.background = "rgba(255, 255, 255, 0.02)";
+                if(isDragging) loaderText.innerText = "PRÊT POUR UPLOAD";
+                return false;
+            }
+        }
+
+        // Lancement de la transition finale
+        function launchSequence() {
+            // 1. Faire disparaître les éléments du drag & drop
+            dropZone.style.borderColor = "#fff";
+            draggable.style.transition = "all 0.3s ease";
+            draggable.style.opacity = "0";
+            draggable.style.transform = "scale(0)";
+            dropZone.style.opacity = "0";
+
+            // 2. Déclencher l'ouverture du cercle noir après un court instant
+            setTimeout(() => {
+                transitionScreen.classList.add('reveal');
+                
+                // 3. REDIRECTION FINALE VERS TON PORTFOLIO
+                setTimeout(() => {
+                    // --- REMPLACE CECI PAR TON LIEN RÉEL ---
+                     window.location.href = "index.html"; 
+                }, 2800); // Temps d'attente pour lire le texte (2.8 secondes)
+            }, 300);
+        }
+    </script>
+</body>
+</html>
