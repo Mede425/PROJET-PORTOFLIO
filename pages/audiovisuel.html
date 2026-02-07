@@ -12,6 +12,7 @@
 
     <style>
         :root {
+            /* JE GARDE TES VARIABLES LOCALES */
             --bg: #050505;
             --text: #ffffff;
             --accent: #00ff88;
@@ -37,17 +38,14 @@
             width: 100vw;
         }
 
-        /* --- CURSEUR (MODIFIÉ POUR DISPARAITRE PROPREMENT) --- */
+        /* --- CURSEUR --- */
         .cursor-dot, .cursor-outline {
             position: fixed; top: 0; left: 0; transform: translate(-50%, -50%); border-radius: 50%; 
             z-index: 10005; pointer-events: none;
-            /* Ajout d'une transition pour que la disparition soit fluide */
             transition: width 0.2s, height 0.2s, opacity 0.2s;
         }
         .cursor-dot { width: 8px; height: 8px; background-color: var(--accent); }
         .cursor-outline { width: 40px; height: 40px; border: 1px solid var(--accent); }
-
-        /* Classe pour cacher le curseur sur les vidéos */
         .cursor-hidden { opacity: 0 !important; }
 
         /* LAYERS */
@@ -67,14 +65,12 @@
 
         a { text-decoration: none; color: white; }
 
-        /* HEADER */
         header { padding: 4rem 10%; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
         .back-link {
             font-weight: bold; color: white; border: 1px solid rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 50px;
             transition: 0.3s; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
         }
 
-        /* TITRE */
         .title-section {
             padding: 0 10%; margin-bottom: 4rem; position: relative; z-index: 4; min-height: 50vh;
             display: flex; flex-direction: column; justify-content: center; pointer-events: none;
@@ -92,22 +88,31 @@
             background: linear-gradient(to bottom, transparent, var(--bg) 20%, var(--bg) 100%);
             padding: 4rem 10%; margin-top: -10vh; min-height: 100vh;
         }
-        .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 3rem; }
+        
+        .cards-grid { 
+            display: grid; 
+            grid-template-columns: 1fr; /* Une seule colonne (rectangles empilés) */
+            gap: 4rem;
+        }
 
         .project-card {
-            position: relative; height: 400px; border-radius: 20px; overflow: hidden;
+            position: relative; height: 450px;
+            border-radius: 20px; overflow: hidden;
             border: 1px solid rgba(255,255,255,0.1); transition: 0.4s; background: #111; cursor: pointer;
+            width: 100%;
         }
-        .project-card:hover { transform: scale(1.02); border-color: var(--accent); }
+        .project-card:hover { transform: scale(1.01); border-color: var(--accent); }
+        
         .card-bg { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; opacity: 0.7; }
-        .project-card:hover .card-bg { opacity: 0.4; transform: scale(1.1); }
+        .project-card:hover .card-bg { opacity: 0.4; transform: scale(1.05); }
+        
         .card-content {
-            position: absolute; bottom: 0; left: 0; width: 100%; padding: 2rem;
+            position: absolute; bottom: 0; left: 0; width: 100%; padding: 3rem;
             background: linear-gradient(to top, black, transparent);
         }
         .card-meta { color: var(--accent); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; display: block; }
-        .card-title { font-family: 'Syncopate'; font-size: 2rem; margin: 0; line-height: 1; }
-        .btn-open { margin-top: 1rem; display: inline-block; border-bottom: 1px solid white; opacity: 0; transform: translateY(20px); transition: 0.3s; }
+        .card-title { font-family: 'Syncopate'; font-size: 3rem; margin: 0; line-height: 1; margin-top: 10px; }
+        .btn-open { margin-top: 2rem; display: inline-block; border-bottom: 1px solid white; opacity: 0; transform: translateY(20px); transition: 0.3s; }
         .project-card:hover .btn-open { opacity: 1; transform: translateY(0); }
 
         /* OVERLAY MODAL */
@@ -115,11 +120,7 @@
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #050505; z-index: 10000;
             opacity: 0; visibility: hidden; pointer-events: none; transition: 0.5s;
-            overflow-y: auto; /* SCROLL ACTIVÉ */
-            overscroll-behavior: contain;
-            -webkit-overflow-scrolling: touch;
-            /* On remet le curseur normal dans le modal au cas où */
-            cursor: auto; 
+            overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; cursor: auto; 
         }
         .project-overlay.active { opacity: 1; visibility: visible; pointer-events: auto; }
 
@@ -153,6 +154,28 @@
         .video-info p { font-size: 1.1rem; line-height: 1.6; opacity: 0.8; max-width: 800px; }
 
         .motion-section { width: 100%; max-width: 1000px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 4rem; margin-top: 2rem; }
+
+        /* GRILLE POUR LES SHORTS YOUTUBE */
+        .shorts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+            margin-top: 3rem;
+        }
+        .short-wrapper {
+            position: relative;
+            padding-bottom: 177.77%; /* Ratio 9:16 (Shorts) */
+            height: 0;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .short-wrapper iframe {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;
+        }
 
         footer { position: relative; z-index: 4; padding: 6rem 10%; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); background: var(--bg); }
     </style>
@@ -191,67 +214,151 @@
                     <span class="btn-open">Voir le dossier complet →</span>
                 </div>
             </div>
+
+            <div class="project-card" id="card-rallye">
+                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2670&auto=format&fit=crop" class="card-bg" alt="Cover Rallye">
+                <div class="card-content">
+                    <span class="card-meta">Kinetic Typo // Challenge 24H</span>
+                    <h2 class="card-title">Rallye Motion</h2>
+                    <span class="btn-open">Voir le dossier complet →</span>
+                </div>
+            </div>
+
+            <div class="project-card" id="card-ia">
+                <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=2664&auto=format&fit=crop" class="card-bg" alt="Cover IA">
+                <div class="card-content">
+                    <span class="card-meta">Vulgarisation // 1 Semaine</span>
+                    <h2 class="card-title">L'IA Générative</h2>
+                    <span class="btn-open">Voir le dossier complet →</span>
+                </div>
+            </div>
+
+            <div class="project-card" id="card-youtube">
+                <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=2574&auto=format&fit=crop" class="card-bg" alt="Cover YouTube">
+                <div class="card-content">
+                    <span class="card-meta">Stratégie & Niches // Millions de Vues</span>
+                    <h2 class="card-title">Cas Pratique : Une Niche</h2>
+                    <span class="btn-open">Voir le dossier complet →</span>
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <div class="project-overlay" data-lenis-prevent>
+    <div class="project-overlay" id="overlay-justice" data-lenis-prevent>
         <div class="close-btn">FERMER ✕</div>
-        
         <div class="modal-container">
             <div class="modal-header">
                 <span class="modal-meta">Court-Métrage MMI</span>
                 <h2 class="modal-title">Justice & Vérité</h2>
             </div>
-
             <div class="video-block">
                 <div class="video-wrapper">
-                    <iframe 
-                        src="https://www.youtube.com/embed/47lN1FvggAA" 
-                        title="YouTube video player" 
-                        frameborder="0" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                        referrerpolicy="strict-origin-when-cross-origin" 
-                        allowfullscreen>
-                    </iframe>
+                    <iframe src="https://www.youtube.com/embed/47lN1FvggAA" allowfullscreen></iframe>
                 </div>
                 <div class="video-info">
                     <h3>Le Projet</h3>
-                    <p>
-                        Une parodie d'émission télévisée qui tourne mal. JusticeMan, super-héros de la vérité, affronte une mythomane qui déjoue tous ses pièges.
-                        <br><br>
-                        <strong>Mon rôle :</strong> Participation à l'écriture, assistance technique sur le plateau et acting (rôle secondaire).
-                    </p>
+                    <p>Une parodie d'émission télévisée qui tourne mal. JusticeMan, super-héros de la vérité, affronte une mythomane qui déjoue tous ses pièges.</p>
                 </div>
             </div>
-
             <div class="motion-section">
                 <div class="video-wrapper" style="border-color: #7000ff; box-shadow: 0 0 50px rgba(112, 0, 255, 0.15);">
-                    <iframe 
-                        src="https://www.youtube.com/embed/z2GUoF64qd8" 
-                        title="YouTube video player" 
-                        frameborder="0" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                        referrerpolicy="strict-origin-when-cross-origin" 
-                        allowfullscreen>
-                    </iframe>
+                    <iframe src="https://www.youtube.com/embed/z2GUoF64qd8" allowfullscreen></iframe>
                 </div>
                 <div class="video-info">
                     <h3 style="border-color: #7000ff; color: #b400ff;">Focus : Le Motion Design</h3>
-                    <p>
-                        Pour habiller l'émission fictive, j'ai <strong>entièrement réalisé</strong> le générique et les jingles de transition.
-                        <br><br>
-                        L'objectif était de créer une identité visuelle "TV Show" crédible mais décalée avec After Effects.
-                    </p>
+                    <p>Pour habiller l'émission fictive, j'ai entièrement réalisé le générique et les jingles de transition avec After Effects.</p>
                 </div>
             </div>
         </div>
     </div>
 
+    <div class="project-overlay" id="overlay-rallye" data-lenis-prevent>
+        <div class="close-btn">FERMER ✕</div>
+        <div class="modal-container">
+            <div class="modal-header">
+                <span class="modal-meta">Challenge 24H</span>
+                <h2 class="modal-title">Kinetic Typo</h2>
+            </div>
+            <div class="video-block">
+                <div class="video-wrapper" style="max-width: 600px; margin: 0 auto 2rem auto;">
+                    <iframe src="https://www.youtube.com/embed/gmPtAGmgtRU" allowfullscreen></iframe>
+                </div>
+                <div class="video-info">
+                    <h3>Sprint Créatif</h3>
+                    <p>Réalisé en <strong>moins de 24 heures</strong>. Format carré et musique imposée.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="project-overlay" id="overlay-ia" data-lenis-prevent>
+        <div class="close-btn">FERMER ✕</div>
+        <div class="modal-container">
+            <div class="modal-header">
+                <span class="modal-meta">Projet 1 Semaine</span>
+                <h2 class="modal-title">L'IA et l'Image</h2>
+            </div>
+            <div class="video-block">
+                <div class="video-wrapper">
+                    <iframe src="https://www.youtube.com/embed/qicOlKoT62o" allowfullscreen></iframe>
+                </div>
+                <div class="video-info">
+                    <h3>Vulgarisation Scientifique</h3>
+                    <p>Explication du fonctionnement de l'IA générative. Assets Illustrator et animation After Effects.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="project-overlay" id="overlay-youtube" data-lenis-prevent>
+        <div class="close-btn">FERMER ✕</div>
+        <div class="modal-container">
+            <div class="modal-header">
+                <span class="modal-meta">Stratégie de Contenu</span>
+                <h2 class="modal-title">Une Chaîne, Une Niche</h2>
+            </div>
+            
+            <div class="video-info" style="text-align:center; max-width:800px; margin-bottom:3rem;">
+                <h3 style="font-size: 2rem; margin-bottom:1rem; color:var(--accent);">CASE STUDY : DOMINER UNE THÉMATIQUE</h3>
+                <p>
+                    J'ai monté plusieurs chaînes YouTube cumulant des millions de vues en appliquant une règle stricte : <strong>la spécialisation.</strong>
+                    <br><br>
+                    Pour prouver l'efficacité de cette méthode, voici <strong>6 exemples tirés d'une seule et même chaîne</strong>. 
+                    <br>
+                    Cela démontre ma capacité à décliner un concept à l'infini tout en gardant une audience captive sur une thématique précise.
+                </p>
+            </div>
+
+            <div class="shorts-grid">
+                <div class="short-wrapper">
+                    <iframe src="https://www.youtube.com/embed/GQP2tFFI6Z8" allowfullscreen></iframe>
+                </div>
+                <div class="short-wrapper">
+                    <iframe src="https://www.youtube.com/embed/7_NeLzDiK4I" allowfullscreen></iframe>
+                </div>
+                <div class="short-wrapper">
+                    <iframe src="https://www.youtube.com/embed/XyR-AH4hLLo" allowfullscreen></iframe>
+                </div>
+                <div class="short-wrapper">
+                    <iframe src="https://www.youtube.com/embed/ePeQsub1q6I" allowfullscreen></iframe>
+                </div>
+                <div class="short-wrapper">
+                    <iframe src="https://www.youtube.com/embed/zKcxSFqLgDY" allowfullscreen></iframe>
+                </div>
+                <div class="short-wrapper">
+                    <iframe src="https://www.youtube.com/embed/Okhrle9k57Y" allowfullscreen></iframe>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
     <footer>
-        <h2 style="font-size: 4vw; margin-bottom: 2rem;">LET'S WORK TOGETHER</h2>
-        <p>Email: contact@monportfolio.mmi</p>
+        <h2 style="font-size: 4vw; margin-bottom: 2rem;">TRAVAILLONS ENSEMBLE</h2>
+        <p>Email: seuxmedelys2006@gmail.com</p>
         <div style="margin-top: 3rem; opacity: 0.5; font-size: 0.8rem;">
-            <a href="mentions.html" style="text-decoration: underline;">Mentions Légales</a>
+            <a href="mentions.html" style="text-decoration: underline;">Mentions Légales - © 2025 Medelys Seux</a>
         </div>
     </footer>
 
@@ -260,30 +367,40 @@
     <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
 
     <script>
+        // 1. ON INITIALISE GSAP ET LENIS
         gsap.registerPlugin(ScrollTrigger);
 
         const lenis = new Lenis();
         function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
         requestAnimationFrame(raf);
 
-        // GESTION MODAL
-        const cardJustice = document.getElementById('card-justice');
-        const overlay = document.querySelector('.project-overlay');
-        const closeBtn = document.querySelector('.close-btn');
+        // 2. GESTION DES MODALS
+        function setupModal(cardId, overlayId) {
+            const card = document.getElementById(cardId);
+            const overlay = document.getElementById(overlayId);
+            const closeBtn = overlay.querySelector('.close-btn');
 
-        cardJustice.addEventListener('click', () => {
-            overlay.classList.add('active');
-            lenis.stop(); 
-            document.body.style.overflow = 'hidden'; 
-        });
+            if(card && overlay) { 
+                card.addEventListener('click', () => {
+                    overlay.classList.add('active');
+                    lenis.stop(); 
+                    document.body.style.overflow = 'hidden'; 
+                });
 
-        closeBtn.addEventListener('click', () => {
-            overlay.classList.remove('active');
-            lenis.start(); 
-            document.body.style.overflow = '';
-        });
+                closeBtn.addEventListener('click', () => {
+                    overlay.classList.remove('active');
+                    lenis.start(); 
+                    document.body.style.overflow = '';
+                });
+            }
+        }
 
-        // GESTION INTELLIGENTE DU CURSEUR (FIX POUR IFRAME)
+        setupModal('card-justice', 'overlay-justice');
+        setupModal('card-rallye', 'overlay-rallye');
+        setupModal('card-ia', 'overlay-ia');
+        setupModal('card-youtube', 'overlay-youtube');
+
+        // 3. GESTION DU CURSEUR
         const cursorDot = document.querySelector('.cursor-dot');
         const cursorOutline = document.querySelector('.cursor-outline');
         
@@ -292,7 +409,7 @@
             gsap.to(cursorOutline, { x: e.clientX, y: e.clientY, duration: 0.1 });
         });
 
-        // Effets de survol
+        // Effets de survol (Liens et Cartes)
         document.querySelectorAll('a, .project-card, .close-btn').forEach(el => {
             el.addEventListener('mouseenter', () => {
                 cursorOutline.style.transform = 'translate(-50%, -50%) scale(2.5)';
@@ -304,8 +421,8 @@
             });
         });
 
-        // CACHER LE CURSEUR VERT QUAND ON SURVOLE UNE VIDÉO (POUR EVITER QU'IL BLOQUE)
-        document.querySelectorAll('.video-wrapper').forEach(video => {
+        // Cacher le curseur sur les vidéos pour pouvoir cliquer
+        document.querySelectorAll('.video-wrapper, .short-wrapper').forEach(video => {
             video.addEventListener('mouseenter', () => {
                 cursorDot.classList.add('cursor-hidden');
                 cursorOutline.classList.add('cursor-hidden');
@@ -316,18 +433,33 @@
             });
         });
 
-        // Animations Scroll
+        // 4. ANIMATIONS SCROLL
+        
+        // Animation du fond Spline
         gsap.to(".spline-background", {
             scrollTrigger: { trigger: "body", start: "top top", end: "bottom bottom", scrub: 1 },
             yPercent: 15, ease: "none"
         });
 
+        // Animation du Titre et Intro
         gsap.from("h1", { y: 100, opacity: 0, duration: 1.5, ease: "power4.out" });
         gsap.from("p.intro", { x: -50, opacity: 0, duration: 1, delay: 0.5 });
-        gsap.from(".project-card", {
-            scrollTrigger: { trigger: ".gallery-section", start: "top 80%" },
-            y: 50, opacity: 0, duration: 1, ease: "power3.out"
+
+        // Animation des Cartes (Individuelle pour éviter les bugs)
+        gsap.utils.toArray(".project-card").forEach(card => {
+            gsap.from(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: "top 85%",
+                    toggleActions: "play none none reverse"
+                },
+                y: 100,
+                opacity: 0,
+                duration: 1,
+                ease: "power3.out"
+            });
         });
+
     </script>
 </body>
 </html>

@@ -186,7 +186,16 @@
             .pdf-info-panel { order: 1; }
         }
 
-        footer { height: 20vh; display: flex; align-items: center; justify-content: center; font-family: var(--font-code); color: #555; }
+        /* --- FOOTER (Mis à jour style Audiovisuel) --- */
+        footer { 
+            position: relative; 
+            z-index: 4; 
+            padding: 6rem 10%; 
+            text-align: center; 
+            border-top: 1px solid rgba(255,255,255,0.05); 
+            background: var(--bg-color); 
+            color: var(--text-color);
+        }
 
         @media (max-width: 768px) {
             .hero h1 { font-size: 3rem; }
@@ -339,7 +348,11 @@
             </section>
 
             <footer>
-                <p>SYSTEM END OF LINE _</p>
+                <h2 style="font-family: var(--font-display); font-size: 4vw; margin-bottom: 2rem; color: var(--text-color);">TRAVAILLONS ENSEMBLE</h2>
+                <p style="font-family: var(--font-body); font-size: 1.2rem;">Email: seuxmedelys2006@gmail.com</p>
+                <div style="margin-top: 3rem; opacity: 0.5; font-size: 0.8rem; font-family: var(--font-code);">
+                    <a href="mentions.html" style="text-decoration: underline; color: var(--text-color);">Mentions Légales - © 2025 Medelys Seux</a>
+                </div>
             </footer>
         </div>
     </div>
