@@ -241,8 +241,31 @@
         .card:hover .tag { background: rgb(var(--rgb)); color: #000; font-weight: bold; }
         .btn-start { background: rgb(var(--rgb)) !important; color: #000 !important; font-weight: bold; border: none !important; }
 
-        footer { padding: 4rem 10% 8rem 10%; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); }
+        footer { padding: 4rem 10% 8rem 10%; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 4rem;}
         @keyframes bounce { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 10px); } }
+
+        /* --- BOUTON CV FOOTER --- */
+        .btn-download {
+            display: inline-block; 
+            margin-top: 2rem; 
+            padding: 1.2rem 3.5rem;
+            background: #ffffff; 
+            color: #050505; 
+            font-weight: bold; 
+            font-family: 'Space Grotesk', sans-serif;
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            border-radius: 50px; 
+            transition: 0.3s;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .btn-download:hover { 
+            background: var(--accent); 
+            box-shadow: 0 0 30px var(--accent); 
+            transform: scale(1.05); 
+            color: black;
+        }
 
         /* --- DOCK MENU --- */
         .floating-dock {
@@ -378,9 +401,18 @@
     </section>
 
     <footer id="contact">
-        <h2 style="font-size: 4vw; margin-bottom: 2rem;">TRAVAILLONS ENSEMBLE</h2>
+        <div class="footer-cta" style="margin-bottom: 4rem;">
+            <h2 style="font-family: 'Syncopate', sans-serif; font-size: 2rem; margin-bottom: 1rem;">Un projet en tête ?</h2>
+            <p style="opacity: 0.6; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+                Je suis actuellement à la recherche d'un <strong>stage</strong>.<br>
+                Pour apporter une vision neuve et stratégique à vos projets.
+            </p>
+            <a href="assets/CV_Medelys_Seux.pdf" target="_blank" class="btn-download">TÉLÉCHARGER MON CV</a>
+        </div>
+
+        <h2 style="font-size: 1.5rem; margin-bottom: 1rem; opacity: 0.8; font-family: 'Syncopate';">Me Contacter</h2>
         <p>Email: seuxmedelys2006@gmail.com</p>
-        <div style="margin-top: 3rem; opacity: 0.5; font-size: 0.8rem;">
+        <div style="margin-top: 3rem; opacity: 0.5; font-size: 0.8rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
             <a href="pages/mentions.html" style="text-decoration: underline;">Mentions Légales</a> - © 2025 Medelys Seux
         </div>
     </footer>
@@ -525,7 +557,7 @@
             }, { duration: 500, fill: "forwards" });
         });
 
-        document.querySelectorAll('a, .card, .about-btn, .floating-dock').forEach(el => {
+        document.querySelectorAll('a, .card, .about-btn, .floating-dock, .btn-download').forEach(el => {
             el.addEventListener('mouseenter', () => {
                 cursorOutline.style.transform = 'translate(-50%, -50%) scale(2.5)';
                 cursorOutline.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
