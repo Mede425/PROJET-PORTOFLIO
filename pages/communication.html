@@ -40,13 +40,17 @@
         /* --- 2. BOOT SCREEN --- */
         #boot-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 10000;
+            background: #000; z-index: 10000; cursor: pointer;
             display: flex; flex-direction: column; justify-content: flex-end; padding: 50px;
             font-family: var(--font-code); color: var(--accent); font-size: 0.9rem; line-height: 1.5;
         }
         .boot-line { opacity: 0; }
         .boot-cursor { display: inline-block; width: 8px; height: 15px; background: var(--cyan); animation: blink 0.1s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        .boot-skip-hint {
+            position: absolute; bottom: 20px; right: 30px;
+            font-size: 0.7rem; opacity: 0.35; letter-spacing: 0.2em; pointer-events: none;
+        }
 
         /* --- 3. SMOOTH WRAPPER --- */
         #smooth-wrapper { position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; }
@@ -72,6 +76,13 @@
             transition: width 0.3s, height 0.3s, background 0.3s; mix-blend-mode: difference;
         }
         .cursor.active { width: 50px; height: 50px; background: var(--cyan); border: none; opacity: 0.5; }
+
+        /* Désactivation du curseur custom sur écrans tactiles ou petits écrans */
+        @media (hover: none) and (pointer: coarse), (max-width: 768px) {
+            .cursor { display: none !important; }
+            * { cursor: auto !important; }
+            a, button, [onclick], [role="button"], .back-btn { cursor: pointer !important; }
+        }
 
         /* BOUTON RETOUR MODIFIÉ (Style Graphisme) */
         .back-btn {
@@ -122,10 +133,10 @@
 
         /* --- 8. PROJECT ARCHIVE (TREK) --- */
         .archives-title { text-align: center; margin-bottom: 50px; font-family: var(--font-display); font-size: 1.5rem; color: var(--text-color); }
-        .archives { padding: 0 5% 100px 5%; display: flex; justify-content: center; perspective: 1000px; }
+        .archives { padding: 0 5% 100px 5%; display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; perspective: 1000px; }
 
         .archive-card {
-            width: 100%; max-width: 900px; background: #0a0a0a; border: 1px solid #333; padding: 60px 40px; text-align: center;
+            width: calc(50% - 1rem); max-width: 600px; min-width: 280px; background: #0a0a0a; border: 1px solid #333; padding: 60px 40px; text-align: center;
             transition: 0.3s; transform: rotateX(20deg) scale(0.9); opacity: 0.5; position: relative; overflow: hidden; cursor: pointer;
         }
         .archive-card.in-view { transform: rotateX(0deg) scale(1); opacity: 1; }
@@ -157,13 +168,13 @@
         .pdf-close:hover { background: var(--accent); color: black; }
 
         .pdf-body {
-            display: grid; grid-template-columns: 1fr 400px; gap: 40px; padding: 40px; max-width: 1600px; margin: 0 auto; width: 100%;
+            display: grid; grid-template-columns: 1fr 400px; gap: 40px; padding: 40px; max-width: 1600px; margin: 0 auto; width: 100%; min-width: 0; box-sizing: border-box;
         }
 
-        .pdf-viewer-container { width: 100%; height: 80vh; background: #111; border: 1px solid #333; }
+        .pdf-viewer-container { width: 100%; min-width: 0; height: 80vh; background: #111; border: 1px solid #333; }
         embed { width: 100%; height: 100%; }
 
-        .pdf-info-panel { color: #ccc; font-family: var(--font-body); }
+        .pdf-info-panel { color: #ccc; font-family: var(--font-body); min-width: 0; }
         .pdf-info-title { font-family: var(--font-display); font-size: 2rem; color: #fff; margin-bottom: 10px; line-height: 1.1; }
         .pdf-info-subtitle { color: var(--cyan); font-family: var(--font-code); margin-bottom: 30px; display: block; }
         
@@ -198,10 +209,147 @@
         }
 
         @media (max-width: 768px) {
-            .hero h1 { font-size: 3rem; }
+            .hero { padding: 0 5%; }
+            .hero h1 { font-size: clamp(1.6rem, 7vw, 3rem); max-width: 100%; overflow-wrap: break-word; word-break: break-word; }
             .skill-row { flex-direction: column !important; margin-bottom: 10vh; }
             .skill-content { width: 90%; text-align: left !important; }
             .skill-tags { justify-content: flex-start !important; }
+            .pdf-body { padding: 20px 15px; gap: 20px; }
+            .pdf-header { padding: 15px; flex-wrap: nowrap; gap: 10px; }
+            .pdf-title-bar { font-size: 0.75rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            .pdf-close { font-size: 0.75rem; padding: 8px 12px; flex-shrink: 0; }
+            .pdf-info-title { font-size: 1.3rem; }
+        }
+
+        /* --- CASE STUDY MOTION DESIGN --- */
+        .motion-case-study {
+            max-width: 1000px; width: 100%; min-width: 0; box-sizing: border-box; margin: 0 auto; padding: 60px 40px;
+            font-family: var(--font-body); color: var(--text-color);
+        }
+        .cs-hero {
+            padding: 60px 0; border-bottom: 1px solid #222;
+            margin-bottom: 80px; text-align: center;
+        }
+        .cs-tag {
+            font-family: var(--font-code); color: var(--cyan); font-size: 0.8rem;
+            letter-spacing: 3px; margin-bottom: 20px; display: block;
+        }
+        .cs-title {
+            font-family: var(--font-display); font-size: clamp(3rem, 6vw, 5rem);
+            line-height: 0.9; color: #fff; margin-bottom: 30px;
+        }
+        .cs-title span { color: transparent; -webkit-text-stroke: 1px var(--accent); }
+        .cs-question {
+            font-size: 1.2rem; color: #aaa; font-style: italic;
+            margin: 0 auto 50px auto; max-width: 650px; line-height: 1.5;
+        }
+        .cs-meta-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+            border-top: 1px solid #222; padding-top: 30px;
+        }
+        .cs-meta-item { text-align: center; }
+        .cs-meta-label {
+            display: block; font-family: var(--font-code); font-size: 0.7rem;
+            color: var(--accent); letter-spacing: 2px; margin-bottom: 8px;
+        }
+        .cs-meta-value { font-size: 0.85rem; color: #ccc; line-height: 1.4; }
+
+        .cs-section { padding: 70px 0; border-bottom: 1px solid #111; }
+        .cs-section-alt {
+            background: rgba(188, 19, 254, 0.03);
+            margin: 0 -40px; padding: 70px 40px;
+        }
+        .cs-section-label {
+            font-family: var(--font-code); color: var(--accent); font-size: 0.8rem;
+            letter-spacing: 3px; margin-bottom: 20px; display: block;
+        }
+        .cs-section-content h2 {
+            font-family: var(--font-display); font-size: 1.8rem; color: #fff;
+            margin-bottom: 20px;
+        }
+        .cs-section-content p {
+            font-size: 1rem; color: #aaa; line-height: 1.7; margin-bottom: 15px;
+            max-width: 720px;
+        }
+        .cs-tags-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 25px; }
+        .cs-chip {
+            font-family: var(--font-code); font-size: 0.72rem; padding: 6px 14px;
+            border: 1px solid var(--accent); color: var(--accent); border-radius: 20px;
+            background: rgba(188, 19, 254, 0.05);
+        }
+
+        .cs-storyboard-embed {
+            width: 100%; height: 70vh; margin-top: 40px;
+            background: #111; border: 1px solid #333;
+        }
+        .cs-storyboard-embed embed { width: 100%; height: 100%; }
+
+        .cs-gallery {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px; margin-top: 40px;
+        }
+        .cs-gallery img {
+            width: 100%; aspect-ratio: 1; object-fit: contain;
+            background: #0d0d0d; border: 1px solid #222; border-radius: 8px;
+            padding: 10px; transition: 0.3s; cursor: zoom-in;
+        }
+        .cs-gallery img:hover {
+            border-color: var(--accent); transform: scale(1.04);
+            box-shadow: 0 0 20px rgba(188, 19, 254, 0.25);
+        }
+
+        .cs-placeholder {
+            width: 100%; min-height: 220px; background: #0a0a0a;
+            border: 2px dashed #2a2a2a; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            margin-top: 30px; color: #333; font-family: var(--font-code);
+            font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase;
+            transition: 0.3s;
+        }
+        .cs-placeholder:hover { border-color: #444; color: #555; }
+
+        .cs-result { border-bottom: none; }
+        .cs-video-wrapper {
+            position: relative; width: 100%; padding-bottom: 56.25%;
+            margin-top: 40px; background: #000; border: 1px solid #333;
+            border-radius: 10px; overflow: hidden;
+        }
+        .cs-video-wrapper iframe {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;
+        }
+
+        .cs-gallery.photos { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+        .cs-gallery.photos img {
+            aspect-ratio: 4 / 3; object-fit: cover; padding: 0; cursor: default;
+        }
+        .cs-gallery.photos img:hover { transform: scale(1.02); border-color: var(--accent); }
+
+        .cs-video-row {
+            display: flex; gap: 30px; align-items: flex-start; flex-wrap: wrap;
+            margin-top: 40px;
+        }
+        .cs-video-col { flex: 1 1 420px; display: flex; flex-direction: column; gap: 12px; }
+        .cs-video-col .cs-video-wrapper { margin-top: 0; }
+        .cs-video-col-vertical { flex: 0 1 240px; }
+        .cs-video-vertical {
+            position: relative; width: 100%; aspect-ratio: 9 / 16;
+            background: #000; border: 1px solid #333; border-radius: 10px; overflow: hidden;
+        }
+        .cs-video-vertical iframe {
+            position: absolute; inset: 0; width: 100%; height: 100%; border: none;
+        }
+        .cs-video-label {
+            font-family: var(--font-code); font-size: 0.7rem; color: #666;
+            letter-spacing: 1px; text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .motion-case-study { padding: 40px 20px; }
+            .cs-meta-grid { grid-template-columns: repeat(2, 1fr); }
+            .cs-title { font-size: clamp(1.8rem, 7vw, 3rem); }
+            .cs-section-alt { margin: 0 -20px; padding: 60px 20px; }
+            .cs-video-row { flex-direction: column; align-items: stretch; }
+            .cs-video-col-vertical { flex: none; max-width: 260px; margin: 0 auto; }
         }
     </style>
 </head>
@@ -210,6 +358,7 @@
     <div id="boot-screen">
         <div id="boot-text"></div>
         <div class="boot-cursor"></div>
+        <div class="boot-skip-hint">CLIQUER POUR PASSER</div>
     </div>
 
     <div class="crt-overlay"></div>
@@ -256,6 +405,463 @@
                     ↓ TÉLÉCHARGER LE PDF
                 </a>
             </div>
+        </div>
+    </div>
+
+    <div class="pdf-overlay" id="motion-overlay">
+        <div class="pdf-header">
+            <div class="pdf-title-bar">CASE STUDY: WORKSHOP_MOTION_DESIGN_IA</div>
+            <div class="pdf-close" onclick="closeMotion()">FERMER [X]</div>
+        </div>
+
+        <div class="motion-case-study">
+
+            <!-- HERO -->
+            <div class="cs-hero">
+                <span class="cs-tag">[SAE302 // WORKSHOP 1 SEMAINE // BUT2 MMI]</span>
+                <h1 class="cs-title">VULGARISATION<br><span>SCIENTIFIQUE</span></h1>
+                <p class="cs-question">"Comment une IA générative crée-t-elle une image ?"</p>
+                <div class="cs-meta-grid">
+                    <div class="cs-meta-item">
+                        <span class="cs-meta-label">CLIENT</span>
+                        <span class="cs-meta-value">Département MMI Chambéry</span>
+                    </div>
+                    <div class="cs-meta-item">
+                        <span class="cs-meta-label">FORMAT</span>
+                        <span class="cs-meta-value">Motion Design · 1 min · FR/EN</span>
+                    </div>
+                    <div class="cs-meta-item">
+                        <span class="cs-meta-label">MON RÔLE</span>
+                        <span class="cs-meta-value">Script · Éléments graphiques · Animation</span>
+                    </div>
+                    <div class="cs-meta-item">
+                        <span class="cs-meta-label">DURÉE</span>
+                        <span class="cs-meta-value">5 jours (janvier 2026)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 01 LE BRIEF -->
+            <div class="cs-section">
+                <span class="cs-section-label">// 01 LE BRIEF</span>
+                <div class="cs-section-content">
+                    <h2>La mission communication</h2>
+                    <p>Le département MMI Chambéry voulait créer une série de vidéos courtes de <strong>vulgarisation scientifique</strong> — projetées en amphithéâtre devant l'ensemble des promos MMI. Contrainte forte : rendre un concept d'IA technique <strong>accessible en exactement 1 minute</strong>, bilingue FR/EN, sans utiliser d'IA générative pour la création.</p>
+                    <p>Le motion design s'impose comme le format idéal : il permet d'<strong>illustrer des concepts abstraits</strong>, de rythmer une narration et de maintenir l'attention d'un public large en un temps très court.</p>
+                </div>
+            </div>
+
+            <!-- 02 LE SCRIPT -->
+            <div class="cs-section cs-section-alt">
+                <span class="cs-section-label">// 02 ÉCRITURE & SCRIPT</span>
+                <div class="cs-section-content">
+                    <h2>Écrire pour être compris</h2>
+                    <p>Avant la moindre image, j'ai mené une <strong>recherche scientifique</strong> sur le fonctionnement des IA génératives, synthétisée en une demi-page vulgarisée. À partir de cette base, j'ai rédigé un <strong>script audio de 150 mots</strong> — narration accessible, sans jargon, pensée pour fonctionner avec l'image.</p>
+                    <p>Principe : <strong>un concept = une scène</strong>. Ce découpage narratif structure toute la production en aval. J'ai ensuite adapté l'intégralité du script en anglais pour la version internationale.</p>
+                    <div class="cs-tags-row">
+                        <span class="cs-chip">Recherche scientifique</span>
+                        <span class="cs-chip">Synthèse vulgarisée</span>
+                        <span class="cs-chip">Script voix off 150 mots</span>
+                        <span class="cs-chip">Narration accessible</span>
+                        <span class="cs-chip">Traduction FR → EN</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 03 STORYBOARD -->
+            <div class="cs-section">
+                <span class="cs-section-label">// 03 STORYBOARD</span>
+                <div class="cs-section-content">
+                    <h2>Planifier le message avant de l'animer</h2>
+                    <p>Le storyboard traduit le script en séquences visuelles. Chaque case fixe <strong>une intention de communication</strong> : comment montrer la "question", comment rendre visible un réseau de neurones, comment illustrer l'invisible pour qu'il devienne évident.</p>
+                </div>
+                <div class="cs-storyboard-embed">
+                    <embed src="../assets/Storyboard Motion design 1 semaine/Frame 1 (1).pdf" type="application/pdf">
+                </div>
+            </div>
+
+            <!-- 04 ÉLÉMENTS GRAPHIQUES -->
+            <div class="cs-section cs-section-alt">
+                <span class="cs-section-label">// 04 CRÉATION GRAPHIQUE</span>
+                <div class="cs-section-content">
+                    <h2>Les assets au service du message</h2>
+                    <p>Tous les éléments visuels ont été créés sur <strong>Illustrator</strong> — charte graphique, icônes personnalisées et formes vectorielles pensées pour être animées sur After Effects. Chaque élément est isolé sur son propre calque pour permettre une animation indépendante.</p>
+                </div>
+                <div class="cs-gallery">
+                    <img src="../assets/Elements graphiques Motion design 1 semaine/Fichier 2@4x 1.png" alt="Élément graphique">
+                    <img src="../assets/Elements graphiques Motion design 1 semaine/Fichier 3@4x 1.png" alt="Élément graphique">
+                    <img src="../assets/Elements graphiques Motion design 1 semaine/Fichier 4@4x 1.png" alt="Élément graphique">
+                    <img src="../assets/Elements graphiques Motion design 1 semaine/Fichier 5@4x 1.png" alt="Élément graphique">
+                    <img src="../assets/Elements graphiques Motion design 1 semaine/Fichier 6@4x 1.png" alt="Élément graphique">
+                    <img src="../assets/Elements graphiques Motion design 1 semaine/image 2.png" alt="Élément graphique">
+                    <img src="../assets/Elements graphiques Motion design 1 semaine/image 3.png" alt="Élément graphique">
+                    <img src="../assets/Elements graphiques Motion design 1 semaine/image 4.png" alt="Élément graphique">
+                    <img src="../assets/Elements graphiques Motion design 1 semaine/image 5.png" alt="Élément graphique">
+                    <img src="../assets/Elements graphiques Motion design 1 semaine/image 6.png" alt="Élément graphique">
+                    <img src="../assets/Elements graphiques Motion design 1 semaine/image 7.png" alt="Élément graphique">
+                    <img src="../assets/Elements graphiques Motion design 1 semaine/image 8.png" alt="Élément graphique">
+                </div>
+            </div>
+
+            <!-- 05 RÉSULTAT -->
+            <div class="cs-section cs-result">
+                <span class="cs-section-label">// 05 LE RÉSULTAT</span>
+                <div class="cs-section-content">
+                    <h2>Projeté en Amphi 160</h2>
+                    <p>La vidéo finale — 1 minute, bilingue, produite en 5 jours — a été projetée devant l'ensemble des promos MMI. Une vulgarisation efficace d'un concept d'IA complexe, sans une seule IA générative utilisée dans la création.</p>
+                    <p style="font-family:var(--font-code); font-size:0.8rem; color:#555; margin-top:-5px;">(étude de cas technique disponible dans la section <a href="audiovisuel.html" style="color:var(--cyan); text-decoration:underline;">Audiovisuel</a>)</p>
+                </div>
+                <div class="cs-video-wrapper">
+                    <iframe src="https://www.youtube.com/embed/qicOlKoT62o" allowfullscreen></iframe>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="pdf-overlay" id="mapping-overlay">
+        <div class="pdf-header">
+            <div class="pdf-title-bar">CASE STUDY: MAPPING_VIDEO_JPO_IUT</div>
+            <div class="pdf-close" onclick="closeMapping()">FERMER [X]</div>
+        </div>
+        <div class="motion-case-study">
+
+            <div class="cs-hero">
+                <span class="cs-tag">[R403 // DESIGN D'EXPÉRIENCE // BUT2 MMI]</span>
+                <h1 class="cs-title">MAPPING<br><span>VIDÉO</span></h1>
+                <p class="cs-question">"Comment rendre une Journée Portes Ouvertes immersive grâce au mapping vidéo ?"</p>
+                <div class="cs-meta-grid">
+                    <div class="cs-meta-item">
+                        <span class="cs-meta-label">CLIENT</span>
+                        <span class="cs-meta-value">IUT Chambéry</span>
+                    </div>
+                    <div class="cs-meta-item">
+                        <span class="cs-meta-label">ÉVÉNEMENT</span>
+                        <span class="cs-meta-value">JPO · 31 janvier 2026</span>
+                    </div>
+                    <div class="cs-meta-item">
+                        <span class="cs-meta-label">MON RÔLE</span>
+                        <span class="cs-meta-value">Assets graphiques · Animation · Mapping</span>
+                    </div>
+                    <div class="cs-meta-item">
+                        <span class="cs-meta-label">OUTILS</span>
+                        <span class="cs-meta-value">Illustrator · After Effects · Resolume</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cs-section">
+                <span class="cs-section-label">// 01 LE BRIEF</span>
+                <div class="cs-section-content">
+                    <h2>Communication événementielle immersive</h2>
+                    <p>L'IUT Chambéry organise sa Journée Portes Ouvertes le 31 janvier 2026. Mission : créer un mapping vidéo de <strong>10 secondes en boucle</strong>, projeté dans la salle des conseils G114 pour présenter les 5 départements de l'IUT à des lycéens venus découvrir leurs futures études.</p>
+                    <p>Le mapping vidéo n'est pas un simple écran — c'est une <strong>expérience de communication spatiale</strong> : la projection s'adapte à l'architecture réelle de la salle, les zones communiquent entre elles, et le message prend vie dans l'espace physique.</p>
+                </div>
+            </div>
+
+            <div class="cs-section cs-section-alt">
+                <span class="cs-section-label">// 02 STORYBOARD & DÉCOUPAGE</span>
+                <div class="cs-section-content">
+                    <h2>Planifier le mouvement dans l'espace</h2>
+                    <p>Avant d'animer, j'ai analysé la zone de projection et planifié comment les éléments graphiques se déplacent d'une surface à l'autre. La contrainte des <strong>10 secondes</strong> impose une narration visuelle ultra-efficace — chaque seconde compte.</p>
+                    <p>Plutôt qu'un storyboard dessiné classique, l'équipe a construit une <strong>carte des zones de projection</strong> : un support commun représentant les surfaces réelles de la salle G114, sur lequel chacun a pu caler ses propres animations et synchroniser ses mouvements avec ceux du groupe.</p>
+                    <div class="cs-tags-row">
+                        <span class="cs-chip">Analyse zone de projection</span>
+                        <span class="cs-chip">Storyboard de mouvement</span>
+                        <span class="cs-chip">Boucle 10 secondes</span>
+                        <span class="cs-chip">Zones communicantes</span>
+                    </div>
+                </div>
+                <figure style="margin-top: 30px;">
+                    <img src="../assets/Mapping/ZonesMappingStoryBoard.png" alt="Carte des zones de projection de la salle G114, utilisée comme support collectif de storyboard" style="width: 100%; display: block; border-radius: 8px; border: 1px solid #333;">
+                    <figcaption style="font-family: var(--font-code); font-size: 0.75rem; color: #666; letter-spacing: 1px; text-align: center; margin-top: 14px;">Carte des zones de projection — support partagé par toute l'équipe pour caler les animations dans l'espace</figcaption>
+                </figure>
+            </div>
+
+            <div class="cs-section">
+                <span class="cs-section-label">// 03 CRÉATION GRAPHIQUE & ANIMATION</span>
+                <div class="cs-section-content">
+                    <h2>Des assets pensés pour l'espace</h2>
+                    <p>Création des éléments visuels sur <strong>Illustrator</strong>, puis animation sur <strong>After Effects</strong>. Chaque asset est conçu pour s'intégrer à la surface projetée : formes, typographies et mouvements respectent les contraintes physiques de la projection et servent le message institutionnel.</p>
+                </div>
+                <div class="cs-gallery">
+                    <img src="../assets/Mapping/Version SVG/Bonhomme.svg" alt="Personnage illustré - élément graphique du mapping vidéo">
+                    <img src="../assets/Mapping/Version SVG/Camera et objectif.svg" alt="Caméra et objectif - élément graphique du mapping vidéo">
+                    <img src="../assets/Mapping/Version SVG/Souris.svg" alt="Souris - élément graphique du mapping vidéo">
+                </div>
+            </div>
+
+            <div class="cs-section cs-result">
+                <span class="cs-section-label">// 04 LE RÉSULTAT</span>
+                <div class="cs-section-content">
+                    <h2>Projeté en salle des conseils G114</h2>
+                    <p>Le mapping vidéo a tourné en boucle pendant toute la JPO du 31 janvier 2026, accueillant les lycéens dans un dispositif immersif. 5 groupes, 5 × 10 secondes, une seule installation collective.</p>
+                    <p style="font-family:var(--font-code); font-size:0.8rem; color:#555; margin-top:-5px;">(étude de cas technique disponible dans la section <a href="audiovisuel.html" style="color:var(--cyan); text-decoration:underline;">Audiovisuel</a>)</p>
+                </div>
+                <div class="cs-video-wrapper">
+                    <iframe src="https://www.youtube.com/embed/Mcyc0NOxtWg" allowfullscreen></iframe>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="pdf-overlay" id="audit-overlay">
+        <div class="pdf-header">
+            <div class="pdf-title-bar">FICHIER: AUDIT_SITE_IUT_CHAMBERY_USMB.PDF</div>
+            <div class="pdf-close" onclick="closeAudit()">FERMER [X]</div>
+        </div>
+        <div class="pdf-body">
+            <div class="pdf-viewer-container">
+                <embed src="../assets/Audit communication/Audit site web IUT de Chambery - SEUX Medelys (refonte V12).pdf" type="application/pdf">
+            </div>
+            <div class="pdf-info-panel">
+                <h2 class="pdf-info-title">AUDIT DE COMMUNICATION<br>IUT DE CHAMBÉRY</h2>
+                <span class="pdf-info-subtitle">SITE ÉTUDIÉ : IUT-CHY.UNIV-SMB.FR // USMB</span>
+
+                <div class="info-block">
+                    <h4>// LE CONTEXTE</h4>
+                    <p>Audit complet du site institutionnel de l'IUT de Chambéry (Université Savoie Mont Blanc), réalisé dans le cadre d'une SAE individuelle. L'objectif : analyser le site sous tous ses angles, du schéma de communication aux performances techniques, en passant par l'ergonomie et l'identité graphique.</p>
+                </div>
+
+                <div class="info-block">
+                    <h4>// LA MÉTHODOLOGIE</h4>
+                    <p>Quatre axes d'analyse : <strong>contexte de communication</strong> (émetteur, cibles, canal, message), <strong>ergonomie & navigation</strong> (4 scénarios utilisateur chronométrés avec comptage de clics), <strong>performance technique</strong> (tests PageSpeed Insights) et <strong>identité graphique</strong> (mesure des contrastes WCAG, typographies, grille d'évaluation).</p>
+                </div>
+
+                <div class="info-block">
+                    <h4>// PRÉCONISATIONS CLÉS</h4>
+                    <ul>
+                        <li>Optimiser images & JS (score mobile : 43 / 100)</li>
+                        <li>Corriger les contrastes du thème clair (4 ratios non conformes)</li>
+                        <li>Renforcer la tolérance aux fautes de la barre de recherche</li>
+                        <li>Réduire les redondances de menu & aérer les pages denses</li>
+                    </ul>
+                </div>
+
+                <a href="../assets/Audit communication/Audit site web IUT de Chambery - SEUX Medelys (refonte V12).pdf" download class="download-btn">
+                    ↓ TÉLÉCHARGER LE PDF
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="pdf-overlay" id="aftermovie-overlay">
+        <div class="pdf-header">
+            <div class="pdf-title-bar">CASE STUDY: AFTERMOVIE_TOUR_DU_MONDE</div>
+            <div class="pdf-close" onclick="closeAftermovie()">FERMER [X]</div>
+        </div>
+
+        <div class="motion-case-study">
+
+            <!-- HERO -->
+            <div class="cs-hero">
+                <span class="cs-tag">[SAE402 // AFTERMOVIE ÉVÉNEMENTIEL // BUT2 MMI]</span>
+                <h1 class="cs-title">LE TOUR<br><span>DU MONDE</span></h1>
+                <p class="cs-question">"Comment faire rayonner un festival interculturel et donner envie au public de revenir ?"</p>
+                <div class="cs-meta-grid">
+                    <div class="cs-meta-item">
+                        <span class="cs-meta-label">CLIENTS</span>
+                        <span class="cs-meta-value">Le Tour du Monde · Ville de Chambéry</span>
+                    </div>
+                    <div class="cs-meta-item">
+                        <span class="cs-meta-label">ÉVÉNEMENT</span>
+                        <span class="cs-meta-value">Place des Éléphants · 28 mars 2026</span>
+                    </div>
+                    <div class="cs-meta-item">
+                        <span class="cs-meta-label">MON RÔLE</span>
+                        <span class="cs-meta-value">Pré-prod · Captation · Montage vertical · Motion</span>
+                    </div>
+                    <div class="cs-meta-item">
+                        <span class="cs-meta-label">FORMAT</span>
+                        <span class="cs-meta-value">Aftermovie 2-3 min · Web &amp; Réseaux</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 01 LE BRIEF -->
+            <div class="cs-section">
+                <span class="cs-section-label">// 01 LE BRIEF</span>
+                <div class="cs-section-content">
+                    <h2>Une commande de communication événementielle</h2>
+                    <p>Pour la 27ᵉ édition du festival <strong>Le Tour du Monde</strong>, la mission était claire : produire un <strong>aftermovie</strong> qui fasse rayonner l'événement, célèbre sa diversité culturelle et son ambiance festive, valorise la ville et remercie les partenaires — le tout pour <strong>donner envie au public de revenir l'année suivante</strong>.</p>
+                    <p>Des contraintes bien réelles encadraient la création : une vidéo de <strong>2 à 3 minutes</strong> pensée pour le web et les réseaux (YouTube), montrant l'ensemble des drapeaux et le concert du soir, faisant apparaître les chiffres clés (<strong>4 000 visiteurs, 25 stands</strong>), sans police blanche ni Comic Sans.</p>
+                </div>
+                <div class="cs-gallery photos">
+                    <img src="../assets/Projet SAE 402 Aftermovie Tour du monde/Image 1.jpg" alt="Ambiance du festival Le Tour du Monde - public et stands">
+                    <img src="../assets/Projet SAE 402 Aftermovie Tour du monde/Image 2.jpg" alt="Ambiance du festival Le Tour du Monde - public et stands">
+                    <img src="../assets/Projet SAE 402 Aftermovie Tour du monde/Image 3.jpg" alt="Ambiance du festival Le Tour du Monde - public et stands">
+                </div>
+            </div>
+
+            <!-- 02 DEUX CLIENTS -->
+            <div class="cs-section cs-section-alt">
+                <span class="cs-section-label">// 02 DEUX CLIENTS, DEUX FORMATS</span>
+                <div class="cs-section-content">
+                    <h2>Travailler pour de vrais commanditaires</h2>
+                    <p>Au-delà des organisateurs du festival, un <strong>second commanditaire institutionnel</strong> s'est greffé en cours de projet : la <strong>Ville de Chambéry</strong>, qui voulait une déclinaison <strong>verticale</strong> pour ses réseaux sociaux. Résultat : deux livrables, deux formats, deux usages à piloter en parallèle — un vrai exercice de gestion de la relation client.</p>
+                    <div class="cs-tags-row">
+                        <span class="cs-chip">Le Tour du Monde</span>
+                        <span class="cs-chip">Ville de Chambéry</span>
+                        <span class="cs-chip">Format horizontal · web</span>
+                        <span class="cs-chip">Format vertical · réseaux</span>
+                    </div>
+                </div>
+                <div class="cs-video-row">
+                    <div class="cs-video-col">
+                        <div class="cs-video-wrapper">
+                            <iframe src="https://www.youtube-nocookie.com/embed/a2W1gsYscGg" title="Aftermovie Le Tour du Monde - format horizontal" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                        <span class="cs-video-label">Format horizontal — Le Tour du Monde / YouTube</span>
+                    </div>
+                    <div class="cs-video-col cs-video-col-vertical">
+                        <div class="cs-video-vertical">
+                            <iframe src="https://www.youtube-nocookie.com/embed/tOu1bxJqlMY" title="Aftermovie Le Tour du Monde - format vertical" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                        <span class="cs-video-label">Format vertical — Ville de Chambéry / Réseaux</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 03 ORGANISATION -->
+            <div class="cs-section">
+                <span class="cs-section-label">// 03 ORGANISATION &amp; GESTION DE PROJET</span>
+                <div class="cs-section-content">
+                    <h2>Tout se joue avant le tournage</h2>
+                    <p>La réussite d'une captation d'une <strong>journée entière</strong> (9h → 21h) se prépare en amont. J'ai participé à la création de tous les documents de cadrage — <strong>brief client</strong>, organisation, <strong>repérage</strong> des lieux, planning et calls d'équipe — pour répartir les rôles et ne manquer aucun temps fort, des stands du matin au concert du soir.</p>
+                    <div class="cs-tags-row">
+                        <span class="cs-chip">Brief client</span>
+                        <span class="cs-chip">Repérage</span>
+                        <span class="cs-chip">Planning</span>
+                        <span class="cs-chip">Calls d'équipe</span>
+                        <span class="cs-chip">Découpage</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 04 CIBLES & DIFFUSION -->
+            <div class="cs-section cs-section-alt">
+                <span class="cs-section-label">// 04 CIBLES &amp; DIFFUSION</span>
+                <div class="cs-section-content">
+                    <h2>Le bon format pour la bonne cible</h2>
+                    <p>La stratégie de diffusion répondait à des cibles précises : en <strong>principal</strong>, les étudiants et jeunes actifs de Chambéry ; en <strong>secondaire</strong>, les habitants de l'agglomération et les partenaires institutionnels. D'où la logique des deux formats — l'<strong>horizontal</strong> pour le web et YouTube, le <strong>vertical</strong> pour capter l'attention sur les réseaux sociaux.</p>
+                </div>
+            </div>
+
+            <!-- 05 RÉSULTAT -->
+            <div class="cs-section cs-result">
+                <span class="cs-section-label">// 05 LE RÉSULTAT</span>
+                <div class="cs-section-content">
+                    <h2>Un livrable double, prêt pour la diffusion</h2>
+                    <p>Deux aftermovies complémentaires — un horizontal et un vertical — conçus pour faire vivre l'événement bien au-delà du jour J, et présentés en soutenance devant les commanditaires.</p>
+                    <p style="font-family:var(--font-code); font-size:0.8rem; color:#555; margin-top:-5px;">(la réalisation technique détaillée — captation, montage, motion design du logo, photos — est dans la section <a href="audiovisuel.html" style="color:var(--cyan); text-decoration:underline;">Audiovisuel</a>)</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="pdf-overlay" id="kapich-overlay">
+        <div class="pdf-header">
+            <div class="pdf-title-bar">CASE STUDY: KAPICH_STRATEGIE_COM</div>
+            <div class="pdf-close" onclick="closeKapich()">FERMER [X]</div>
+        </div>
+
+        <div class="motion-case-study">
+
+            <!-- HERO -->
+            <div class="cs-hero">
+                <span class="cs-tag">[SAE302 // STRATÉGIE DE COMMUNICATION // BUT2 MMI]</span>
+                <h1 class="cs-title">KAPICH<span>?</span></h1>
+                <p class="cs-question">"Comment transformer un média fictif sur l'IA en un vrai phénomène social ?"</p>
+                <div class="cs-meta-grid">
+                    <div class="cs-meta-item">
+                        <span class="cs-meta-label">CLIENT</span>
+                        <span class="cs-meta-value">Émilien Gillet (commanditaire SAE)</span>
+                    </div>
+                    <div class="cs-meta-item">
+                        <span class="cs-meta-label">FORMAT</span>
+                        <span class="cs-meta-value">Média social first · Vidéos 9:16</span>
+                    </div>
+                    <div class="cs-meta-item">
+                        <span class="cs-meta-label">MON RÔLE</span>
+                        <span class="cs-meta-value">Stratégie comm · Dispositif "Prank" · Production vidéo</span>
+                    </div>
+                    <div class="cs-meta-item">
+                        <span class="cs-meta-label">CIBLE</span>
+                        <span class="cs-meta-value">16-25 ans, accros aux réseaux & aux trends</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 01 LE BRIEF -->
+            <div class="cs-section">
+                <span class="cs-section-label">// 01 LE BRIEF</span>
+                <div class="cs-section-content">
+                    <h2>Inventer un média qui rend l'IA accessible</h2>
+                    <p><strong>Kapich?</strong> est un média social first qui décrypte l'actualité de l'IA de façon fun, accessible et sans filtre. Format principal : des vidéos courtes 9:16 d'environ 1 minute, deux présentateurs au ton humoristique et pédagogique, avec un <strong>élément généré par IA caché</strong> dans chaque épisode que l'audience doit retrouver.</p>
+                    <p>Objectif : informer sans donner de leçon, et laisser chacun se forger sa propre opinion sur l'IA en le faisant jouer plutôt qu'en lui imposant un discours.</p>
+                </div>
+            </div>
+
+            <!-- 02 LE DISPOSITIF PRANK -->
+            <div class="cs-section cs-section-alt">
+                <span class="cs-section-label">// 02 LA STRATÉGIE "PHYSIQUE" — LE PRANK</span>
+                <div class="cs-section-content">
+                    <h2>Piéger pour mieux faire connaître</h2>
+                    <p>Plutôt que le QR code "classique" jugé trop vu, le dispositif détourne le code en piège : des <strong>textes aguicheurs</strong> ("Canva pro gratuit", "Emilien avec des cheveux") collés dans l'aile MMI, et un <strong>concours QR codes</strong> caché dans l'IUT où un seul code sur plusieurs fait gagner des bonbons. Le prank devient la signature de toute la communication Kapich.</p>
+                    <p>Deux déclinaisons phares de ce dispositif : l'<strong>affiche "prank" cafétéria</strong> annonçant -50% sur les sandwiches derrière un QR code à conditions impossibles, et une <strong>vidéo diffusée sur les écrans de l'IUT</strong> avec un visage connu du bâtiment qui "casse l'écran" en plein direct.</p>
+                    <p style="font-family:var(--font-code); font-size:0.8rem; color:#555; margin-top:-5px;">(l'affiche complète est dans la section <a href="graphisme.html" style="color:var(--cyan); text-decoration:underline;">Graphisme</a> · la vidéo écrans IUT est détaillée dans <a href="audiovisuel.html" style="color:var(--cyan); text-decoration:underline;">Audiovisuel</a>)</p>
+                    <div class="cs-tags-row">
+                        <span class="cs-chip">Bouche-à-oreille</span>
+                        <span class="cs-chip">QR codes "aguicheurs"</span>
+                        <span class="cs-chip">Concours QR codes</span>
+                        <span class="cs-chip">Affiche prank cafétéria</span>
+                        <span class="cs-chip">Vidéo écrans IUT</span>
+                    </div>
+
+                    <h2 style="margin-top:50px;">Preuve de diffusion</h2>
+                    <p>Pas juste une vidéo produite : la preuve qu'elle a vraiment tourné sur les écrans de l'IUT, en conditions réelles.</p>
+                </div>
+                <div class="cs-video-vertical" style="max-width:300px; margin:0 auto;">
+                    <iframe src="https://www.youtube-nocookie.com/embed/nWr3XX8BZUI" title="Diffusion de la vidéo prank sur l'écran IUT" allowfullscreen></iframe>
+                </div>
+                <div class="cs-gallery photos">
+                    <img src="../assets/kapich/photo 1.png" alt="Écran de l'IUT diffusant la vidéo prank Kapich">
+                    <img src="../assets/kapich/photo 2.jpg" alt="Écran de l'IUT diffusant la vidéo prank Kapich">
+                    <img src="../assets/kapich/photo 3.jpg" alt="Écran de l'IUT diffusant la vidéo prank Kapich">
+                </div>
+            </div>
+
+            <!-- 03 STRATÉGIE NUMÉRIQUE -->
+            <div class="cs-section">
+                <span class="cs-section-label">// 03 LA STRATÉGIE NUMÉRIQUE</span>
+                <div class="cs-section-content">
+                    <h2>Construire l'audience en ligne</h2>
+                    <p><strong>Instagram</strong> comme réseau principal (Reels, carrousels, stories) et <strong>YouTube</strong> en secondaire (Shorts + format long), avec un site web pour centraliser le contenu. Pour générer de l'engagement : suivre les micro-créateurs du domaine, répondre systématiquement aux commentaires, et contacter des <strong>streameurs Twitch</strong> pour leur faire jouer le jeu web "IA ou pas IA" en direct devant leur communauté.</p>
+                    <p>Dernier levier : se faire <strong>reposter par le compte MMI</strong> pour profiter immédiatement de sa notoriété auprès des étudiants et futurs étudiants intéressés par le numérique.</p>
+                    <div class="cs-tags-row">
+                        <span class="cs-chip">Instagram Reels & Carrousels</span>
+                        <span class="cs-chip">YouTube Shorts</span>
+                        <span class="cs-chip">Streamers Twitch</span>
+                        <span class="cs-chip">Repost MMI</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 04 LE RÉSULTAT -->
+            <div class="cs-section cs-result">
+                <span class="cs-section-label">// 04 LE RÉSULTAT</span>
+                <div class="cs-section-content">
+                    <h2>Un prank tourné, un contenu monté</h2>
+                    <p>Deux livrables vidéo issus de ce dispositif : la <strong>vidéo "prank" des écrans IUT</strong> avec ses effets spéciaux, et un <strong>contenu court monté</strong> pour le média fictif Kapich lui-même.</p>
+                    <p style="font-family:var(--font-code); font-size:0.8rem; color:#555; margin-top:-5px;">(la réalisation technique détaillée — effets spéciaux, montage, captation — est dans la section <a href="audiovisuel.html" style="color:var(--cyan); text-decoration:underline;">Audiovisuel</a>)</p>
+                </div>
+                <div class="cs-video-wrapper">
+                    <iframe src="https://www.youtube-nocookie.com/embed/ADX6eeCeCQ0" title="Vidéo prank Kapich — Écrans IUT" allowfullscreen></iframe>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -325,20 +931,115 @@
 
             </div>
 
-            <h2 class="archives-title">/// PROJET PHARE ///</h2>
+            <h2 class="archives-title">/// PROJETS ///</h2>
             <section class="archives">
                 <div class="archive-card" id="btn-open-trek">
                     <div class="scan-line"></div>
                     <div style="color:var(--cyan); font-family:var(--font-code); margin-bottom:15px;">[CASE STUDY: TOURISME]</div>
-                    
+
                     <h3 style="color:#fff; font-family:var(--font-display); font-size:2.5rem; margin-bottom:20px;">
                         TREK BERBÈRE
                     </h3>
-                    
+
                     <p style="font-size:1rem; color:#aaa; line-height:1.6; max-width:600px; margin:0 auto;">
                         Refonte complète de la stratégie de communication pour un guide de haute montagne.
                         <br><br>
                         <strong>Mission :</strong> Moderniser l'image de marque et rassurer la clientèle "Famille" sur la sécurité.
+                    </p>
+
+                    <div class="btn-view">
+                        [ ACCÉDER AU DOSSIER ]
+                    </div>
+                </div>
+
+                <div class="archive-card" id="btn-open-mapping">
+                    <div class="scan-line"></div>
+                    <div style="color:var(--cyan); font-family:var(--font-code); margin-bottom:15px;">[EVENT COMM: PORTES OUVERTES IUT]</div>
+
+                    <h3 style="color:#fff; font-family:var(--font-display); font-size:2.5rem; margin-bottom:20px;">
+                        MAPPING VIDÉO
+                    </h3>
+
+                    <p style="font-size:1rem; color:#aaa; line-height:1.6; max-width:600px; margin:0 auto;">
+                        JPO de l'IUT · Salle des conseils G114
+                        <br><br>
+                        <strong>Mission :</strong> Créer une expérience de communication immersive projetée sur l'architecture réelle de la salle.
+                    </p>
+
+                    <div class="btn-view">
+                        [ ACCÉDER AU DOSSIER ]
+                    </div>
+                </div>
+
+                <div class="archive-card" id="btn-open-motion">
+                    <div class="scan-line"></div>
+                    <div style="color:var(--cyan); font-family:var(--font-code); margin-bottom:15px;">[WORKSHOP: VULGARISATION SCIENTIFIQUE]</div>
+
+                    <h3 style="color:#fff; font-family:var(--font-display); font-size:2.5rem; margin-bottom:20px;">
+                        MOTION DESIGN IA
+                    </h3>
+
+                    <p style="font-size:1rem; color:#aaa; line-height:1.6; max-width:600px; margin:0 auto;">
+                        Comment une IA générative crée-t-elle une image ?
+                        <br><br>
+                        <strong>Mission :</strong> Vulgariser un concept d'IA en 1 minute, bilingue FR/EN, de la synthèse scientifique à l'animation finale.
+                    </p>
+
+                    <div class="btn-view">
+                        [ ACCÉDER AU DOSSIER ]
+                    </div>
+                </div>
+
+                <div class="archive-card" id="btn-open-audit">
+                    <div class="scan-line"></div>
+                    <div style="color:var(--cyan); font-family:var(--font-code); margin-bottom:15px;">[AUDIT UX : SITE INSTITUTIONNEL]</div>
+
+                    <h3 style="color:#fff; font-family:var(--font-display); font-size:2.5rem; margin-bottom:20px;">
+                        AUDIT SITE IUT
+                    </h3>
+
+                    <p style="font-size:1rem; color:#aaa; line-height:1.6; max-width:600px; margin:0 auto;">
+                        Audit complet du site de l'IUT de Chambéry · UX, performance &amp; communication
+                        <br><br>
+                        <strong>Mission :</strong> Diagnostiquer l'expérience utilisateur, la performance et la stratégie de com' — scénarios chronométrés, tests PageSpeed, contrastes WCAG, analytics.
+                    </p>
+
+                    <div class="btn-view">
+                        [ ACCÉDER AU DOSSIER ]
+                    </div>
+                </div>
+
+                <div class="archive-card" id="btn-open-aftermovie">
+                    <div class="scan-line"></div>
+                    <div style="color:var(--cyan); font-family:var(--font-code); margin-bottom:15px;">[EVENT COMM: AFTERMOVIE · 2 CLIENTS]</div>
+
+                    <h3 style="color:#fff; font-family:var(--font-display); font-size:2.5rem; margin-bottom:20px;">
+                        LE TOUR DU MONDE
+                    </h3>
+
+                    <p style="font-size:1rem; color:#aaa; line-height:1.6; max-width:600px; margin:0 auto;">
+                        Festival interculturel · Place des Éléphants, Chambéry
+                        <br><br>
+                        <strong>Mission :</strong> Faire rayonner l'événement auprès de deux commanditaires — les organisateurs &amp; la Ville de Chambéry — via un aftermovie diffusé sur le web et les réseaux.
+                    </p>
+
+                    <div class="btn-view">
+                        [ ACCÉDER AU DOSSIER ]
+                    </div>
+                </div>
+
+                <div class="archive-card" id="btn-open-kapich">
+                    <div class="scan-line"></div>
+                    <div style="color:var(--cyan); font-family:var(--font-code); margin-bottom:15px;">[STRATÉGIE COM' : MÉDIA FICTIF IA]</div>
+
+                    <h3 style="color:#fff; font-family:var(--font-display); font-size:2.5rem; margin-bottom:20px;">
+                        KAPICH?
+                    </h3>
+
+                    <p style="font-size:1rem; color:#aaa; line-height:1.6; max-width:600px; margin:0 auto;">
+                        Média social first qui décrypte l'IA · cible 16-25 ans
+                        <br><br>
+                        <strong>Mission :</strong> Construire une stratégie de communication "prank" (QR codes, affiche, vidéo écrans IUT) et digitale (Instagram, streamers) pour faire connaître le média.
                     </p>
 
                     <div class="btn-view">
@@ -351,7 +1052,7 @@
                 <h2 style="font-family: var(--font-display); font-size: 4vw; margin-bottom: 2rem; color: var(--text-color);">TRAVAILLONS ENSEMBLE</h2>
                 <p style="font-family: var(--font-body); font-size: 1.2rem;">Email: seuxmedelys2006@gmail.com</p>
                 <div style="margin-top: 3rem; opacity: 0.5; font-size: 0.8rem; font-family: var(--font-code);">
-                    <a href="mentions.html" style="text-decoration: underline; color: var(--text-color);">Mentions Légales - © 2025 Medelys Seux</a>
+                    <a href="mentions.html" style="text-decoration: underline; color: var(--text-color);">Mentions Légales - © 2026 Medelys Seux</a>
                 </div>
             </footer>
         </div>
@@ -367,8 +1068,19 @@
             "DECRYPTING FILES...", "CONNECTION ESTABLISHED."
         ];
         let lineIndex = 0; let charIndex = 0;
+        let bootFinished = false;
+
+        function finishBoot() {
+            if (bootFinished) return;
+            bootFinished = true;
+            bootScreen.style.transition = "transform 0.5s ease-in-out";
+            bootScreen.style.transform = "translateY(-100%)";
+            sessionStorage.setItem('commBootPlayed', 'true');
+            initExperience();
+        }
 
         function typeWriter() {
+            if (bootFinished) return;
             if (lineIndex < lines.length) {
                 if (charIndex < lines[lineIndex].length) {
                     if(charIndex === 0) {
@@ -382,21 +1094,26 @@
                     lineIndex++; charIndex = 0; setTimeout(typeWriter, 100);
                 }
             } else {
-                setTimeout(() => {
-                    bootScreen.style.transition = "transform 0.5s ease-in-out";
-                    bootScreen.style.transform = "translateY(-100%)";
-                    initExperience();
-                }, 800);
+                setTimeout(finishBoot, 800);
             }
         }
-        window.addEventListener('load', typeWriter);
+
+        // Ne rejoue le boot que la 1ère fois par session ; clic = passer l'intro
+        if (sessionStorage.getItem('commBootPlayed')) {
+            bootScreen.style.display = 'none';
+            bootFinished = true;
+            setTimeout(initExperience, 0);
+        } else {
+            bootScreen.addEventListener('click', finishBoot);
+            window.addEventListener('load', typeWriter);
+        }
 
         // --- 2. SMOOTH SCROLL ---
         let current = 0; let target = 0; const ease = 0.075;
         const smoothContent = document.getElementById('smooth-content');
         const skillRows = document.querySelectorAll('.skill-row');
         const manifest = document.querySelector('.manifesto');
-        const archiveCard = document.querySelector('.archive-card');
+        const archiveCards = document.querySelectorAll('.archive-card');
         const laser = document.getElementById('laser');
 
         function setHeight() { document.body.style.height = `${smoothContent.getBoundingClientRect().height}px`; }
@@ -441,26 +1158,91 @@
                 if(mRect.top < window.innerHeight * 0.8) manifest.classList.add('in-view');
             }
 
-            if(archiveCard) {
-                const aRect = archiveCard.getBoundingClientRect();
-                if(aRect.top < window.innerHeight * 0.85) archiveCard.classList.add('in-view');
-            }
+            archiveCards.forEach(card => {
+                const aRect = card.getBoundingClientRect();
+                if(aRect.top < window.innerHeight * 0.85) card.classList.add('in-view');
+            });
 
             requestAnimationFrame(animate);
         }
 
-        // --- 3. MODAL PDF ---
+        // --- 3. MODALS ---
         const btnOpenTrek = document.getElementById('btn-open-trek');
         const overlay = document.getElementById('trek-overlay');
 
         btnOpenTrek.addEventListener('click', () => {
             overlay.classList.add('active');
-            document.body.style.overflow = 'hidden'; 
+            document.body.style.overflow = 'hidden';
         });
 
         function closePdf() {
             overlay.classList.remove('active');
-            document.body.style.overflow = 'scroll'; 
+            document.body.style.overflow = 'scroll';
+        }
+
+        const btnOpenMotion = document.getElementById('btn-open-motion');
+        const motionOverlay = document.getElementById('motion-overlay');
+
+        btnOpenMotion.addEventListener('click', () => {
+            motionOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+
+        function closeMotion() {
+            motionOverlay.classList.remove('active');
+            document.body.style.overflow = 'scroll';
+        }
+
+        const btnOpenMapping = document.getElementById('btn-open-mapping');
+        const mappingOverlay = document.getElementById('mapping-overlay');
+
+        btnOpenMapping.addEventListener('click', () => {
+            mappingOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+
+        function closeMapping() {
+            mappingOverlay.classList.remove('active');
+            document.body.style.overflow = 'scroll';
+        }
+
+        const btnOpenAudit = document.getElementById('btn-open-audit');
+        const auditOverlay = document.getElementById('audit-overlay');
+
+        btnOpenAudit.addEventListener('click', () => {
+            auditOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+
+        function closeAudit() {
+            auditOverlay.classList.remove('active');
+            document.body.style.overflow = 'scroll';
+        }
+
+        const btnOpenAftermovie = document.getElementById('btn-open-aftermovie');
+        const aftermovieOverlay = document.getElementById('aftermovie-overlay');
+
+        btnOpenAftermovie.addEventListener('click', () => {
+            aftermovieOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+
+        function closeAftermovie() {
+            aftermovieOverlay.classList.remove('active');
+            document.body.style.overflow = 'scroll';
+        }
+
+        const btnOpenKapich = document.getElementById('btn-open-kapich');
+        const kapichOverlay = document.getElementById('kapich-overlay');
+
+        btnOpenKapich.addEventListener('click', () => {
+            kapichOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+
+        function closeKapich() {
+            kapichOverlay.classList.remove('active');
+            document.body.style.overflow = 'scroll';
         }
 
         // --- 4. BACKGROUND STARS ---
@@ -492,7 +1274,7 @@
         window.addEventListener('mousemove', e => {
             cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
         });
-        document.querySelectorAll('a, .skill-content, .archive-card, .pdf-close, .download-btn, .back-btn').forEach(el => {
+        document.querySelectorAll('a, .skill-content, .archive-card, .pdf-close, .download-btn, .back-btn, #motion-overlay .pdf-close').forEach(el => {
             el.addEventListener('mouseenter', () => cursor.classList.add('active'));
             el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
         });

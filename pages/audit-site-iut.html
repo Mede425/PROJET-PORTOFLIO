@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audit UX — Site IUT de Chambéry · Étude de cas</title>
+<meta name="description" content="Audit complet de l'expérience utilisateur, de la performance et de la stratégie de communication du site web de l'IUT de Chambéry (Université Savoie Mont Blanc). SAE 101 — 2024.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   AUDIT REPORT — système de design autonome
+   (volontairement différent du portfolio : éditorial / agence)
+   ============================================================ */
+:root{
+  --bg:#FBFAF7;
+  --surface:#FFFFFF;
+  --ink:#15151A;
+  --ink-soft:#3A3A42;
+  --muted:#6E6B74;
+  --faint:#9A97A0;
+  --line:#E8E4DC;
+  --line-strong:#D8D3C8;
+  --navy:#141627;
+  --navy-2:#1C1F36;
+  --accent:#2F55E6;
+  --accent-ink:#1E3DBE;
+  --accent-soft:#EDF1FD;
+  --ok:#1E9E6A;      --ok-soft:#E6F5EE;
+  --warn:#CE8616;    --warn-soft:#FBF1DE;
+  --bad:#D6453F;     --bad-soft:#FBE9E8;
+  --r:14px;
+  --maxw:1120px;
+  --ff-display:'Fraunces',Georgia,serif;
+  --ff-body:'Inter',system-ui,sans-serif;
+  --ff-mono:'IBM Plex Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:var(--ff-body);font-size:17px;line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+img{max-width:100%;display:block;}
+a{color:inherit;}
+::selection{background:var(--accent);color:#fff;}
+
+/* scrollbar */
+::-webkit-scrollbar{width:11px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:#cfcabf;border-radius:8px;border:3px solid var(--bg);}
+::-webkit-scrollbar-thumb:hover{background:#b6b0a3;}
+
+/* ---------- TOPBAR ---------- */
+.topbar{
+  position:fixed;top:0;left:0;width:100%;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px clamp(18px,4vw,40px);
+  background:rgba(251,250,247,.82);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.tb-left{display:flex;align-items:center;gap:18px;}
+.tb-back{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--ff-mono);font-size:.72rem;letter-spacing:.04em;
+  text-transform:uppercase;text-decoration:none;color:var(--ink-soft);
+  padding:8px 14px;border:1px solid var(--line-strong);border-radius:50px;
+  transition:.25s;
+}
+.tb-back:hover{background:var(--ink);color:#fff;border-color:var(--ink);}
+.tb-crumb{font-family:var(--ff-mono);font-size:.7rem;letter-spacing:.12em;color:var(--faint);text-transform:uppercase;}
+.tb-crumb b{color:var(--accent);font-weight:600;}
+.tb-pdf{
+  display:inline-flex;align-items:center;gap:9px;
+  font-family:var(--ff-mono);font-size:.72rem;letter-spacing:.03em;text-transform:uppercase;
+  text-decoration:none;color:#fff;background:var(--accent);
+  padding:9px 18px;border-radius:50px;transition:.25s;white-space:nowrap;
+}
+.tb-pdf:hover{background:var(--accent-ink);transform:translateY(-1px);}
+.progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:201;transition:width .1s linear;}
+@media(max-width:680px){.tb-crumb{display:none;}}
+
+/* ---------- LAYOUT SHELL ---------- */
+.shell{max-width:var(--maxw);margin:0 auto;padding:0 clamp(20px,5vw,40px);}
+section{position:relative;}
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1);}
+.reveal.in{opacity:1;transform:none;}
+
+/* ---------- HERO ---------- */
+.hero{
+  background:radial-gradient(120% 140% at 80% -10%,#222645 0%,var(--navy) 55%);
+  color:#EDEDF2;padding:150px clamp(20px,5vw,40px) 90px;position:relative;overflow:hidden;
+}
+.hero::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    linear-gradient(transparent 95%,rgba(255,255,255,.04) 95%) 0 0/100% 34px,
+    radial-gradient(60% 60% at 15% 110%,rgba(47,85,230,.20),transparent 70%);
+  opacity:.7;
+}
+.hero-inner{max-width:var(--maxw);margin:0 auto;position:relative;z-index:1;}
+.eyebrow{
+  font-family:var(--ff-mono);font-size:.74rem;letter-spacing:.22em;text-transform:uppercase;
+  color:#8FA2FF;margin-bottom:26px;display:flex;align-items:center;gap:12px;
+}
+.eyebrow::before{content:"";width:34px;height:1px;background:#5C6CCB;display:inline-block;}
+.hero h1{
+  font-family:var(--ff-display);font-weight:500;
+  font-size:clamp(2.4rem,6vw,4.7rem);line-height:1.02;letter-spacing:-.01em;color:#fff;
+  max-width:16ch;
+}
+.hero h1 em{font-style:italic;color:#A9B7FF;font-weight:400;}
+.hero-dek{
+  margin-top:28px;max-width:58ch;font-size:clamp(1rem,1.4vw,1.18rem);
+  color:#B9B9C6;line-height:1.6;
+}
+.hero-meta{
+  margin-top:54px;display:grid;grid-template-columns:repeat(5,1fr);gap:1px;
+  background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.10);border-radius:12px;overflow:hidden;
+}
+.hm{background:var(--navy);padding:18px 20px;}
+.hm .k{font-family:var(--ff-mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:#7B7E9A;margin-bottom:8px;}
+.hm .v{font-size:.92rem;color:#E7E7EE;line-height:1.35;font-weight:500;}
+@media(max-width:880px){.hero-meta{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:480px){.hero-meta{grid-template-columns:1fr;}}
+
+/* ---------- KPI STRIP ---------- */
+.kpi-wrap{max-width:var(--maxw);margin:-46px auto 0;padding:0 clamp(20px,5vw,40px);position:relative;z-index:5;}
+.kpi-grid{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:14px;
+}
+.kpi{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  padding:22px 20px;box-shadow:0 18px 40px -28px rgba(20,22,39,.35);
+}
+.kpi .num{font-family:var(--ff-display);font-weight:600;font-size:2.05rem;line-height:1;letter-spacing:-.02em;}
+.kpi .num.alert{color:var(--bad);}
+.kpi .lab{margin-top:10px;font-size:.82rem;color:var(--muted);line-height:1.4;}
+@media(max-width:960px){.kpi-grid{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:560px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
+
+/* ---------- BODY + STICKY TOC ---------- */
+.body-wrap{max-width:var(--maxw);margin:0 auto;padding:0 clamp(20px,5vw,40px);display:grid;grid-template-columns:200px 1fr;gap:54px;}
+.toc{position:sticky;top:96px;align-self:start;height:max-content;padding-top:96px;}
+.toc ul{list-style:none;border-left:1px solid var(--line-strong);}
+.toc a{
+  display:block;padding:7px 0 7px 18px;margin-left:-1px;border-left:2px solid transparent;
+  font-family:var(--ff-mono);font-size:.72rem;letter-spacing:.02em;text-transform:uppercase;
+  color:var(--faint);text-decoration:none;transition:.2s;
+}
+.toc a:hover{color:var(--ink);}
+.toc a.active{color:var(--accent);border-left-color:var(--accent);font-weight:600;}
+.content{min-width:0;padding-top:30px;}
+@media(max-width:980px){.body-wrap{grid-template-columns:1fr;}.toc{display:none;}}
+
+/* ---------- SECTION ---------- */
+.sec{padding:62px 0;border-top:1px solid var(--line);}
+.sec:first-child{border-top:none;}
+.sec-label{
+  font-family:var(--ff-mono);font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:16px;display:flex;align-items:center;gap:10px;
+}
+.sec-label .no{color:var(--faint);}
+.sec h2{
+  font-family:var(--ff-display);font-weight:500;font-size:clamp(1.7rem,3.4vw,2.5rem);
+  line-height:1.08;letter-spacing:-.01em;margin-bottom:18px;max-width:20ch;
+}
+.sec p{color:var(--ink-soft);margin-bottom:16px;max-width:68ch;}
+.sec p.lead{font-size:1.12rem;color:var(--ink);}
+strong{font-weight:600;color:var(--ink);}
+.muted{color:var(--muted);}
+
+/* ---------- COMM SCHEME ---------- */
+.scheme{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:30px 0 8px;}
+.scheme .node{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px;}
+.scheme .node .t{font-family:var(--ff-mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:9px;}
+.scheme .node .d{font-size:.9rem;color:var(--ink-soft);line-height:1.5;}
+.scheme-sub{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;}
+.pill{font-family:var(--ff-mono);font-size:.72rem;padding:7px 13px;border-radius:50px;background:var(--accent-soft);color:var(--accent-ink);border:1px solid #DCE4FB;}
+@media(max-width:680px){.scheme{grid-template-columns:1fr;}}
+
+/* ---------- TARGET CARDS ---------- */
+.targets{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:26px;}
+.tcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px;position:relative;overflow:hidden;}
+.tcard::before{content:attr(data-n);position:absolute;top:-12px;right:8px;font-family:var(--ff-display);font-weight:700;font-size:5rem;color:#F1EEE7;line-height:1;}
+.tcard .rank{font-family:var(--ff-mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;position:relative;}
+.tcard h3{font-family:var(--ff-display);font-weight:600;font-size:1.25rem;margin-bottom:10px;position:relative;}
+.tcard p{font-size:.9rem;margin:0;position:relative;}
+@media(max-width:680px){.targets{grid-template-columns:1fr;}}
+
+/* ---------- METHOD STRIP ---------- */
+.method{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:24px;counter-reset:m;}
+.mstep{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 16px;}
+.mstep .mi{width:36px;height:36px;border-radius:9px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--ff-mono);font-weight:600;margin-bottom:12px;}
+.mstep .mt{font-weight:600;font-size:.92rem;margin-bottom:5px;}
+.mstep .md{font-size:.78rem;color:var(--muted);line-height:1.45;}
+@media(max-width:880px){.method{grid-template-columns:repeat(2,1fr);}}
+
+/* ---------- SCENARIO TABLE ---------- */
+.tbl{width:100%;border-collapse:collapse;margin:26px 0 10px;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;font-size:.92rem;}
+.tbl th,.tbl td{padding:14px 16px;text-align:left;border-bottom:1px solid var(--line);}
+.tbl thead th{background:#F4F1EA;font-family:var(--ff-mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;}
+.tbl tbody th{font-weight:600;color:var(--ink);width:200px;}
+.tbl tbody tr:last-child td,.tbl tbody tr:last-child th{border-bottom:none;}
+.tbl .rowname{font-family:var(--ff-mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:block;}
+.scen-head{font-weight:600;}
+.scen-head small{display:block;font-weight:400;color:var(--muted);font-size:.78rem;margin-top:3px;line-height:1.3;}
+.bar-cell{display:flex;align-items:center;gap:10px;}
+.bar-track{flex:1;height:7px;background:#EEEAE2;border-radius:5px;overflow:hidden;min-width:50px;}
+.bar-fill{height:100%;border-radius:5px;background:var(--accent);}
+.score-good{color:var(--ok);font-weight:600;}
+.score-mid{color:var(--warn);font-weight:600;}
+.score-bad{color:var(--bad);font-weight:600;}
+.tbl-wrap{overflow-x:auto;}
+
+/* ---------- FINDINGS ---------- */
+.finds{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:24px;}
+.find{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:0 12px 12px 0;padding:20px 22px;}
+.find h4{font-size:1rem;margin-bottom:8px;}
+.find p{font-size:.88rem;margin:0;}
+@media(max-width:680px){.finds{grid-template-columns:1fr;}}
+
+/* ---------- GAUGES ---------- */
+.gauges-block{margin-top:26px;}
+.gauge-group{margin-bottom:30px;}
+.gauge-group .gg-title{font-family:var(--ff-mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.gauge-group .gg-title .tag{background:#F1EEE7;border-radius:50px;padding:3px 11px;color:var(--ink-soft);}
+.gauges{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.gauge{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;text-align:center;}
+.gauge svg{width:96px;height:96px;}
+.gauge .ring-bg{fill:none;stroke:#EEEAE2;stroke-width:9;}
+.gauge .ring-fg{fill:none;stroke-width:9;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset 1.1s cubic-bezier(.2,.7,.2,1);}
+.gauge .gnum{font-family:var(--ff-display);font-weight:600;font-size:1.5rem;}
+.gauge .glab{margin-top:8px;font-size:.8rem;color:var(--muted);font-weight:500;}
+@media(max-width:880px){.gauges{grid-template-columns:repeat(2,1fr);}}
+
+.callout{background:var(--bad-soft);border:1px solid #F2D2D0;border-radius:12px;padding:20px 22px;margin-top:24px;}
+.callout .ct{font-family:var(--ff-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--bad);margin-bottom:10px;font-weight:600;}
+.callout ul{list-style:none;display:grid;gap:8px;}
+.callout li{font-size:.9rem;color:var(--ink-soft);padding-left:22px;position:relative;}
+.callout li::before{content:"▲";position:absolute;left:0;color:var(--bad);font-size:.7rem;top:3px;}
+
+/* ---------- A11Y TWO COL ---------- */
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px;}
+.colbox{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px;}
+.colbox h4{display:flex;align-items:center;gap:9px;font-size:1.05rem;margin-bottom:16px;}
+.colbox h4 .dot{width:10px;height:10px;border-radius:50%;}
+.colbox ul{list-style:none;display:grid;gap:11px;}
+.colbox li{font-size:.9rem;color:var(--ink-soft);padding-left:26px;position:relative;line-height:1.45;}
+.colbox.good li::before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:700;}
+.colbox.bad li::before{content:"✕";position:absolute;left:0;color:var(--bad);font-weight:700;}
+@media(max-width:680px){.cols2{grid-template-columns:1fr;}}
+
+/* ---------- CONTRAST TABLE ---------- */
+.ctheme{margin-top:26px;}
+.ctheme .cth{font-family:var(--ff-mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.ctable{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;font-size:.86rem;}
+.ctable th{background:#F4F1EA;font-family:var(--ff-mono);font-size:.64rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:12px 14px;text-align:left;}
+.ctable td{padding:12px 14px;border-top:1px solid var(--line);vertical-align:middle;}
+.swatch{display:inline-flex;align-items:center;gap:9px;font-family:var(--ff-mono);font-size:.78rem;}
+.chip{width:26px;height:26px;border-radius:7px;border:1px solid rgba(0,0,0,.12);flex:none;}
+.preview-cell{font-family:var(--ff-body);font-weight:600;padding:8px 12px;border-radius:7px;font-size:.9rem;white-space:nowrap;}
+.ratio{font-family:var(--ff-mono);font-weight:600;}
+.badge{font-family:var(--ff-mono);font-size:.66rem;font-weight:600;letter-spacing:.04em;padding:4px 10px;border-radius:50px;white-space:nowrap;}
+.badge.pass{background:var(--ok-soft);color:var(--ok);}
+.badge.mid{background:var(--warn-soft);color:var(--warn);}
+.badge.fail{background:var(--bad-soft);color:var(--bad);}
+
+/* ---------- STATS / CHARTS ---------- */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:26px;}
+.stat-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:26px;}
+.stat-card h4{font-size:1rem;margin-bottom:6px;}
+.stat-card .sub{font-size:.82rem;color:var(--muted);margin-bottom:20px;}
+.donut-row{display:flex;align-items:center;gap:24px;}
+.donut svg{width:130px;height:130px;}
+.legend{display:grid;gap:12px;}
+.legend .li{display:flex;align-items:center;gap:10px;font-size:.9rem;}
+.legend .sw{width:14px;height:14px;border-radius:4px;flex:none;}
+.legend b{font-family:var(--ff-display);font-weight:600;}
+.dur-bars{display:grid;gap:16px;}
+.durrow .dl{display:flex;justify-content:space-between;font-size:.86rem;margin-bottom:7px;}
+.durrow .dl b{font-family:var(--ff-mono);}
+.dtrack{height:12px;background:#EEEAE2;border-radius:7px;overflow:hidden;}
+.dfill{height:100%;border-radius:7px;}
+@media(max-width:780px){.stats-grid{grid-template-columns:1fr;}}
+
+/* ---------- GALLERY ---------- */
+.gal{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:26px;}
+.gitem{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:zoom-in;transition:.25s;}
+.gitem:hover{border-color:var(--accent);box-shadow:0 22px 44px -30px rgba(47,85,230,.5);transform:translateY(-2px);}
+.gal{align-items:start;}
+.gitem .gimg{background:#F1EEE7;aspect-ratio:16/10;overflow:hidden;}
+.gitem .gimg img{width:100%;height:100%;object-fit:cover;object-position:top center;}
+.gitem figcaption{padding:14px 18px;font-size:.84rem;color:var(--muted);border-top:1px solid var(--line);display:flex;gap:8px;align-items:baseline;}
+.gitem figcaption b{color:var(--ink);font-weight:600;}
+@media(max-width:680px){.gal{grid-template-columns:1fr;}}
+
+/* lightbox */
+.lightbox{position:fixed;inset:0;background:rgba(15,15,22,.92);z-index:500;display:none;align-items:center;justify-content:center;padding:40px;cursor:zoom-out;}
+.lightbox.open{display:flex;}
+.lightbox img{max-width:94vw;max-height:88vh;border-radius:8px;box-shadow:0 30px 80px rgba(0,0,0,.6);cursor:default;}
+.lightbox .lb-close{position:absolute;top:22px;right:26px;color:#fff;font-family:var(--ff-mono);font-size:.8rem;border:1px solid rgba(255,255,255,.4);border-radius:50px;padding:8px 16px;cursor:pointer;}
+.lightbox .lb-cap{position:absolute;bottom:26px;left:0;width:100%;text-align:center;color:#cfcfda;font-size:.85rem;font-family:var(--ff-mono);}
+
+/* ---------- RECOMMENDATIONS ---------- */
+.reco{background:var(--navy);color:#E9E9F0;border-radius:18px;padding:clamp(26px,4vw,44px);margin-top:28px;}
+.reco .rl{font-family:var(--ff-mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:#8FA2FF;margin-bottom:20px;}
+.reco-list{display:grid;grid-template-columns:1fr 1fr;gap:14px 30px;}
+.reco-item{display:flex;gap:14px;padding:14px 0;border-top:1px solid rgba(255,255,255,.10);}
+.reco-item .ri-n{font-family:var(--ff-mono);color:#8FA2FF;font-size:.85rem;flex:none;}
+.reco-item .ri-t{font-size:.94rem;color:#D7D7E1;line-height:1.5;}
+@media(max-width:680px){.reco-list{grid-template-columns:1fr;}}
+
+/* ---------- DELIVERABLE / PDF ---------- */
+.deliver{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:clamp(22px,3vw,34px);margin-top:24px;}
+.deliver-top{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:22px;}
+.deliver-top h3{font-family:var(--ff-display);font-weight:600;font-size:1.4rem;}
+.deliver-top .meta{font-family:var(--ff-mono);font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:6px;}
+.dl-btn{display:inline-flex;align-items:center;gap:9px;background:var(--accent);color:#fff;text-decoration:none;font-family:var(--ff-mono);font-size:.76rem;text-transform:uppercase;letter-spacing:.03em;padding:12px 22px;border-radius:50px;transition:.25s;}
+.dl-btn:hover{background:var(--accent-ink);transform:translateY(-1px);}
+.pdf-frame{width:100%;height:75vh;min-height:440px;border:1px solid var(--line);border-radius:12px;background:#f3f1ec;}
+
+/* ---------- CONTRIBUTION ---------- */
+.contrib{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px;}
+.cbox{border:1px solid var(--line);border-radius:14px;padding:22px;}
+.cbox.mine{background:var(--accent-soft);border-color:#D7E0FB;}
+.cbox .cname{font-family:var(--ff-display);font-weight:600;font-size:1.1rem;margin-bottom:4px;}
+.cbox .crole{font-family:var(--ff-mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--accent-ink);margin-bottom:14px;}
+.cbox ul{list-style:none;display:grid;gap:8px;}
+.cbox li{font-size:.88rem;color:var(--ink-soft);padding-left:18px;position:relative;}
+.cbox li::before{content:"–";position:absolute;left:0;color:var(--faint);}
+@media(max-width:680px){.contrib{grid-template-columns:1fr;}}
+
+/* ---------- FOOTER ---------- */
+footer{background:var(--navy);color:#9FA0B4;padding:64px clamp(20px,5vw,40px);margin-top:70px;}
+.foot-inner{max-width:var(--maxw);margin:0 auto;display:flex;justify-content:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap;}
+.foot-inner .fbig{font-family:var(--ff-display);font-weight:500;font-size:clamp(1.4rem,3vw,2rem);color:#fff;line-height:1.15;max-width:24ch;}
+.foot-meta{font-family:var(--ff-mono);font-size:.74rem;line-height:1.9;text-align:right;}
+.foot-meta a{color:#A9B7FF;text-decoration:none;}
+.foot-meta a:hover{text-decoration:underline;}
+@media(max-width:680px){.foot-inner{flex-direction:column;align-items:flex-start;}.foot-meta{text-align:left;}}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="tb-left">
+    <a href="communication.html" class="tb-back">← Portfolio</a>
+    <span class="tb-crumb">Étude de cas / <b>Audit UX</b></span>
+  </div>
+  <a href="../assets/Audit IUT/Audit-Site-IUT-Chambery-SAE101.pdf" download class="tb-pdf">↓ Rapport PDF</a>
+</div>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">Étude de cas · UX & Communication · 2024</div>
+    <h1>Audit du site web de <em>l'IUT de Chambéry</em></h1>
+    <p class="hero-dek">Diagnostic complet de l'expérience utilisateur, de la performance technique et de la stratégie de communication du site institutionnel de l'IUT de Chambéry — Université Savoie Mont Blanc.</p>
+    <div class="hero-meta">
+      <div class="hm"><div class="k">Client</div><div class="v">IUT de Chambéry — USMB</div></div>
+      <div class="hm"><div class="k">Cadre</div><div class="v">SAE 101 · BUT MMI</div></div>
+      <div class="hm"><div class="k">Équipe</div><div class="v">Medelys Seux & Léo Joly</div></div>
+      <div class="hm"><div class="k">Discipline</div><div class="v">Audit UX · Analyse de com'</div></div>
+      <div class="hm"><div class="k">Année</div><div class="v">2024</div></div>
+    </div>
+  </div>
+</header>
+
+<!-- KPI STRIP -->
+<div class="kpi-wrap">
+  <div class="kpi-grid">
+    <div class="kpi"><div class="num">5</div><div class="lab">départements analysés · ~700 étudiants</div></div>
+    <div class="kpi"><div class="num">4</div><div class="lab">scénarios utilisateurs chronométrés</div></div>
+    <div class="kpi"><div class="num alert">43</div><div class="lab">score performance mobile (accueil) /100</div></div>
+    <div class="kpi"><div class="num alert">50s</div><div class="lab">durée de visite moy. <span class="muted">(vs 3 min réf.)</span></div></div>
+    <div class="kpi"><div class="num">29,4%</div><div class="lab">des visites sur mobile</div></div>
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="body-wrap">
+  <!-- TOC -->
+  <nav class="toc">
+    <ul>
+      <li><a href="#contexte">01 · Contexte</a></li>
+      <li><a href="#cibles">02 · Cibles</a></li>
+      <li><a href="#methodo">03 · Méthode</a></li>
+      <li><a href="#ergonomie">04 · Ergonomie</a></li>
+      <li><a href="#performance">05 · Performance</a></li>
+      <li><a href="#accessibilite">06 · Accessibilité</a></li>
+      <li><a href="#graphisme">07 · Identité visuelle</a></li>
+      <li><a href="#donnees">08 · Données</a></li>
+      <li><a href="#captures">09 · Captures</a></li>
+      <li><a href="#conclusion">10 · Conclusion</a></li>
+      <li><a href="#document">Document complet</a></li>
+    </ul>
+  </nav>
+
+  <main class="content">
+
+    <!-- 01 CONTEXTE -->
+    <section class="sec reveal" id="contexte">
+      <div class="sec-label"><span class="no">01</span> — Contexte &amp; objectifs</div>
+      <h2>Pourquoi auditer ce site ?</h2>
+      <p class="lead">L'IUT de Chambéry, composante de l'Université Savoie Mont Blanc, forme près de 700 étudiants répartis sur 5 départements (Génie Civil, Packaging, Multimédia, GACO et Matériaux).</p>
+      <p>Son site web est sa <strong>vitrine institutionnelle</strong> : il doit informer les futurs étudiants et leurs parents, valoriser les partenariats avec les entreprises et promouvoir les événements. Dans un contexte de concurrence avec les pôles de Lyon et Grenoble, l'efficacité de cette communication numérique est un enjeu de recrutement. L'objectif de l'audit : <strong>mesurer si le site remplit réellement sa mission</strong> auprès de ses cibles, sur le fond comme sur la forme.</p>
+
+      <div class="scheme">
+        <div class="node"><div class="t">Émetteur</div><div class="d">Institution publique rattachée à l'USMB. Identité nominale, visuelle (logo IUT/USMB) et territoriale forte en Auvergne-Rhône-Alpes.</div></div>
+        <div class="node"><div class="t">Message</div><div class="d">Informer sur les formations, valoriser l'insertion professionnelle et l'alternance, promouvoir une image de proximité et d'innovation.</div></div>
+        <div class="node"><div class="t">Récepteur</div><div class="d">Futurs étudiants &amp; parents en priorité, entreprises partenaires, étudiants actuels et diplômés.</div></div>
+      </div>
+      <div class="scheme-sub">
+        <span class="pill">Code : équilibre texte / image</span>
+        <span class="pill">Canal : site web + réseaux sociaux</span>
+        <span class="pill">Contexte : recrutement &amp; visibilité</span>
+      </div>
+    </section>
+
+    <!-- 02 CIBLES -->
+    <section class="sec reveal" id="cibles">
+      <div class="sec-label"><span class="no">02</span> — Les cibles</div>
+      <h2>À qui s'adresse le site ?</h2>
+      <p>La segmentation distingue quatre cercles de cibles, du cœur de la mission de recrutement jusqu'aux relais d'influence et de réputation.</p>
+      <div class="targets">
+        <div class="tcard" data-n="1"><div class="rank">Cible principale</div><h3>Les futurs étudiants</h3><p>Bacheliers et étudiants en réorientation susceptibles de s'inscrire en BUT, Licence Pro ou alternance.</p></div>
+        <div class="tcard" data-n="2"><div class="rank">Cœur de cible</div><h3>Filières techno &amp; générales</h3><p>Élèves cherchant une formation professionnalisante, sensibles à l'insertion rapide et aux opportunités d'alternance et de stage.</p></div>
+        <div class="tcard" data-n="3"><div class="rank">Cible secondaire</div><h3>Parents &amp; entreprises</h3><p>Parents qui influencent l'orientation, et entreprises partenaires intéressées par le recrutement d'alternants et de stagiaires.</p></div>
+        <div class="tcard" data-n="4"><div class="rank">Cible périphérique</div><h3>Grand public &amp; alumni</h3><p>Médias, institutions locales, collectivités et anciens diplômés — relais de réputation et mentors potentiels.</p></div>
+      </div>
+    </section>
+
+    <!-- 03 METHODO -->
+    <section class="sec reveal" id="methodo">
+      <div class="sec-label"><span class="no">03</span> — Méthodologie</div>
+      <h2>Comment l'audit a été mené</h2>
+      <p>Une approche croisée combinant tests utilisateurs, mesures techniques et analyse de données réelles, pour objectiver chaque constat.</p>
+      <div class="method">
+        <div class="mstep"><div class="mi">01</div><div class="mt">Scénarios</div><div class="md">4 parcours utilisateurs chronométrés (clics, temps, hésitations).</div></div>
+        <div class="mstep"><div class="mi">02</div><div class="mt">Performance</div><div class="md">Tests PageSpeed Insights / Lighthouse mobile &amp; bureau.</div></div>
+        <div class="mstep"><div class="mi">03</div><div class="mt">Contraste</div><div class="md">Analyse WCAG des couleurs (thèmes clair &amp; sombre).</div></div>
+        <div class="mstep"><div class="mi">04</div><div class="mt">Analytics</div><div class="md">Données d'audience : pays, appareils, durée de visite.</div></div>
+        <div class="mstep"><div class="mi">05</div><div class="mt">Grille</div><div class="md">Grille d'analyse ergonomique &amp; éditoriale du contenu.</div></div>
+      </div>
+    </section>
+
+    <!-- 04 ERGONOMIE -->
+    <section class="sec reveal" id="ergonomie">
+      <div class="sec-label"><span class="no">04</span> — Ergonomie &amp; navigation</div>
+      <h2>Tester le parcours réel des utilisateurs</h2>
+      <p>Quatre scénarios représentatifs ont été chronométrés. Le constat est clair : <strong>plus la tâche concerne le service de base (transport, restauration), plus l'utilisateur peine</strong> — alors que les parcours de recrutement (alternance, aides) sont fluides.</p>
+
+      <div class="tbl-wrap">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Indicateur</th>
+            <th class="scen-head">Scénario 1<small>Trouver les transports vers l'IUT</small></th>
+            <th class="scen-head">Scénario 2<small>Infos restauration sur le campus</small></th>
+            <th class="scen-head">Scénario 3<small>Entreprise : recruter un alternant</small></th>
+            <th class="scen-head">Scénario 4<small>Étudiant : aides financières</small></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>Nombre de clics</th>
+            <td>5</td><td>4</td><td>2</td><td>1</td>
+          </tr>
+          <tr>
+            <th>Taux de succès</th>
+            <td><div class="bar-cell"><span class="score-bad">5/10</span><span class="bar-track"><span class="bar-fill" style="width:50%;background:var(--bad)"></span></span></div></td>
+            <td><div class="bar-cell"><span class="score-mid">6/10</span><span class="bar-track"><span class="bar-fill" style="width:60%;background:var(--warn)"></span></span></div></td>
+            <td><div class="bar-cell"><span class="score-good">9/10</span><span class="bar-track"><span class="bar-fill" style="width:90%;background:var(--ok)"></span></span></div></td>
+            <td><div class="bar-cell"><span class="score-good">10/10</span><span class="bar-track"><span class="bar-fill" style="width:100%;background:var(--ok)"></span></span></div></td>
+          </tr>
+          <tr>
+            <th>Temps moyen</th>
+            <td class="score-bad">1 min 30</td><td class="score-mid">1 min</td><td class="score-good">10 s</td><td class="score-good">6 s</td>
+          </tr>
+          <tr>
+            <th>Hésitations</th>
+            <td class="score-bad">3</td><td class="score-mid">1</td><td class="score-good">0</td><td class="score-good">0</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="finds">
+        <div class="find"><h4>Fil d'Ariane présent…</h4><p>Chaque page géolocalise l'utilisateur (Accueil &gt; Catégorie &gt; Sous-catégorie), sans limite de niveaux — mais il est placé trop bas et passe souvent inaperçu.</p></div>
+        <div class="find"><h4>…mais des intitulés ambigus</h4><p>Redondances (« Candidater », « Plaquettes ») et doublons (« Pédagogie » présent à deux endroits). Restauration et sport sont peu intuitifs à localiser.</p></div>
+        <div class="find"><h4>Règle des 7 clics respectée</h4><p>Sur les parcours candidature et stage international, l'accès aux ressources et aux contacts reste rapide et direct.</p></div>
+        <div class="find"><h4>Responsive efficace</h4><p>Le site s'adapte bien à mobile, tablette et PC. Léger bémol sur le header mobile : lisibilité réduite sur certains petits écrans.</p></div>
+      </div>
+    </section>
+
+    <!-- 05 PERFORMANCE -->
+    <section class="sec reveal" id="performance">
+      <div class="sec-label"><span class="no">05</span> — Performance technique</div>
+      <h2>Une vitesse à deux vitesses</h2>
+      <p>Les tests PageSpeed Insights révèlent une performance <strong>très inégale selon les pages</strong>. La page d'accueil, lourde en vidéos et images, décroche fortement sur mobile (43/100), tandis que des pages plus légères comme « Notre IUT » s'en sortent bien.</p>
+
+      <div class="gauges-block">
+        <div class="gauge-group">
+          <div class="gg-title">Page d'accueil <span class="tag">Mobile</span></div>
+          <div class="gauges">
+            <div class="gauge" data-score="43"><svg viewBox="0 0 100 100"><circle class="ring-bg" cx="50" cy="50" r="42"/><circle class="ring-fg" cx="50" cy="50" r="42"/><text class="gnum" x="50" y="50" text-anchor="middle" dominant-baseline="central">0</text></svg><div class="glab">Performance</div></div>
+            <div class="gauge" data-score="67"><svg viewBox="0 0 100 100"><circle class="ring-bg" cx="50" cy="50" r="42"/><circle class="ring-fg" cx="50" cy="50" r="42"/><text class="gnum" x="50" y="50" text-anchor="middle" dominant-baseline="central">0</text></svg><div class="glab">Accessibilité</div></div>
+            <div class="gauge" data-score="75"><svg viewBox="0 0 100 100"><circle class="ring-bg" cx="50" cy="50" r="42"/><circle class="ring-fg" cx="50" cy="50" r="42"/><text class="gnum" x="50" y="50" text-anchor="middle" dominant-baseline="central">0</text></svg><div class="glab">Bonnes pratiques</div></div>
+            <div class="gauge" data-score="85"><svg viewBox="0 0 100 100"><circle class="ring-bg" cx="50" cy="50" r="42"/><circle class="ring-fg" cx="50" cy="50" r="42"/><text class="gnum" x="50" y="50" text-anchor="middle" dominant-baseline="central">0</text></svg><div class="glab">SEO</div></div>
+          </div>
+        </div>
+        <div class="gauge-group">
+          <div class="gg-title">Page « Notre IUT » <span class="tag">Mobile</span></div>
+          <div class="gauges">
+            <div class="gauge" data-score="79"><svg viewBox="0 0 100 100"><circle class="ring-bg" cx="50" cy="50" r="42"/><circle class="ring-fg" cx="50" cy="50" r="42"/><text class="gnum" x="50" y="50" text-anchor="middle" dominant-baseline="central">0</text></svg><div class="glab">Performance</div></div>
+            <div class="gauge" data-score="88"><svg viewBox="0 0 100 100"><circle class="ring-bg" cx="50" cy="50" r="42"/><circle class="ring-fg" cx="50" cy="50" r="42"/><text class="gnum" x="50" y="50" text-anchor="middle" dominant-baseline="central">0</text></svg><div class="glab">Accessibilité</div></div>
+            <div class="gauge" data-score="76"><svg viewBox="0 0 100 100"><circle class="ring-bg" cx="50" cy="50" r="42"/><circle class="ring-fg" cx="50" cy="50" r="42"/><text class="gnum" x="50" y="50" text-anchor="middle" dominant-baseline="central">0</text></svg><div class="glab">Bonnes pratiques</div></div>
+            <div class="gauge" data-score="92"><svg viewBox="0 0 100 100"><circle class="ring-bg" cx="50" cy="50" r="42"/><circle class="ring-fg" cx="50" cy="50" r="42"/><text class="gnum" x="50" y="50" text-anchor="middle" dominant-baseline="central">0</text></svg><div class="glab">SEO</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <div class="ct">Principaux freins identifiés</div>
+        <ul>
+          <li>Temps d'exécution JavaScript trop élevé (≈ 2,6 s) et ressources bloquant le rendu (≈ 860 ms)</li>
+          <li>Images et vidéos non optimisées qui alourdissent fortement la page d'accueil</li>
+          <li>Code JavaScript inutilisé et ressources superflues à supprimer</li>
+          <li>Recommandation : différer le chargement des images hors écran, compresser les médias et nettoyer le JS</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 06 ACCESSIBILITE -->
+    <section class="sec reveal" id="accessibilite">
+      <div class="sec-label"><span class="no">06</span> — Accessibilité</div>
+      <h2>Un socle solide, des angles morts</h2>
+      <p>Le site couvre bien les fondamentaux de l'accessibilité, mais reste perfectible sur la navigation alternative et les troubles cognitifs.</p>
+      <div class="cols2">
+        <div class="colbox good">
+          <h4><span class="dot" style="background:var(--ok)"></span>Points forts</h4>
+          <ul>
+            <li>Bons contrastes globaux et mode sombre disponible</li>
+            <li>Descriptions textuelles (alt) sur les images et médias</li>
+            <li>Contenu structuré : titres, listes et liens clairs</li>
+            <li>Sous-titres présents sur les vidéos</li>
+            <li>Taille du texte ajustable sans casser la mise en page</li>
+          </ul>
+        </div>
+        <div class="colbox bad">
+          <h4><span class="dot" style="background:var(--bad)"></span>Points faibles</h4>
+          <ul>
+            <li>Toutes les fonctionnalités ne sont pas accessibles au clavier</li>
+            <li>Pas d'indications spécifiques pour les troubles cognitifs</li>
+            <li>Impossible de désactiver animations et effets visuels</li>
+            <li>Risque pour les personnes sensibles aux mouvements</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 GRAPHISME -->
+    <section class="sec reveal" id="graphisme">
+      <div class="sec-label"><span class="no">07</span> — Identité visuelle</div>
+      <h2>Couleurs &amp; contrastes au crible WCAG</h2>
+      <p>Chaque couple de couleurs du site a été testé selon le ratio de contraste WCAG. Le seuil <strong>AA</strong> exige un ratio ≥ 4,5:1 pour le texte courant. Verdict : le <strong>thème clair pèche par des couleurs trop vives</strong>, tandis que le thème sombre est globalement conforme.</p>
+
+      <div class="ctheme">
+        <div class="cth">Thème clair — 4 contrastes insuffisants sur 6</div>
+        <div class="tbl-wrap">
+        <table class="ctable">
+          <thead><tr><th>Texte</th><th>Fond</th><th>Aperçu</th><th>Ratio</th><th>WCAG AA</th></tr></thead>
+          <tbody>
+            <tr><td><span class="swatch"><span class="chip" style="background:#5A91FF"></span>#5A91FF</span></td><td><span class="swatch"><span class="chip" style="background:#EFEFEF"></span>#EFEFEF</span></td><td><span class="preview-cell" style="color:#5A91FF;background:#EFEFEF">Texte</span></td><td class="ratio">2.6</td><td><span class="badge fail">Échec</span></td></tr>
+            <tr><td><span class="swatch"><span class="chip" style="background:#FFFFFF"></span>#FFFFFF</span></td><td><span class="swatch"><span class="chip" style="background:#FF5C5A"></span>#FF5C5A</span></td><td><span class="preview-cell" style="color:#FFFFFF;background:#FF5C5A">Texte</span></td><td class="ratio">3.0</td><td><span class="badge mid">Grand texte</span></td></tr>
+            <tr><td><span class="swatch"><span class="chip" style="background:#FFFFFF"></span>#FFFFFF</span></td><td><span class="swatch"><span class="chip" style="background:#F1B04D"></span>#F1B04D</span></td><td><span class="preview-cell" style="color:#FFFFFF;background:#F1B04D">Texte</span></td><td class="ratio">1.8</td><td><span class="badge fail">Échec</span></td></tr>
+            <tr><td><span class="swatch"><span class="chip" style="background:#8B8B8B"></span>#8B8B8B</span></td><td><span class="swatch"><span class="chip" style="background:#EFEFEF"></span>#EFEFEF</span></td><td><span class="preview-cell" style="color:#8B8B8B;background:#EFEFEF">Texte</span></td><td class="ratio">2.9</td><td><span class="badge fail">Échec</span></td></tr>
+            <tr><td><span class="swatch"><span class="chip" style="background:#272727"></span>#272727</span></td><td><span class="swatch"><span class="chip" style="background:#FEFEFE"></span>#FEFEFE</span></td><td><span class="preview-cell" style="color:#272727;background:#FEFEFE">Texte</span></td><td class="ratio">14.8</td><td><span class="badge pass">Conforme</span></td></tr>
+            <tr><td><span class="swatch"><span class="chip" style="background:#FCFDFE"></span>#FCFDFE</span></td><td><span class="swatch"><span class="chip" style="background:#5A91FF"></span>#5A91FF</span></td><td><span class="preview-cell" style="color:#FCFDFE;background:#5A91FF">Texte</span></td><td class="ratio">2.9</td><td><span class="badge fail">Échec</span></td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+
+      <div class="ctheme">
+        <div class="cth">Thème sombre — majorité conforme</div>
+        <div class="tbl-wrap">
+        <table class="ctable">
+          <thead><tr><th>Texte</th><th>Fond</th><th>Aperçu</th><th>Ratio</th><th>WCAG AA</th></tr></thead>
+          <tbody>
+            <tr><td><span class="swatch"><span class="chip" style="background:#5A91FF"></span>#5A91FF</span></td><td><span class="swatch"><span class="chip" style="background:#1E1E1E"></span>#1E1E1E</span></td><td><span class="preview-cell" style="color:#5A91FF;background:#1E1E1E">Texte</span></td><td class="ratio">5.5</td><td><span class="badge pass">Conforme</span></td></tr>
+            <tr><td><span class="swatch"><span class="chip" style="background:#8F8F8F"></span>#8F8F8F</span></td><td><span class="swatch"><span class="chip" style="background:#272727"></span>#272727</span></td><td><span class="preview-cell" style="color:#8F8F8F;background:#272727">Texte</span></td><td class="ratio">4.6</td><td><span class="badge pass">Conforme</span></td></tr>
+            <tr><td><span class="swatch"><span class="chip" style="background:#FFFFFF"></span>#FFFFFF</span></td><td><span class="swatch"><span class="chip" style="background:#1E1E1E"></span>#1E1E1E</span></td><td><span class="preview-cell" style="color:#FFFFFF;background:#1E1E1E">Texte</span></td><td class="ratio">16.6</td><td><span class="badge pass">Conforme</span></td></tr>
+            <tr><td><span class="swatch"><span class="chip" style="background:#FFFFFF"></span>#FFFFFF</span></td><td><span class="swatch"><span class="chip" style="background:#FF5C5A"></span>#FF5C5A</span></td><td><span class="preview-cell" style="color:#FFFFFF;background:#FF5C5A">Texte</span></td><td class="ratio">3.0</td><td><span class="badge mid">Grand texte</span></td></tr>
+            <tr><td><span class="swatch"><span class="chip" style="background:#FFFFFF"></span>#FFFFFF</span></td><td><span class="swatch"><span class="chip" style="background:#F1B04D"></span>#F1B04D</span></td><td><span class="preview-cell" style="color:#FFFFFF;background:#F1B04D">Texte</span></td><td class="ratio">1.8</td><td><span class="badge fail">Échec</span></td></tr>
+            <tr><td><span class="swatch"><span class="chip" style="background:#FCFDFE"></span>#FCFDFE</span></td><td><span class="swatch"><span class="chip" style="background:#5A91FF"></span>#5A91FF</span></td><td><span class="preview-cell" style="color:#FCFDFE;background:#5A91FF">Texte</span></td><td class="ratio">2.9</td><td><span class="badge fail">Échec</span></td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+
+      <div class="finds" style="margin-top:24px;">
+        <div class="find"><h4>Typographies</h4><p>Deux polices cohérentes (Heebo &amp; Open Sans, sans-serif), usage logique des majuscules et de l'italique. Bémol : polices non-système, qui ralentissent légèrement le chargement.</p></div>
+        <div class="find"><h4>Recommandation couleurs</h4><p>Assombrir les couleurs vives (bleu, orange, rouge) pour passer les seuils de contraste, surtout en thème clair où la lisibilité est la plus fragile.</p></div>
+      </div>
+    </section>
+
+    <!-- 08 DONNEES -->
+    <section class="sec reveal" id="donnees">
+      <div class="sec-label"><span class="no">08</span> — Données d'audience</div>
+      <h2>Ce que disent les statistiques</h2>
+      <p>L'analyse du trafic réel oriente les priorités : un public quasi exclusivement français, une part mobile importante, et surtout un temps de visite anormalement court.</p>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h4>Répartition par pays</h4>
+          <div class="sub">Une audience très majoritairement nationale</div>
+          <div class="donut-row">
+            <div class="donut">
+              <svg viewBox="0 0 36 36">
+                <circle cx="18" cy="18" r="15.915" fill="none" stroke="#EEEAE2" stroke-width="5"/>
+                <circle class="dseg" cx="18" cy="18" r="15.915" fill="none" stroke="#2F55E6" stroke-width="5" stroke-dasharray="94 6" stroke-dashoffset="25" data-final="94 6"/>
+              </svg>
+            </div>
+            <div class="legend">
+              <div class="li"><span class="sw" style="background:#2F55E6"></span><span><b>94 %</b> France</span></div>
+              <div class="li"><span class="sw" style="background:#EEEAE2"></span><span><b>6 %</b> International</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <h4>Type d'appareil</h4>
+          <div class="sub">Le mobile pèse près d'un tiers du trafic</div>
+          <div class="donut-row">
+            <div class="donut">
+              <svg viewBox="0 0 36 36">
+                <circle cx="18" cy="18" r="15.915" fill="none" stroke="#9DB7FF" stroke-width="5"/>
+                <circle class="dseg" cx="18" cy="18" r="15.915" fill="none" stroke="#2F55E6" stroke-width="5" stroke-dasharray="70.6 29.4" stroke-dashoffset="25" data-final="70.6 29.4"/>
+              </svg>
+            </div>
+            <div class="legend">
+              <div class="li"><span class="sw" style="background:#2F55E6"></span><span><b>70,6 %</b> Bureau</span></div>
+              <div class="li"><span class="sw" style="background:#9DB7FF"></span><span><b>29,4 %</b> Mobile</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-card" style="margin-top:16px;">
+        <h4>Durée de visite</h4>
+        <div class="sub">Comparé à la référence de ~3 min pour un site institutionnel</div>
+        <div class="dur-bars">
+          <div class="durrow"><div class="dl"><span>Médiane observée</span><b>40 s</b></div><div class="dtrack"><div class="dfill" style="width:22%;background:var(--bad)"></div></div></div>
+          <div class="durrow"><div class="dl"><span>Moyenne observée</span><b>50 s</b></div><div class="dtrack"><div class="dfill" style="width:28%;background:var(--warn)"></div></div></div>
+          <div class="durrow"><div class="dl"><span>Référence sites institutionnels</span><b>~3 min</b></div><div class="dtrack"><div class="dfill" style="width:100%;background:var(--ok)"></div></div></div>
+        </div>
+        <p style="margin-top:18px;font-size:.9rem;">Les quartiles montrent que l'engagement décolle <strong>après les 40 premières secondes</strong> : le problème relève davantage d'un <strong>frein d'accès à l'information</strong> que d'un manque de contenu. Côté international, la part de 6 % ne justifie pas une version anglaise complète — une page d'accueil multilingue ciblée (admissions, logement, contacts) suffirait.</p>
+      </div>
+    </section>
+
+    <!-- 09 CAPTURES -->
+    <section class="sec reveal" id="captures">
+      <div class="sec-label"><span class="no">09</span> — Captures d'audit</div>
+      <h2>Le site analysé, en images</h2>
+      <p>Quelques captures réelles issues de l'audit — preuves à l'appui des constats.</p>
+      <div class="gal">
+        <figure class="gitem" data-cap="Page d'accueil du site — vidéo de fond et messages clés">
+          <div class="gimg"><img src="../assets/Audit IUT/01-accueil-iut.png" alt="Page d'accueil du site de l'IUT de Chambéry" loading="lazy"></div>
+          <figcaption><b>Accueil</b> · page d'entrée auditée (lourde en médias)</figcaption>
+        </figure>
+        <figure class="gitem" data-cap="Page 404 personnalisée — un point fort UX du site">
+          <div class="gimg"><img src="../assets/Audit IUT/02-page-404.png" alt="Page 404 personnalisée du site IUT" loading="lazy"></div>
+          <figcaption><b>Erreur 404</b> · bien personnalisée</figcaption>
+        </figure>
+        <figure class="gitem" data-cap="Section éditoriale : appel à la taxe d'apprentissage">
+          <div class="gimg"><img src="../assets/Audit IUT/03-section-site.png" alt="Section taxe d'apprentissage du site" loading="lazy"></div>
+          <figcaption><b>Contenu</b> · hiérarchie &amp; appels à l'action</figcaption>
+        </figure>
+        <figure class="gitem" data-cap="Rapport Lighthouse mobile — diagnostic de performance détaillé">
+          <div class="gimg"><img src="../assets/Audit IUT/04-lighthouse-mobile.png" alt="Rapport Lighthouse mobile du site" loading="lazy"></div>
+          <figcaption><b>Lighthouse</b> · diagnostic performance mobile</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- 10 CONCLUSION -->
+    <section class="sec reveal" id="conclusion">
+      <div class="sec-label"><span class="no">10</span> — Conclusion &amp; préconisations</div>
+      <h2>Un site qui remplit son rôle, à fluidifier</h2>
+      <p class="lead">Le site de l'IUT de Chambéry propose une interface attrayante, bien structurée et adaptée à ses publics. Il est efficace pour présenter l'essentiel — mais gagnerait en accessibilité, en performance et en clarté de navigation pour réellement retenir ses visiteurs.</p>
+
+      <div class="cols2">
+        <div class="colbox good">
+          <h4><span class="dot" style="background:var(--ok)"></span>Points forts</h4>
+          <ul>
+            <li>Design responsive soigné sur tous les supports</li>
+            <li>Informations riches et bien hiérarchisées par les titres</li>
+            <li>Navigation principale intuitive, menu clair (5 entrées)</li>
+            <li>Page 404 personnalisée</li>
+          </ul>
+        </div>
+        <div class="colbox bad">
+          <h4><span class="dot" style="background:var(--bad)"></span>Points faibles</h4>
+          <ul>
+            <li>Pages d'accueil lourdes : performance mobile faible</li>
+            <li>Header peu lisible sur certains mobiles</li>
+            <li>Contenus redondants générant des hésitations</li>
+            <li>Services de base (transport, resto) difficiles à trouver</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="reco">
+        <div class="rl">Recommandations prioritaires</div>
+        <div class="reco-list">
+          <div class="reco-item"><span class="ri-n">01</span><span class="ri-t">Optimiser images &amp; vidéos et nettoyer le JavaScript pour accélérer le chargement.</span></div>
+          <div class="reco-item"><span class="ri-n">02</span><span class="ri-t">Intégrer une barre de recherche tolérante aux fautes de frappe.</span></div>
+          <div class="reco-item"><span class="ri-n">03</span><span class="ri-t">Simplifier la hiérarchie et réduire le nombre de clics vers l'info clé.</span></div>
+          <div class="reco-item"><span class="ri-n">04</span><span class="ri-t">Agrandir &amp; clarifier le header sur mobile.</span></div>
+          <div class="reco-item"><span class="ri-n">05</span><span class="ri-t">Assombrir les couleurs vives pour passer les contrastes WCAG.</span></div>
+          <div class="reco-item"><span class="ri-n">06</span><span class="ri-t">Ajouter une page d'accueil multilingue ciblée plutôt qu'une version EN complète.</span></div>
+        </div>
+      </div>
+
+      <h3 style="font-family:var(--ff-display);font-weight:600;font-size:1.2rem;margin:40px 0 6px;">Répartition du travail</h3>
+      <p style="font-size:.92rem;">Projet réalisé en binôme. Voici qui a fait quoi.</p>
+      <div class="contrib">
+        <div class="cbox mine">
+          <div class="cname">Medelys Seux</div>
+          <div class="crole">Ma contribution</div>
+          <ul>
+            <li>Contexte &amp; schéma de communication (questions 1 à 3)</li>
+            <li>Analyse de l'ergonomie &amp; de la navigation (menu, parcours)</li>
+            <li>Analyse statistique des données</li>
+          </ul>
+        </div>
+        <div class="cbox">
+          <div class="cname">Léo Joly</div>
+          <div class="crole">Binôme</div>
+          <ul>
+            <li>Contexte (questions 3 à 6)</li>
+            <li>Analyse statistique des données</li>
+            <li>Analyse graphique</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- DOCUMENT COMPLET -->
+    <section class="sec reveal" id="document">
+      <div class="sec-label">Annexe — Livrable</div>
+      <h2>Le rapport d'audit complet</h2>
+      <p>L'intégralité de l'étude — méthodologie détaillée, grilles d'analyse, statistiques et annexes — est consultable ci-dessous.</p>
+      <div class="deliver">
+        <div class="deliver-top">
+          <div>
+            <h3>Audit du site de l'IUT de Chambéry</h3>
+            <div class="meta">PDF · 28 pages · SAE 101 · 2024</div>
+          </div>
+          <a href="../assets/Audit IUT/Audit-Site-IUT-Chambery-SAE101.pdf" download class="dl-btn">↓ Télécharger le PDF</a>
+        </div>
+        <embed class="pdf-frame" src="../assets/Audit IUT/Audit-Site-IUT-Chambery-SAE101.pdf#view=FitH" type="application/pdf">
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-inner">
+    <div class="fbig">Auditer, mesurer, recommander — pour une communication qui atteint sa cible.</div>
+    <div class="foot-meta">
+      Medelys Seux &amp; Léo Joly<br>
+      SAE 101 · BUT MMI · IUT de Chambéry · 2024<br>
+      <a href="communication.html">← Retour au portfolio</a>
+    </div>
+  </div>
+</footer>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <div class="lb-close">Fermer ✕</div>
+  <img src="" alt="" id="lb-img">
+  <div class="lb-cap" id="lb-cap"></div>
+</div>
+
+<script>
+/* reading progress */
+const prog=document.getElementById('progress');
+function onScroll(){
+  const h=document.documentElement;
+  const sc=h.scrollTop, max=h.scrollHeight-h.clientHeight;
+  prog.style.width=(max>0?(sc/max*100):0)+'%';
+}
+window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+/* reveal on scroll */
+const io=new IntersectionObserver((es)=>{
+  es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+/* gauges animate */
+function gaugeColor(v){ return v>=90?'var(--ok)':(v>=50?'var(--warn)':'var(--bad)'); }
+const gio=new IntersectionObserver((es)=>{
+  es.forEach(e=>{
+    if(!e.isIntersecting) return;
+    const g=e.target, v=+g.dataset.score;
+    const ring=g.querySelector('.ring-fg'), num=g.querySelector('.gnum');
+    const C=2*Math.PI*42;
+    ring.style.stroke=gaugeColor(v);
+    ring.style.strokeDasharray=C;
+    ring.style.strokeDashoffset=C;
+    requestAnimationFrame(()=>{ ring.style.strokeDashoffset=C*(1-v/100); });
+    let cur=0; const step=Math.max(1,Math.round(v/40));
+    const t=setInterval(()=>{ cur=Math.min(v,cur+step); num.textContent=cur; if(cur>=v)clearInterval(t); },22);
+    gio.unobserve(g);
+  });
+},{threshold:.5});
+document.querySelectorAll('.gauge').forEach(g=>gio.observe(g));
+
+/* TOC active state */
+const links=[...document.querySelectorAll('.toc a')];
+const map=links.map(a=>({a,sec:document.querySelector(a.getAttribute('href'))})).filter(o=>o.sec);
+const tio=new IntersectionObserver((es)=>{
+  es.forEach(e=>{
+    if(e.isIntersecting){
+      links.forEach(l=>l.classList.remove('active'));
+      const m=map.find(o=>o.sec===e.target); if(m)m.a.classList.add('active');
+    }
+  });
+},{rootMargin:'-45% 0px -50% 0px'});
+map.forEach(o=>tio.observe(o.sec));
+
+/* lightbox */
+const lb=document.getElementById('lightbox'),lbImg=document.getElementById('lb-img'),lbCap=document.getElementById('lb-cap');
+document.querySelectorAll('.gitem').forEach(fig=>{
+  fig.addEventListener('click',()=>{
+    const img=fig.querySelector('img');
+    lbImg.src=img.src; lbImg.alt=img.alt; lbCap.textContent=fig.dataset.cap||'';
+    lb.classList.add('open');
+  });
+});
+lb.addEventListener('click',(e)=>{ if(e.target!==lbImg) lb.classList.remove('open'); });
+document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') lb.classList.remove('open'); });
+</script>
+</body>
+</html>

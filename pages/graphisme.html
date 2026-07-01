@@ -169,6 +169,48 @@
             .modal-media { height: 400px; flex: none; }
             .modal-text { padding: 30px; }
         }
+
+        /* ============================================================
+           VERSION MOBILE : spotlight fixé au centre, scroll pour révéler
+           ============================================================ */
+        @media (max-width: 768px) {
+            body { cursor: auto; }
+            .custom-cursor { display: none; }
+
+            /* Spotlight figé au centre du viewport, plus grand */
+            :root { --spotlight-size: 340px; }
+            .darkness-overlay {
+                /* on ignore les variables --cursor-x/y et on centre dur */
+                background: radial-gradient(circle var(--spotlight-size) at 50% 50%, transparent 0%, rgba(0, 0, 0, 0.98) 100%);
+                transition: none;
+            }
+
+            /* Galerie en colonne, chaque œuvre dans son propre écran */
+            .gallery-container {
+                flex-direction: column;
+                flex-wrap: nowrap;
+                gap: 35vh;
+                padding: 40vh 20px 50vh;
+                align-items: center;
+            }
+
+            .project-card {
+                width: 88vw;
+                max-width: 360px;
+                height: auto;
+                aspect-ratio: 3 / 4;
+                transform: none;
+            }
+            /* Désactive le hover/cursor:none sur tactile */
+            .project-card:hover { transform: none; cursor: pointer; }
+            .project-card .project-info { transform: translateY(0); }
+
+            /* UI flottante un peu plus compacte */
+            .floating-ui { top: 18px; left: 18px; }
+            .back-btn { padding: 8px 16px; font-size: 0.8rem; margin-bottom: 1rem; }
+            h1 { font-size: 1.1rem; }
+            p.instruction { font-size: 0.75rem; }
+        }
     </style>
 </head>
 <body>
@@ -201,10 +243,18 @@
         </div>
         
         <div class="project-card" onclick="openModal('videolan')">
-            <img src="../assets/charte_vlc_miniature.png" alt="Charte Graphique VLC"> 
+            <img src="../assets/charte_vlc_miniature.png" alt="Charte Graphique VLC">
             <div class="project-info">
                 <h3>VIDEOLAN (VLC)</h3>
                 <p>Design System & Identité</p>
+            </div>
+        </div>
+
+        <div class="project-card" onclick="openModal('kapich')">
+            <img src="../assets/Projet Graphisme Kapich/V21 AFFICHE -50%.png" alt="Affiche Kapich -50%">
+            <div class="project-info">
+                <h3>KAPICH?</h3>
+                <p>Affiche "Prank" — Réalisée en 1h</p>
             </div>
         </div>
     </div>
@@ -310,8 +360,44 @@
                 <p>
                     Utilisation de la police <strong>Cascadia Code</strong> pour évoquer l'aspect open-source et développement, couplée à <strong>Raleway</strong> pour la modernité des titres.
                 </p>
-                
+
                 </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-kapich">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('modal-kapich')">×</button>
+            <div class="modal-media">
+                <img src="../assets/Projet Graphisme Kapich/V21 AFFICHE -50%.png" alt="Affiche Kapich -50% Full">
+            </div>
+            <div class="modal-text">
+                <h2>Kapich?</h2>
+                <p style="color: var(--accent-print); margin-bottom: 30px;"><em>Affiche "Prank" - SAE Stratégie de Communication — <strong>Réalisée en 1h</strong></em></p>
+
+                <h3>Le Brief : un média à inventer</h3>
+                <p>
+                    Dans le cadre d'une SAE de groupe (11 étudiant·es en BUT MMI), nous devions concevoir <strong>Kapich?</strong>, un média social-first qui décrypte l'actualité de l'intelligence artificielle pour les 16-25 ans — sans filtre, de façon ludique, en piégeant gentiment sa cible pour mieux l'embarquer dans le jeu. Au sein du groupe, j'ai pris en charge une partie de la <strong>communication</strong> (dont un volet audiovisuel, à compléter prochainement ici), et notamment la conception de cette affiche imprimée.
+                </p>
+
+                <h3>Le Concept : une affiche-appât</h3>
+                <p>
+                    L'identité de Kapich? repose sur un axe assumé : <strong>le prank</strong> — surprendre la cible pour l'amener à s'interroger, puis à nous suivre. Cette affiche en est la traduction print : pensée pour être placardée à la cafétéria de l'IUT, elle annonce une fausse promotion <strong>« -50% sur tous les sandwiches »</strong>, à débloquer en scannant le QR code. Une fois scanné, le code redirige vers une page qui dévoile des conditions volontairement impossibles à remplir... avant de renvoyer, avec humour, vers les réseaux de Kapich?. L'idée n'est pas de tromper méchamment, mais de créer un instant de surprise assez fort pour donner envie de comprendre la suite — et donc de nous suivre.
+                </p>
+
+                <h3>Direction Artistique : crédible avant d'être drôle</h3>
+                <p>
+                    Pour qu'un piège fonctionne, il doit d'abord être crédible. J'ai donc construit cette affiche dans les codes visuels d'une vraie promotion de restauration rapide : palette saturée jaune / rose / violet, immense « -50% » en typographie épaisse et arrondie, packshot de sandwich généreux et appétissant, flèches et accroche « Scanne pour tenter ta chance » qui guident l'œil droit vers le QR code. Rien ne doit trahir le prank au premier regard : c'est justement le contraste entre l'apparence ultra-classique de l'affiche et la révélation absurde cachée derrière le QR code qui crée l'effet de surprise recherché — en plein dans l'esprit fun, décalé et volontairement surprenant qui définit l'identité de Kapich?.
+                </p>
+
+                <img src="../assets/Projet Graphisme Kapich/Screenshot dans photoshop.png" class="process-img" alt="Interface Photoshop - Affiche Kapich">
+                <span style="font-size: 0.8rem; color: #666;">Composition et gestion des calques sur Adobe Photoshop.</span>
+
+                <h3>Visuel & Stratégie</h3>
+                <p>
+                    Cette affiche m'a appris à penser un visuel comme un <strong>maillon d'un dispositif</strong> : chaque choix (couleurs, accroche, emplacement du QR code) sert un objectif précis — capter l'attention dans un lieu de passage, déclencher une action, puis transformer la curiosité en abonné·e. Une façon concrète de relier graphisme et réflexion stratégique.
+                </p>
+            </div>
         </div>
     </div>
 
@@ -319,29 +405,37 @@
         const root = document.documentElement;
         const cursor = document.getElementById('cursor');
         const cards = document.querySelectorAll('.project-card');
-        
-        // --- GESTION LUMIÈRE ---
-        document.addEventListener('mousemove', (e) => {
-            if(document.querySelector('.modal-overlay.active')) return;
+        const isMobile = window.matchMedia('(max-width: 768px)').matches;
 
-            const x = e.clientX;
-            const y = e.clientY;
-            root.style.setProperty('--cursor-x', x + 'px');
-            root.style.setProperty('--cursor-y', y + 'px');
-            cursor.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
-        });
-
-        cards.forEach(card => {
-            card.addEventListener('mouseenter', () => {
+        if (isMobile) {
+            // Mobile : on remplace le mode "lampe torche à la souris" par un spotlight figé
+            // au centre que l'on traverse en scrollant. Pas de cursor custom, pas de mousemove.
+            const instr = document.querySelector('.instruction');
+            if (instr) instr.textContent = 'Utilisez votre lumière en faisant défiler pour révéler les œuvres.';
+        } else {
+            // --- GESTION LUMIÈRE (desktop) ---
+            document.addEventListener('mousemove', (e) => {
                 if(document.querySelector('.modal-overlay.active')) return;
-                root.style.setProperty('--spotlight-size', '400px');
-                cursor.style.width = '60px'; cursor.style.height = '60px'; cursor.style.borderColor = '#fff';
+
+                const x = e.clientX;
+                const y = e.clientY;
+                root.style.setProperty('--cursor-x', x + 'px');
+                root.style.setProperty('--cursor-y', y + 'px');
+                cursor.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
             });
-            card.addEventListener('mouseleave', () => {
-                root.style.setProperty('--spotlight-size', '250px');
-                cursor.style.width = '40px'; cursor.style.height = '40px'; cursor.style.borderColor = 'rgba(255, 255, 255, 0.5)';
+
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    if(document.querySelector('.modal-overlay.active')) return;
+                    root.style.setProperty('--spotlight-size', '400px');
+                    cursor.style.width = '60px'; cursor.style.height = '60px'; cursor.style.borderColor = '#fff';
+                });
+                card.addEventListener('mouseleave', () => {
+                    root.style.setProperty('--spotlight-size', '250px');
+                    cursor.style.width = '40px'; cursor.style.height = '40px'; cursor.style.borderColor = 'rgba(255, 255, 255, 0.5)';
+                });
             });
-        });
+        }
 
         // --- GESTION MODALES ---
         function openModal(modalId) {

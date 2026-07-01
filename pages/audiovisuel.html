@@ -48,6 +48,13 @@
         .cursor-outline { width: 40px; height: 40px; border: 1px solid var(--accent); }
         .cursor-hidden { opacity: 0 !important; }
 
+        /* Désactivation du curseur custom sur écrans tactiles ou petits écrans */
+        @media (hover: none) and (pointer: coarse), (max-width: 768px) {
+            .cursor-dot, .cursor-outline { display: none !important; }
+            * { cursor: auto !important; }
+            a, button, [onclick], [role="button"] { cursor: pointer !important; }
+        }
+
         /* LAYERS */
         .vignette-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2;
@@ -155,6 +162,80 @@
 
         .motion-section { width: 100%; max-width: 1000px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 4rem; margin-top: 2rem; }
 
+        /* --- PLACEHOLDERS & GALERIES (projet Aftermovie) --- */
+        .ph-box {
+            border-radius: 15px;
+            border: 1px dashed rgba(0, 255, 136, 0.35);
+            background:
+                repeating-linear-gradient(45deg, #0a0a0a, #0a0a0a 12px, #0d0d0d 12px, #0d0d0d 24px);
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+        .ph-16-9 { width: 100%; aspect-ratio: 16 / 9; margin-bottom: 2rem; }
+        .ph-content {
+            display: flex; flex-direction: column; align-items: center; gap: 0.7rem;
+            text-align: center; padding: 1.5rem;
+        }
+        .ph-icon {
+            width: 64px; height: 64px; border-radius: 50%;
+            border: 2px solid var(--accent); color: var(--accent);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; padding-left: 5px;
+            box-shadow: 0 0 25px rgba(0, 255, 136, 0.22);
+        }
+        .ph-title { color: #fff; font-size: 1rem; letter-spacing: 1px; }
+        .ph-sub {
+            color: var(--accent); font-size: 0.72rem; letter-spacing: 2px;
+            text-transform: uppercase; opacity: 0.85;
+        }
+
+        /* Vidéo verticale (format Mairie / réseaux sociaux) */
+        .vertical-row { display: flex; gap: 2.5rem; align-items: center; flex-wrap: wrap; margin-top: 2rem; }
+        .vertical-wrapper {
+            position: relative; width: 270px; max-width: 100%; aspect-ratio: 9 / 16;
+            flex-shrink: 0; box-shadow: 0 0 50px rgba(0, 255, 136, 0.1);
+            border-radius: 15px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .vertical-wrapper iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+        .vertical-text { flex: 1; min-width: 280px; }
+
+        /* Galeries de placeholders (déclinaisons logo / photos) */
+        .ph-gallery {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 1rem; margin-top: 1.8rem;
+        }
+        .ph-gallery.photos { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+        .ph-item {
+            aspect-ratio: 1 / 1; padding: 1rem; gap: 0.45rem;
+            flex-direction: column; color: #888; text-align: center; font-size: 0.78rem;
+        }
+        .ph-gallery.photos .ph-item { aspect-ratio: 4 / 3; }
+        .ph-gallery.photos img {
+            width: 100%; height: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block;
+            border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        .ph-gallery.photos img:hover { transform: scale(1.02); border-color: var(--accent); }
+        .ph-item .ph-chip {
+            color: var(--accent); font-size: 0.65rem; letter-spacing: 1.5px; text-transform: uppercase;
+        }
+
+        /* Grille de vidéos verticales (déclinaisons du logo animé) */
+        .logo-video-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1.3rem; margin-top: 1.8rem;
+        }
+        .logo-video-item { display: flex; flex-direction: column; gap: 0.7rem; }
+        .lv-frame {
+            position: relative; width: 100%; aspect-ratio: 9 / 16;
+            border-radius: 12px; overflow: hidden; background: #000;
+            border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 0 30px rgba(0,255,136,0.08);
+        }
+        .lv-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+        .lv-label {
+            font-size: 0.72rem; color: var(--accent); letter-spacing: 1px;
+            text-align: center; text-transform: uppercase;
+        }
+
         /* GRILLE POUR LES SHORTS YOUTUBE */
         .shorts-grid {
             display: grid;
@@ -242,6 +323,57 @@
                 </div>
             </div>
 
+            <div class="project-card" id="card-mapping">
+                <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=2670&auto=format&fit=crop" class="card-bg" alt="Cover Mapping Vidéo">
+                <div class="card-content">
+                    <span class="card-meta">Mapping Vidéo // Resolume Arena</span>
+                    <h2 class="card-title">JPO IUT</h2>
+                    <span class="btn-open">Voir le dossier complet →</span>
+                </div>
+            </div>
+
+            <div class="project-card" id="card-aftermovie">
+                <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=2670&auto=format&fit=crop" class="card-bg" alt="Cover Aftermovie Le Tour du Monde">
+                <div class="card-content">
+                    <span class="card-meta">Aftermovie Événementiel // Clients Réels</span>
+                    <h2 class="card-title">Le Tour du Monde</h2>
+                    <span class="btn-open">Voir le dossier complet →</span>
+                </div>
+            </div>
+
+            <div class="project-card" id="card-kapich">
+                <img src="https://placehold.co/800x600/0a0a0a/00ff88?text=KAPICH%3F" class="card-bg" alt="Cover Kapich">
+                <div class="card-content">
+                    <span class="card-meta">Stratégie & Prod Vidéo // Média Fictif IA</span>
+                    <h2 class="card-title">Kapich?</h2>
+                    <span class="btn-open">Voir le dossier complet →</span>
+                </div>
+            </div>
+
+            <div class="category-divider" style="padding: 3rem; border-radius: 20px; border: 1px solid rgba(0,255,136,0.25); border-left: 4px solid var(--accent); background: linear-gradient(135deg, rgba(0,255,136,0.06), rgba(255,255,255,0.02)); margin: 1rem 0;">
+                <span style="display:block; color:var(--accent); font-family:'Syncopate'; font-size:0.8rem; letter-spacing:3px; text-transform:uppercase; margin-bottom: 1rem;">— Catégorie —</span>
+                <h2 style="font-family:'Syncopate'; font-size:clamp(1.8rem, 4vw, 2.5rem); margin:0 0 1.2rem; line-height:1.15; text-transform:uppercase; color:white;">Maîtrise de l'Intelligence Artificielle</h2>
+                <p style="font-size:1.05rem; color:#aaa; line-height:1.7; max-width:750px; margin:0;">Ici, l'IA n'est pas qu'un sujet à vulgariser : c'est un véritable outil de création que je dirige de bout en bout, du prompt à la post-production. Direction artistique, prompt engineering, sélection, montage — les projets de cette catégorie montrent comment je mets ces outils au service d'une vision plutôt que l'inverse.</p>
+            </div>
+
+            <div class="project-card" id="card-hijack">
+                <img src="https://images.unsplash.com/photo-1765445773906-64a36ecfd20e?q=80&w=2670&auto=format&fit=crop" class="card-bg" alt="Cover HijackMyDream">
+                <div class="card-content">
+                    <span class="card-meta">Démarche Artistique // Œuvre Exposée</span>
+                    <h2 class="card-title">#HijackMyDream</h2>
+                    <span class="btn-open">Voir le dossier complet →</span>
+                </div>
+            </div>
+
+            <div class="project-card" id="card-statuquo">
+                <img src="https://images.unsplash.com/photo-1711409645921-ef3db0501f96?q=80&w=2670&auto=format&fit=crop" class="card-bg" alt="Cover Le Biais de Statu Quo">
+                <div class="card-content">
+                    <span class="card-meta">Vulgarisation Scientifique // Vidéo Générée par IA</span>
+                    <h2 class="card-title">Le Biais de Statu Quo</h2>
+                    <span class="btn-open">Voir le dossier complet →</span>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -308,6 +440,21 @@
                     <p>Explication du fonctionnement de l'IA générative. Assets Illustrator et animation After Effects.</p>
                 </div>
             </div>
+
+            <div class="motion-section">
+                <div class="video-info" style="margin-bottom: 3.5rem;">
+                    <h3 style="font-size: 1.6rem;">UN FORMAT COURT, UN CAHIER DES CHARGES SERRÉ</h3>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7; margin-bottom: 1.2rem;">Le brief imposait un cahier des charges technique strict : une vidéo d'<strong>exactement 1 minute</strong> (générique de fin compris), livrée en <strong>Full HD 1920×1080 à 25 images/seconde</strong>, et déclinée en format carré 1080×1080 — ce qui oblige à recomposer chaque plan pour que l'essentiel reste lisible quel que soit le support de diffusion. À cela s'ajoutaient une version sous-titrée en français, une déclinaison complète en anglais (textes, voix off et sous-titres .srt), et un générique de fin imposé à respecter au pixel près.</p>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7;">Le clin d'œil du brief : vulgariser le fonctionnement d'une IA générative... sans avoir le droit d'utiliser la moindre IA générative pour la création, ni pour les visuels ni pour la voix off. Tout — illustrations, animations, voix, montage — a été pensé, dessiné et produit à la main (<strong>Illustrator, After Effects</strong>), sur un planning en flux tendu : synthèse et script le premier jour, storyboard le lendemain, graphisme le surlendemain, voix et sound design ensuite, pour livrer la version finale FR/EN dès le vendredi.</p>
+                    <div style="display:flex; flex-wrap:wrap; gap:0.7rem; margin-top:1.8rem;">
+                        <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Full HD · 25 ips · H.264</span>
+                        <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Déclinaison carrée 1:1</span>
+                        <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Bilingue FR/EN + .srt</span>
+                        <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">1 minute pile, outro inclus</span>
+                        <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Zéro IA générative</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -354,11 +501,346 @@
         </div>
     </div>
 
+    <div class="project-overlay" id="overlay-mapping" data-lenis-prevent>
+        <div class="close-btn">FERMER ✕</div>
+        <div class="modal-container">
+            <div class="modal-header">
+                <span class="modal-meta">R403 Design d'expérience // JPO IUT</span>
+                <h2 class="modal-title">Mapping Vidéo</h2>
+            </div>
+
+            <div class="video-block">
+                <div class="video-wrapper">
+                    <iframe src="https://www.youtube.com/embed/Mcyc0NOxtWg" allowfullscreen></iframe>
+                </div>
+                <div class="video-info">
+                    <h3>Mapping Vidéo — JPO de l'IUT</h3>
+                    <p>Une boucle de <strong>10 secondes</strong> projetée en salle des conseils G114 pendant la Journée Portes Ouvertes du 31 janvier 2026. Projection sur l'architecture réelle de la salle, avec des zones communicantes entre elles.</p>
+                </div>
+            </div>
+
+            <div class="motion-section" style="width:100%; max-width:1000px; border-top:1px solid rgba(255,255,255,0.1); padding-top:4rem; margin-top:2rem;">
+
+                <div class="video-info" style="margin-bottom: 3.5rem;">
+                    <h3 style="font-size: 1.6rem; margin-bottom: 1.2rem; color: white; border-left: 4px solid var(--accent); padding-left: 15px;">UN EXERCICE TECHNIQUE À PART ENTIÈRE</h3>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7; margin-bottom: 1.2rem;">Contrairement à un montage diffusé sur un écran rectangulaire classique, le mapping vidéo consiste à projeter une animation sur une <strong>surface réelle et irrégulière</strong> — ici, l'architecture de la salle des conseils G114. Il faut analyser la zone en amont, proposer une modélisation de la surface projetée, puis calibrer chaque export pour qu'il épouse la géométrie de l'espace une fois diffusé en direct sur <strong>Resolume Arena</strong>, un logiciel de VJing utilisé pour le mixage vidéo et le mapping en temps réel.</p>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7;">Le vrai défi technique : <strong>5 groupes</strong> ont chacun produit leur propre séquence de 10 secondes, à synchroniser ensuite en une seule installation collective cohérente — calibrée et testée en conditions réelles avant le jour J, le tout en un peu plus d'une semaine de travail.</p>
+                    <div style="display:flex; flex-wrap:wrap; gap:0.7rem; margin-top:1.8rem;">
+                        <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Analyse de la zone</span>
+                        <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Modélisation de surface</span>
+                        <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Calibrage temps réel</span>
+                        <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Synchronisation collective</span>
+                        <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Test live</span>
+                    </div>
+                </div>
+
+                <div class="video-info" style="margin-bottom:3rem;">
+                    <h3 style="font-size:2rem; margin-bottom:1.5rem; color:var(--accent);">WORKFLOW TECHNIQUE</h3>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1.5rem; margin-top:2rem;">
+                        <div style="background:#0d0d0d; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.5rem;">
+                            <div style="color:var(--accent); font-size:0.75rem; letter-spacing:2px; text-transform:uppercase; margin-bottom:10px;">01 — ANALYSE</div>
+                            <p style="font-size:0.9rem; color:#aaa; line-height:1.5;">Analyse de la zone de projection · modélisation de la surface · storyboard de mouvement</p>
+                        </div>
+                        <div style="background:#0d0d0d; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.5rem;">
+                            <div style="color:var(--accent); font-size:0.75rem; letter-spacing:2px; text-transform:uppercase; margin-bottom:10px;">02 — CRÉATION</div>
+                            <p style="font-size:0.9rem; color:#aaa; line-height:1.5;">Assets visuels sur <strong>Illustrator</strong> · animation et effets sur <strong>After Effects</strong></p>
+                        </div>
+                        <div style="background:#0d0d0d; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.5rem;">
+                            <div style="color:var(--accent); font-size:0.75rem; letter-spacing:2px; text-transform:uppercase; margin-bottom:10px;">03 — MAPPING</div>
+                            <p style="font-size:0.9rem; color:#aaa; line-height:1.5;">Intégration sur <strong>Resolume Arena</strong> · calibrage sur la surface · boucle 10 sec · test live</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="project-overlay" id="overlay-hijack" data-lenis-prevent>
+        <div class="close-btn">FERMER ✕</div>
+        <div class="modal-container">
+            <div class="modal-header">
+                <span class="modal-meta">R310 Réfigurations // Démarche Artistique</span>
+                <h2 class="modal-title">#HijackMyDream</h2>
+            </div>
+
+            <div class="video-block">
+                <div class="video-wrapper">
+                    <iframe src="https://www.youtube.com/embed/KQ2og4FDao4" allowfullscreen></iframe>
+                </div>
+                <div class="video-info">
+                    <h3>Like, Share, Forget.</h3>
+                    <p>Une œuvre vidéo personnelle réalisée dans le cadre du module R310 (Réfigurations) et présentée lors d'une <strong>exposition étudiante — projetée à l'intérieur d'un bus aménagé en espace d'exposition</strong>. #HijackMyDream explore la façon dont le numérique et les réseaux sociaux s'infiltrent jusque dans nos rêves, et détournent peu à peu notre rapport au réel.</p>
+                </div>
+            </div>
+
+            <div class="motion-section">
+                <div class="video-info" style="margin-bottom: 3.5rem;">
+                    <h3 style="font-size: 1.6rem; margin-bottom: 1.2rem; color: white; border-left: 4px solid var(--accent); padding-left: 15px;">LE CONCEPT : UN RÊVE PIRATÉ PAR LE NUMÉRIQUE</h3>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7; margin-bottom: 1.2rem;">Tout commence dans une atmosphère bleutée et mélancolique : un avion traverse le ciel, symbole de voyage intérieur et de liberté — un clin d'œil direct aux ambiances oniriques du peintre <strong>Jacques Monory</strong>. Puis le rêve se dérègle : la trajectoire dévie, la lumière bleue s'efface, les pixels envahissent l'image. Glitchs, reflets dédoublés, notifications, publicités et visages artificiels s'immiscent dans le cadre jusqu'à la saturation totale — la palette glisse du bleu froid vers des teintes rouges, violacées et magenta, de plus en plus agressives et artificielles.</p>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7;">Cette bascule, dans l'esprit du détournement cher à <strong>Gérard Schlosser</strong>, porte l'idée centrale du projet : sur les réseaux, tout semble parfait — corps lissés, paysages irréels, vies sans défaut — mais cette perfection cache une perte d'authenticité et de spontanéité. Le montage suit cette dérive : fluide et contemplatif au début, il devient peu à peu saturé, syncopé, déstructuré — à l'image d'un rêve hijacké par l'algorithme.</p>
+                </div>
+            </div>
+
+            <div class="motion-section">
+                <div class="video-info" style="margin-bottom: 2.5rem;">
+                    <h3 style="font-size: 1.6rem; margin-bottom: 1.2rem; color: white; border-left: 4px solid var(--accent); padding-left: 15px;">DIRIGER L'IA, PLUTÔT QUE LA SUBIR</h3>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7; margin-bottom: 1.2rem;">Le cœur du projet, c'est la maîtrise d'un véritable <strong>workflow de génération dirigée</strong> — combinant <strong>VEO3, Runway et Dall-E</strong> pour l'image et le mouvement, et un tournage réel pour la scène finale. Rien n'est sorti tel quel d'un prompt : chaque image, chaque mouvement de caméra, chaque texture de visage est passé par des dizaines d'essais, d'ajustements et de reformulations avant d'atteindre le rendu voulu — la transition entre le bleu du rêve et le chaos numérique étant, de loin, le point le plus délicat à maîtriser.</p>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7;">L'objectif : garder la main sur chaque détail et <strong>guider l'IA plutôt que la laisser produire librement</strong> — transformer une génération automatisée en un vrai processus de création audiovisuelle dirigé, presque comme un tournage virtuel.</p>
+                </div>
+
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1.5rem; margin-bottom: 2.5rem;">
+                    <div style="background:#0d0d0d; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.5rem;">
+                        <div style="color:var(--accent); font-size:0.75rem; letter-spacing:2px; text-transform:uppercase; margin-bottom:10px;">01 — EXPÉRIMENTATION</div>
+                        <p style="font-size:0.9rem; color:#aaa; line-height:1.5;">Dizaines de tests pour trouver la cohérence visuelle, en particulier sur la transition entre le bleu du rêve et le chaos numérique</p>
+                    </div>
+                    <div style="background:#0d0d0d; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.5rem;">
+                        <div style="color:var(--accent); font-size:0.75rem; letter-spacing:2px; text-transform:uppercase; margin-bottom:10px;">02 — AFFINAGE DES PROMPTS</div>
+                        <p style="font-size:0.9rem; color:#aaa; line-height:1.5;">Réécriture et reformulation de chaque plan pour maîtriser la lumière, les reflets, les glitchs et les mouvements de caméra</p>
+                    </div>
+                    <div style="background:#0d0d0d; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.5rem;">
+                        <div style="color:var(--accent); font-size:0.75rem; letter-spacing:2px; text-transform:uppercase; margin-bottom:10px;">03 — SÉLECTION & POST-PROD</div>
+                        <p style="font-size:0.9rem; color:#aaa; line-height:1.5;">Curation parmi de nombreuses générations, puis colorimétrie, montage et intégration des effets visuels et sonores</p>
+                    </div>
+                </div>
+
+                <div style="display:flex; flex-wrap:wrap; gap:0.7rem;">
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">VEO3 · Runway · Dall-E</span>
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Prompt engineering avancé</span>
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Direction artistique IA</span>
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Montage & étalonnage</span>
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Œuvre exposée publiquement</span>
+                </div>
+            </div>
+
+            <div class="motion-section">
+                <div class="video-info" style="margin-bottom: 1rem;">
+                    <h3 style="font-size: 1.6rem; margin-bottom: 1.2rem; color: white; border-left: 4px solid var(--accent); padding-left: 15px;">RÉSONANCES CONTEMPORAINES & REGARD CRITIQUE</h3>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7; margin-bottom: 1.2rem;">Au-delà des références picturales, le projet dialogue avec deux artistes qui interrogent notre rapport contemporain à l'image générée : <strong>Hito Steyerl</strong>, qui questionne la manière dont le trop-plein d'images sature aujourd'hui notre perception du réel (<em>How Not to Be Seen</em>, 2013), et <strong>Refik Anadol</strong>, qui transforme données et mémoires collectives en expériences immersives portées par l'IA (<em>Machine Hallucinations</em>, <em>Unsupervised</em> — MoMA 2022). Deux démarches qui éclairent la mienne : interroger, par l'image et par la machine, ce que le numérique fait à notre regard.</p>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7;">L'idée de départ allait plus loin : laisser le spectateur influencer ce qui se passe à l'écran. Les contraintes techniques et le temps imparti ont recentré le projet sur une expérience immersive jouée entièrement à l'intérieur de l'image — un choix assumé plutôt qu'un compromis subi. Ce que j'en retiens : une vraie maîtrise du prompting et de la direction d'IA générative pour produire des scènes crédibles, et la conviction qu'un art numérique bien dirigé peut devenir une expérience sensorielle complète, où chaque détail visuel et sonore compte.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="project-overlay" id="overlay-statuquo" data-lenis-prevent>
+        <div class="close-btn">FERMER ✕</div>
+        <div class="modal-container">
+            <div class="modal-header">
+                <span class="modal-meta">Exercice de Vulgarisation // Format Libre</span>
+                <h2 class="modal-title">Le Biais de Statu Quo</h2>
+            </div>
+
+            <div class="video-block">
+                <div class="video-wrapper">
+                    <iframe src="https://www.youtube.com/embed/uKc_JN_juwM" allowfullscreen></iframe>
+                </div>
+                <div class="video-info">
+                    <h3>Expliquer un biais cognitif... en le générant avec l'IA</h3>
+                    <p>Réalisée pour un exercice de vulgarisation scientifique, cette vidéo a une mission simple : rendre accessible en quelques minutes un mécanisme psychologique aussi discret qu'omniprésent, le <strong>biais de statu quo</strong>. La consigne laissait le format totalement ouvert — dessins animés sur ardoise, motion design, ou toute autre approche — et j'ai choisi de relever un défi plus personnel : construire l'intégralité du film à partir d'images et de séquences générées et dirigées par intelligence artificielle.</p>
+                </div>
+            </div>
+
+            <div class="motion-section">
+                <div class="video-info" style="margin-bottom: 3.5rem;">
+                    <h3 style="font-size: 1.6rem; margin-bottom: 1.2rem; color: white; border-left: 4px solid var(--accent); padding-left: 15px;">C'EST QUOI, LE BIAIS DE STATU QUO ?</h3>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7; margin-bottom: 1.2rem;">C'est ce réflexe qui pousse à préférer ce qui existe déjà plutôt que de prendre le risque de changer — même quand une autre option serait objectivement plus avantageuse. Le changement fait peur, l'inaction semble toujours plus sûre que l'action, et l'on finit par traiter la situation actuelle comme une référence à protéger plutôt que comme un choix parmi d'autres. On le croise partout : on garde son opérateur téléphonique par flemme de comparer, on reste sur une option cochée par défaut sans se poser de questions, on n'ose pas remettre en cause une habitude bien installée alors qu'elle ne nous convient plus vraiment.</p>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7;">Le vrai défi d'un exercice de vulgarisation, ce n'est pas de paraître savant : c'est de rendre limpide une notion abstraite sans la trahir, et de donner envie de la comprendre. Toute l'écriture du script s'est construite autour d'une question simple — comment <em>montrer</em> ce que ça fait de préférer ne rien changer, plutôt que de se contenter de l'expliquer ?</p>
+                </div>
+            </div>
+
+            <div class="motion-section">
+                <div class="video-info" style="margin-bottom: 2.5rem;">
+                    <h3 style="font-size: 1.6rem; margin-bottom: 1.2rem; color: white; border-left: 4px solid var(--accent); padding-left: 15px;">UN FORMAT LIBRE, UN CHOIX ASSUMÉ</h3>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7; margin-bottom: 1.2rem;">La consigne proposait plusieurs pistes : une succession de dessins animés sur ardoise dans un esprit "fait-main" très stylisé, un habillage en motion design plus classique, ou bien une troisième voie totalement libre. Plutôt que de suivre l'un des deux formats les plus attendus, j'ai choisi de m'imposer une contrainte plus exigeante — raconter ce biais cognitif comme un véritable petit film, intégralement pensé, écrit et généré avec de l'intelligence artificielle.</p>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7;">Ce choix n'avait rien d'un raccourci. Générer des plans cohérents entre eux, lisibles, fidèles au propos et agréables à regarder demande au moins autant de travail qu'un dessin sur ardoise ou une animation en motion design — sinon plus : il a fallu écrire un script précis, le découper en séquences visuelles, puis diriger la génération plan par plan jusqu'à obtenir une narration fluide qui ne perde jamais le fil de la démonstration.</p>
+                </div>
+
+                <div style="display:flex; flex-wrap:wrap; gap:0.7rem;">
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Génération vidéo par IA</span>
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Écriture de script</span>
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Vulgarisation scientifique</span>
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Montage & sound design</span>
+                </div>
+            </div>
+
+            <div class="motion-section">
+                <div class="video-info" style="margin-bottom: 1rem;">
+                    <h3 style="font-size: 1.6rem; margin-bottom: 1.2rem; color: white; border-left: 4px solid var(--accent); padding-left: 15px;">UNE IA AU SERVICE DE LA CLARTÉ, PAS DE L'EFFET</h3>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7; margin-bottom: 1.2rem;">Ce projet est presque le miroir de <strong style="color:white;">#HijackMyDream</strong> dans ma manière d'aborder l'intelligence artificielle : la même logique de direction et d'itération, mais un objectif radicalement différent. Là où #HijackMyDream cherchait à creuser une ambiance et une émotion, <em>Le Biais de Statu Quo</em> exige l'inverse — une lisibilité immédiate, une cohérence visuelle sans accroc d'un plan à l'autre, et des images qui appuient le discours au lieu de le parasiter.</p>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7;">C'est sans doute ce que ces deux projets complémentaires m'ont le plus appris : savoir qu'une IA générative est capable du meilleur ne suffit pas, encore faut-il savoir précisément ce qu'on veut en faire et adapter sa façon de la diriger à l'intention du projet. On ne dirige pas une IA pour faire rêver comme on dirige une IA pour faire comprendre — et apprendre à faire les deux, consciemment, est exactement ce que je suis venu chercher dans ces exercices.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="project-overlay" id="overlay-aftermovie" data-lenis-prevent>
+        <div class="close-btn">FERMER ✕</div>
+        <div class="modal-container">
+            <div class="modal-header">
+                <span class="modal-meta">Aftermovie Événementiel // SAE 402 — Clients réels</span>
+                <h2 class="modal-title">Le Tour du Monde</h2>
+            </div>
+
+            <!-- AFTERMOVIE HORIZONTAL (placeholder) -->
+            <div class="video-block">
+                <div class="video-wrapper">
+                    <iframe src="https://www.youtube-nocookie.com/embed/a2W1gsYscGg" title="Aftermovie Le Tour du Monde — version horizontale" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                </div>
+                <div class="video-info">
+                    <h3>Faire revivre la 27ᵉ édition du Tour du Monde</h3>
+                    <p>Chaque année, la <strong>Place des Éléphants</strong> de Chambéry se transforme en carrefour des cultures du monde le temps du festival <strong>Le Tour du Monde</strong>. Pour sa 27ᵉ édition, notre équipe MMI a été missionnée pour en réaliser l'<strong>aftermovie officiel</strong> : une captation sur toute une journée (9h → 21h), de l'effervescence des <strong>25 stands</strong> et des <strong>4 000 visiteurs</strong> jusqu'au concert du soir. L'objectif : faire rayonner l'événement, célébrer sa diversité culturelle et son ambiance festive, et donner envie au public de revenir l'année suivante.</p>
+                </div>
+            </div>
+
+            <!-- DEUXIÈME VERSION / DEUXIÈME CLIENT -->
+            <div class="motion-section">
+                <div class="video-info" style="margin-bottom: 1rem;">
+                    <h3 style="font-size: 1.6rem; margin-bottom: 1.2rem; color: white; border-left: 4px solid var(--accent); padding-left: 15px;">DEUX FORMATS, DEUX CLIENTS</h3>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7;">Le projet a pris une ampleur particulière quand un <strong style="color:white;">second commanditaire</strong> s'est greffé : la <strong style="color:white;">Ville de Chambéry</strong>, qui souhaitait une déclinaison <strong>verticale</strong> pensée pour les réseaux sociaux, en complément de l'aftermovie horizontal classique. C'est cette version verticale que j'ai <strong>montée</strong> — un véritable exercice de remontage : repenser le cadrage, le rythme et le découpage pour un format 9:16 mobile-first.</p>
+                </div>
+                <div class="vertical-row">
+                    <div class="vertical-wrapper">
+                        <iframe src="https://www.youtube-nocookie.com/embed/tOu1bxJqlMY" title="Aftermovie Le Tour du Monde — version verticale" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                    <div class="vertical-text">
+                        <p style="font-size:0.95rem; color:#aaa; line-height:1.7;">Un même événement, deux usages : l'<strong>horizontal</strong> pour le web et YouTube, le <strong>vertical</strong> pour Instagram et TikTok. Gérer deux formats, c'est penser deux rythmes de montage et deux façons de raconter la même journée.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MON RÔLE -->
+            <div class="motion-section">
+                <div class="video-info" style="margin-bottom: 2rem;">
+                    <h3 style="font-size: 1.6rem; margin-bottom: 1.2rem; color: white; border-left: 4px solid var(--accent); padding-left: 15px;">MON RÔLE — DE LA PRÉ-PROD À LA POST-PROD</h3>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7; margin-bottom: 1.2rem;">Sur ce projet collectif (réalisé avec mon équipe et encadré par François Piranda), je me suis impliquée à <strong>chaque étape</strong> de la chaîne de production. En amont, j'ai participé à la création de tous les documents — brief client, organisation, <strong>repérage</strong>, planning d'équipe, calls. Le jour J, j'ai géré la <strong>captation</strong> aux côtés de mes camarades, en filmant et en photographiant les temps forts. En post-production, j'ai assuré le <strong>montage de la version verticale</strong> et réalisé le <strong>motion design du logo</strong>.</p>
+                </div>
+                <div style="display:flex; flex-wrap:wrap; gap:0.7rem;">
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Brief &amp; pré-production</span>
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Repérage &amp; planning</span>
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Captation vidéo</span>
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Photographie</span>
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Montage vertical</span>
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Motion design</span>
+                </div>
+            </div>
+
+            <!-- MOTION DESIGN DU LOGO -->
+            <div class="motion-section">
+                <div class="video-info" style="margin-bottom: 1rem;">
+                    <h3 style="font-size: 1.6rem; margin-bottom: 1.2rem; color: white; border-left: 4px solid var(--accent); padding-left: 15px;">LE MOTION DESIGN DU LOGO</h3>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7;">En complément de la vidéo, j'ai <strong>animé le logo</strong> de l'événement et l'ai décliné en <strong>cinq variations de couleurs</strong> — un mini-système d'habillage réutilisable pour l'intro/outro de l'aftermovie et les supports de communication.</p>
+                </div>
+                <div class="logo-video-grid">
+                    <div class="logo-video-item">
+                        <div class="lv-frame"><iframe src="https://www.youtube-nocookie.com/embed/_6NZwkysgSQ" title="Logo animé Tour du Monde — déclinaison Vert" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
+                        <span class="lv-label">Vert</span>
+                    </div>
+                    <div class="logo-video-item">
+                        <div class="lv-frame"><iframe src="https://www.youtube-nocookie.com/embed/7FWm5H2-bU8" title="Logo animé Tour du Monde — déclinaison Vert / Blanc" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
+                        <span class="lv-label">Vert / Blanc</span>
+                    </div>
+                    <div class="logo-video-item">
+                        <div class="lv-frame"><iframe src="https://www.youtube-nocookie.com/embed/YV9MzLIh2kQ" title="Logo animé Tour du Monde — déclinaison Vert / Blanc V2" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
+                        <span class="lv-label">Vert / Blanc · V2</span>
+                    </div>
+                    <div class="logo-video-item">
+                        <div class="lv-frame"><iframe src="https://www.youtube-nocookie.com/embed/HCCVyj6Dj6Q" title="Logo animé Tour du Monde — déclinaison Blanc" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
+                        <span class="lv-label">Blanc</span>
+                    </div>
+                    <div class="logo-video-item">
+                        <div class="lv-frame"><iframe src="https://www.youtube-nocookie.com/embed/fxV9YTwibjE" title="Logo animé Tour du Monde — déclinaison Rouge" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
+                        <span class="lv-label">Rouge</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PHOTOS -->
+            <div class="motion-section">
+                <div class="video-info" style="margin-bottom: 1rem;">
+                    <h3 style="font-size: 1.6rem; margin-bottom: 1.2rem; color: white; border-left: 4px solid var(--accent); padding-left: 15px;">LA CAPTATION PHOTO</h3>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7;">En parallèle de la vidéo, j'ai réalisé une série de <strong>photographies</strong> de l'événement — couleurs, costumes, stands et public — pour capturer l'ambiance et alimenter la communication post-événement.</p>
+                </div>
+                <div class="ph-gallery photos">
+                    <img src="../assets/Projet SAE 402 Aftermovie Tour du monde/Image 1.jpg" alt="Photo de l'événement Le Tour du Monde" loading="lazy">
+                    <img src="../assets/Projet SAE 402 Aftermovie Tour du monde/Image 2.jpg" alt="Photo de l'événement Le Tour du Monde" loading="lazy">
+                    <img src="../assets/Projet SAE 402 Aftermovie Tour du monde/Image 3.jpg" alt="Photo de l'événement Le Tour du Monde" loading="lazy">
+                </div>
+            </div>
+
+            <!-- CLIENTS + CROSS-LINK -->
+            <div class="motion-section">
+                <div class="video-info" style="margin-bottom: 1rem;">
+                    <h3 style="font-size: 1.6rem; margin-bottom: 1.2rem; color: white; border-left: 4px solid var(--accent); padding-left: 15px;">DE VRAIS CLIENTS, DE VRAIS ENJEUX</h3>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7;">Ce projet n'était pas un exercice théorique : il répondait à la commande de <strong style="color:white;">vrais clients</strong> — les organisateurs du <strong>Tour du Monde</strong> et la <strong>Ville de Chambéry</strong> — avec des contraintes réelles (diffusion web et réseaux, mise en avant des partenaires, charte à respecter) et une présentation finale en soutenance.</p>
+                    <p style="font-family:'Syncopate'; font-size:0.78rem; color:#666; margin-top:1.5rem; letter-spacing:1px;">→ Le volet stratégie &amp; gestion de projet est détaillé dans la section <a href="communication.html" style="color:var(--accent); text-decoration:underline;">Communication</a>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="project-overlay" id="overlay-kapich" data-lenis-prevent>
+        <div class="close-btn">FERMER ✕</div>
+        <div class="modal-container">
+            <div class="modal-header">
+                <span class="modal-meta">SAE302 Stratégie de Communication // Média Fictif</span>
+                <h2 class="modal-title">Kapich?</h2>
+            </div>
+
+            <!-- VIDÉO PRANK ÉCRANS IUT -->
+            <div class="video-block">
+                <div class="video-wrapper">
+                    <iframe src="https://www.youtube-nocookie.com/embed/ADX6eeCeCQ0" title="Vidéo prank Kapich — Écrans IUT" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                </div>
+                <div class="video-info">
+                    <h3>Le prank des écrans de l'IUT</h3>
+                    <p>Sur demande du client, le scénario met en scène <strong>Pierre Froelich</strong>, visage connu de l'IUT, dans une vidéo diffusée sur les écrans du bâtiment. Le morceau de bravoure : un effet spécial où il <strong>"casse l'écran"</strong> en plein direct, avant qu'une slide ne descende pour révéler "Kapich : le média qui informe sur l'IA" avec le QR code et le compte Instagram. C'est moi qui ai produit cette vidéo — effets spéciaux compris.</p>
+                </div>
+            </div>
+
+            <!-- CONTENU COURT MONTÉ POUR LE MÉDIA FICTIF -->
+            <div class="motion-section">
+                <div class="video-info" style="margin-bottom: 2rem;">
+                    <h3 style="font-size: 1.6rem; margin-bottom: 1.2rem; color: white; border-left: 4px solid var(--accent); padding-left: 15px;">UN CONTENU MONTÉ POUR LE MÉDIA LUI-MÊME</h3>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7;">En plus du dispositif de prank, j'ai monté un <strong>contenu court</strong> pour Kapich? lui-même — au format des Reels/Shorts pensés dans la stratégie digitale, avec l'élément généré par IA caché que l'audience doit retrouver dans la vidéo.</p>
+                </div>
+                <div class="vertical-row">
+                    <div class="vertical-wrapper">
+                        <iframe src="https://www.youtube-nocookie.com/embed/HZvNC8XWCwk" title="Contenu court Kapich — Reel" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                    <div class="vertical-text">
+                        <p style="font-size:0.95rem; color:#aaa; line-height:1.7;">Un format vertical natif, pensé pour Instagram et YouTube Shorts — l'élément généré par IA est caché quelque part dans l'image, à l'audience de le débusquer.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MON RÔLE -->
+            <div class="motion-section">
+                <div class="video-info" style="margin-bottom: 1.5rem;">
+                    <h3 style="font-size: 1.6rem; margin-bottom: 1.2rem; color: white; border-left: 4px solid var(--accent); padding-left: 15px;">MON RÔLE</h3>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7;">Sur ce projet collectif, j'ai porté la <strong>production vidéo</strong> du dispositif de prank : écriture du scénario avec l'effet "écran cassé", tournage et <strong>effets spéciaux</strong>, puis montage. J'ai aussi assuré le montage du <strong>contenu court</strong> diffusé par le média Kapich lui-même.</p>
+                </div>
+                <div style="display:flex; flex-wrap:wrap; gap:0.7rem;">
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Écriture scénario</span>
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Effets spéciaux</span>
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Captation</span>
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Montage</span>
+                </div>
+            </div>
+
+            <!-- CROSS-LINK -->
+            <div class="motion-section">
+                <div class="video-info">
+                    <p style="font-family:'Syncopate'; font-size:0.78rem; color:#666; letter-spacing:1px;">→ Le dispositif de communication complet (prank, QR codes, affiche, stratégie digitale) est détaillé dans la section <a href="communication.html" style="color:var(--accent); text-decoration:underline;">Communication</a>. L'affiche "prank" cafétéria est visible dans <a href="graphisme.html" style="color:var(--accent); text-decoration:underline;">Graphisme</a>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer>
         <h2 style="font-size: 4vw; margin-bottom: 2rem;">TRAVAILLONS ENSEMBLE</h2>
         <p>Email: seuxmedelys2006@gmail.com</p>
         <div style="margin-top: 3rem; opacity: 0.5; font-size: 0.8rem;">
-            <a href="mentions.html" style="text-decoration: underline;">Mentions Légales - © 2025 Medelys Seux</a>
+            <a href="mentions.html" style="text-decoration: underline;">Mentions Légales - © 2026 Medelys Seux</a>
         </div>
     </footer>
 
@@ -399,6 +881,11 @@
         setupModal('card-rallye', 'overlay-rallye');
         setupModal('card-ia', 'overlay-ia');
         setupModal('card-youtube', 'overlay-youtube');
+        setupModal('card-mapping', 'overlay-mapping');
+        setupModal('card-hijack', 'overlay-hijack');
+        setupModal('card-statuquo', 'overlay-statuquo');
+        setupModal('card-aftermovie', 'overlay-aftermovie');
+        setupModal('card-kapich', 'overlay-kapich');
 
         // 3. GESTION DU CURSEUR
         const cursorDot = document.querySelector('.cursor-dot');

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1190.55 841.89">
+  <defs>
+    <style>
+      .cls-1, .cls-2 {
+        fill: #fff;
+      }
+
+      .cls-2 {
+        stroke-width: 4px;
+      }
+
+      .cls-2, .cls-3, .cls-4, .cls-5 {
+        stroke: #fff;
+        stroke-miterlimit: 10;
+      }
+
+      .cls-3, .cls-4 {
+        stroke-width: 6px;
+      }
+
+      .cls-3, .cls-5 {
+        fill: none;
+      }
+
+      .cls-6 {
+        fill: #106e39;
+      }
+
+      .cls-4 {
+        fill: #37a751;
+      }
+
+      .cls-5 {
+        stroke-width: 2px;
+      }
+    </style>
+  </defs>
+  <g id="ventre">
+    <g>
+      <g>
+        <path class="cls-4" d="M510.35,509.13c-28.11,0-50.91-19.63-50.91-43.84s22.79-43.84,50.91-43.84"/>
+        <path class="cls-4" d="M510.35,421.45c28.11,0,50.91,19.63,50.91,43.84,0,24.21-22.79,43.84-50.91,43.84"/>
+        <path class="cls-6" d="M511.38,424.3c-52.99-.78-50.91,46.7-50.91,46.7l97.43-.72s5.38-45.21-46.53-45.98"/>
+        <path class="cls-3" d="M510.35,509.13c-28.11,0-50.91-19.63-50.91-43.84s22.79-43.84,50.91-43.84"/>
+        <path class="cls-3" d="M510.35,421.45c28.11,0,50.91,19.63,50.91,43.84,0,24.21-22.79,43.84-50.91,43.84"/>
+      </g>
+      <polygon class="cls-2" points="508.6 448.49 509.85 450.14 509.2 450.79 510.63 451.16 511.88 452.82 511.51 451.39 512.93 451.77 511.28 450.51 510.91 449.09 510.25 449.74 508.6 448.49"/>
+    </g>
+  </g>
+  <g id="visage">
+    <path class="cls-4" d="M512.06,277.44c32.02,0,57.97,25.95,57.97,57.97s-25.95,57.97-57.97,57.97"/>
+    <path class="cls-4" d="M512.06,393.39c-32.02,0-57.97-25.95-57.97-57.97s25.95-57.97,57.97-57.97"/>
+    <ellipse class="cls-1" cx="491.26" cy="326.88" rx="4.82" ry="9.03"/>
+    <ellipse class="cls-1" cx="530.98" cy="326.88" rx="4.82" ry="9.03"/>
+    <line class="cls-5" x1="456.46" y1="318.03" x2="474.32" y2="327.17"/>
+    <line class="cls-5" x1="548.15" y1="326.99" x2="565.07" y2="314.8"/>
+    <line class="cls-5" x1="508.39" y1="327.89" x2="514.24" y2="327.82"/>
+    <rect class="cls-5" x="474.32" y="315.17" width="33.34" height="24.15" rx="12" ry="12"/>
+    <rect class="cls-5" x="514.81" y="314.99" width="33.34" height="24.15" rx="12" ry="12"/>
+  </g>
+  <g id="pied_droit" data-name="pied droit">
+    <ellipse class="cls-4" cx="576.39" cy="528.79" rx="19.57" ry="12.32"/>
+  </g>
+  <g id="pied_gauche" data-name="pied gauche">
+    <ellipse class="cls-4" cx="448.53" cy="531.58" rx="19.57" ry="12.32"/>
+  </g>
+  <g id="bras_droit" data-name="bras droit">
+    <ellipse class="cls-4" cx="593.85" cy="414.21" rx="12.32" ry="19.57" transform="translate(-61.79 721.39) rotate(-60)"/>
+  </g>
+  <g id="bras_gauche" data-name="bras gauche">
+    <ellipse class="cls-4" cx="437.21" cy="420.24" rx="19.57" ry="12.32" transform="translate(-151.55 274.91) rotate(-30)"/>
+  </g>
+</svg>

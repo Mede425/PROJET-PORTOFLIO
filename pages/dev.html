@@ -134,6 +134,73 @@
             text-shadow: 0 0 10px #00ffcc;
         }
 
+        /* --- UNLOCK NOTIFICATION --- */
+        #unlock-notification {
+            position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.95); border: 1px solid #ffd700;
+            box-shadow: 0 0 40px rgba(255,215,0,0.35);
+            padding: 16px 36px; border-radius: 8px; z-index: 9999;
+            text-align: center; pointer-events: none;
+            opacity: 0; transition: opacity 0.6s;
+            font-family: 'Courier New', monospace;
+        }
+        #unlock-notification .notif-label {
+            display: block; color: #ffd700; font-size: 0.7rem;
+            letter-spacing: 3px; margin-bottom: 6px; opacity: 0.8;
+        }
+        #unlock-notification .notif-title {
+            color: white; font-size: 1.05rem; font-weight: bold; letter-spacing: 1px;
+        }
+
+        /* --- SECRET ZONE MODAL --- */
+        #secret-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.97); z-index: 10002;
+            justify-content: center; align-items: center;
+        }
+        #secret-modal.open { display: flex; }
+        .secret-modal-content {
+            width: 90%; max-width: 1200px; height: 85vh;
+            background: #080808; border-radius: 12px;
+            border: 1px solid rgba(255,215,0,0.35);
+            box-shadow: 0 0 80px rgba(255,215,0,0.12);
+            display: flex; overflow: hidden; position: relative;
+        }
+        .secret-pdf-side { flex: 1.2; background: #000; }
+        .secret-pdf-side embed { width: 100%; height: 100%; border: none; }
+        .secret-info-side {
+            flex: 1; padding: 50px; overflow-y: auto;
+            font-family: 'Courier New', monospace; color: #ccc;
+            border-left: 1px solid rgba(255,215,0,0.15);
+            display: flex; flex-direction: column; justify-content: center;
+        }
+        .secret-tag {
+            color: #ffd700; font-size: 0.7rem; letter-spacing: 3px;
+            margin-bottom: 30px; display: block; opacity: 0.7;
+        }
+        .secret-title {
+            font-size: 1.7rem; color: #ffd700; margin: 0 0 30px;
+            letter-spacing: 2px; text-shadow: 0 0 20px rgba(255,215,0,0.4);
+            line-height: 1.2;
+        }
+        .secret-message { line-height: 1.9; font-size: 0.9rem; color: #999;
+            border-left: 2px solid rgba(255,215,0,0.25); padding-left: 20px; }
+        .secret-message p { margin-bottom: 14px; }
+        .secret-message strong { color: #eee; }
+        .secret-signature {
+            margin-top: 36px; padding-top: 20px; border-top: 1px solid #1a1a1a;
+            font-size: 0.82rem; color: #555; line-height: 1.8;
+        }
+        .secret-signature a { color: #ffd700; text-decoration: none; }
+        .secret-close-btn {
+            position: absolute; top: 18px; right: 22px;
+            background: none; border: 1px solid rgba(255,215,0,0.35);
+            color: #ffd700; font-size: 0.8rem; cursor: pointer;
+            padding: 7px 16px; border-radius: 4px; transition: 0.3s;
+            font-family: 'Courier New', monospace; letter-spacing: 2px; z-index: 10;
+        }
+        .secret-close-btn:hover { background: rgba(255,215,0,0.08); }
+
         /* --- RIGHT PANEL --- */
         .right-panel {
             display: flex;
@@ -191,9 +258,41 @@
 
         @media (max-width: 768px) {
             .controls-hint { display: none; }
-            .logo h1 { font-size: 1rem; }
-            .logo { padding: 10px 15px; }
-            .sync-container { width: 200px; top: 10px; }
+            .logo { display: none; }
+            .sync-container { width: 185px; top: 76px; padding: 8px; }
+            .sync-label { font-size: 0.65rem; letter-spacing: 1px; }
+            .back-btn { padding: 7px 11px; font-size: 0.72rem; letter-spacing: 0.5px; }
+            .audio-wrapper { padding: 7px 12px; }
+            .audio-text { font-size: 0.72rem; margin-right: 8px; }
+            .audio-icon { width: 20px; height: 20px; }
+
+            /* Modale secrète (CV) : empilée verticalement sur mobile */
+            .secret-modal-content {
+                flex-direction: column; height: 90vh;
+                width: 94%;
+            }
+            /* Bouton FERMER = barre pleine largeur en haut, dans le flux */
+            .secret-close-btn {
+                position: relative; top: auto; right: auto;
+                width: 100%; order: -1;
+                border: none; border-radius: 12px 12px 0 0;
+                border-bottom: 1px solid rgba(255,215,0,0.35);
+                background: rgba(255,215,0,0.1);
+                color: #ffd700; font-size: 0.95rem;
+                padding: 16px 20px;
+                letter-spacing: 3px; text-align: center;
+                flex-shrink: 0;
+                box-shadow: 0 2px 12px rgba(0,0,0,0.5);
+            }
+            .secret-close-btn:active { background: rgba(255,215,0,0.2); }
+            .secret-pdf-side { flex: 1 1 40%; min-height: 0; }
+            .secret-info-side {
+                flex: 1 1 60%; padding: 24px 22px;
+                border-left: none; border-top: 1px solid rgba(255,215,0,0.15);
+                justify-content: flex-start; min-height: 0;
+            }
+            .secret-title { font-size: 1.3rem; margin-bottom: 18px; }
+            .secret-tag { margin-bottom: 16px; }
         }
 
         .key {
@@ -279,9 +378,75 @@
             box-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
         }
 
+        /* --- AMORCE JOYSTICK (onboarding mobile, jusqu'au 1er contact) --- */
+        .joystick-hint-label {
+            position: absolute;
+            bottom: 112px; left: 50%; transform: translateX(-50%);
+            white-space: nowrap; text-align: center; line-height: 1.4;
+            font-family: 'Courier New', monospace; font-size: 0.6rem;
+            letter-spacing: 1px; text-transform: uppercase;
+            color: #00ffcc; text-shadow: 0 0 8px rgba(0, 255, 204, 0.7);
+            pointer-events: none; opacity: 0; transition: opacity 0.5s ease;
+        }
+        #joystick-zone.hint-active { animation: joy-pulse 1.7s ease-out infinite; }
+        #joystick-zone.hint-active .joystick-hint-label { opacity: 1; }
+        #joystick-zone.hint-active #joystick-knob { animation: joy-knob 1.7s ease-in-out infinite; }
+        @keyframes joy-pulse {
+            0%   { box-shadow: 0 0 0 0 rgba(0, 255, 204, 0.45); }
+            70%  { box-shadow: 0 0 0 20px rgba(0, 255, 204, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 255, 204, 0); }
+        }
+        @keyframes joy-knob {
+            0%, 100% { transform: translate(-50%, -50%); }
+            25%      { transform: translate(-78%, -50%); }
+            75%      { transform: translate(-22%, -50%); }
+        }
+
         @media (hover: none) and (pointer: coarse) {
-            #joystick-zone { display: block; }
-            #content-card { bottom: 10px; width: 90%; padding: 20px; }
+            /* Joystick dans le coin bas-gauche, toujours au-dessus */
+            #joystick-zone { display: block; bottom: 24px; left: 24px; width: 100px; height: 100px; z-index: 60; }
+            /* Carte remontée AU-DESSUS du joystick pour ne plus le bloquer */
+            #content-card { bottom: 150px; width: 90%; padding: 18px; }
+            #minimap { display: none; }
+        }
+
+        /* --- MINIMAP / RADAR --- */
+        #minimap {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            width: 160px;
+            background: rgba(5, 8, 12, 0.82);
+            border: 1px solid rgba(0, 255, 204, 0.3);
+            border-radius: 10px;
+            padding: 10px 10px 8px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(0, 255, 204, 0.04);
+            pointer-events: none;
+            z-index: 5;
+        }
+        #minimap .minimap-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.6rem;
+            letter-spacing: 2px;
+            color: rgba(0, 255, 204, 0.75);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        #minimap .minimap-header .dot-live {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: #00ffcc;
+            box-shadow: 0 0 8px #00ffcc;
+            animation: minimap-blink 1.4s infinite;
+        }
+        @keyframes minimap-blink { 0%,100%{opacity:1;} 50%{opacity:0.25;} }
+        #minimap canvas {
+            display: block;
+            width: 140px;
+            height: 140px;
         }
 
         /* --- PROJECT MODAL --- */
@@ -363,6 +528,8 @@
             transition: transform 0.2s;
         }
         .gallery-img:hover { transform: scale(1.02); border-color: #00ffcc; }
+        .gallery-img { cursor: pointer; }
+        .gallery-img.active { border-color: #00ffcc; box-shadow: 0 0 12px rgba(0,255,204,0.5); }
         
         .iframe-wrapper {
             flex: 2; 
@@ -379,12 +546,153 @@
             color: #444; pointer-events: none;
         }
         iframe {
-            position: absolute; 
+            position: absolute;
             top: 0; left: 0;
-            width: 100%; height: 100%; 
+            width: 100%; height: 100%;
             border: none;
             background: #fff;
             transform-origin: 0 0;
+        }
+
+        /* --- MODALE PIANOSCALIER --- */
+        #piano-modal {
+            position: fixed; inset: 0; z-index: 110;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(6px);
+            display: none; justify-content: center; align-items: flex-start;
+            padding: 40px 20px; overflow-y: auto;
+            opacity: 0; transition: opacity 0.3s ease; pointer-events: auto;
+        }
+        #piano-modal.open { display: flex; opacity: 1; }
+        .piano-box {
+            width: 100%; max-width: 1080px; margin: auto;
+            background: #080808; border: 1px solid #333;
+            border-top: 4px solid #ff00aa; border-radius: 12px;
+            box-shadow: 0 0 60px rgba(255,0,170,0.18); overflow: hidden;
+        }
+        .piano-header {
+            position: sticky; top: 0; z-index: 5;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 18px 28px; background: rgba(12,12,14,0.96);
+            border-bottom: 1px solid #222; backdrop-filter: blur(8px);
+        }
+        .piano-header h2 {
+            margin: 0; color: #fff; font-size: 1.3rem;
+            text-transform: uppercase; letter-spacing: 2px;
+        }
+        .piano-header h2 span { color: #ff00aa; }
+        .piano-close {
+            background: none; border: 1px solid #444; color: #fff;
+            width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+            cursor: pointer; font-size: 1.2rem;
+            display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+        }
+        .piano-close:hover { background: #ff00aa; border-color: #ff00aa; }
+        .piano-body { padding: 32px 38px 50px; }
+        .piano-meta {
+            font-family: 'Courier New', monospace; font-size: 0.72rem;
+            letter-spacing: 1.5px; text-transform: uppercase; color: #ff00aa; margin-bottom: 14px;
+        }
+        .piano-hero-title {
+            font-size: clamp(1.9rem, 5vw, 3rem); line-height: 1.08;
+            color: #fff; margin: 0 0 18px; font-weight: 800;
+        }
+        .piano-lead {
+            font-size: 1.05rem; line-height: 1.7; color: #d8d8d8; max-width: 770px; margin: 0;
+        }
+        .piano-role {
+            margin-top: 26px; max-width: 770px;
+            background: rgba(255,0,170,0.06);
+            border: 1px solid rgba(255,0,170,0.25); border-left: 3px solid #ff00aa;
+            border-radius: 8px; padding: 18px 22px;
+        }
+        .piano-role .role-tag {
+            font-family: 'Courier New', monospace; font-size: 0.7rem; letter-spacing: 2px;
+            text-transform: uppercase; color: #ff00aa; display: block; margin-bottom: 8px;
+        }
+        .piano-role p { margin: 0; color: #d0d0d0; line-height: 1.65; font-size: 0.93rem; }
+        .piano-role p strong { color: #fff; }
+        .piano-section { margin-top: 46px; }
+        .piano-section > h3 {
+            font-size: 0.82rem; letter-spacing: 3px; text-transform: uppercase;
+            color: #00ffcc; margin: 0 0 18px; padding-bottom: 8px; border-bottom: 1px solid #222;
+        }
+        .piano-section > p { color: #bdbdbd; line-height: 1.75; font-size: 0.97rem; max-width: 800px; }
+        .piano-section > p strong { color: #fff; }
+
+        .piano-videos { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .piano-video-card .video-frame {
+            position: relative; width: 100%; padding-top: 56.25%;
+            background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden;
+        }
+        .piano-video-card .video-frame iframe {
+            position: absolute; inset: 0; width: 100%; height: 100%; transform: none; background: #000;
+        }
+        .piano-video-card .vid-label { margin: 12px 0 0; font-size: 0.88rem; color: #aaa; }
+        .piano-video-card .vid-label b { color: #fff; }
+
+        .piano-pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+        .piano-pillar {
+            background: rgba(18,18,22,0.8); border: 1px solid #2a2a2a; border-radius: 10px;
+            padding: 22px; transition: transform 0.25s, border-color 0.25s;
+        }
+        .piano-pillar:hover { transform: translateY(-4px); border-color: #ff00aa; }
+        .piano-pillar .p-num { font-family: 'Courier New', monospace; font-size: 0.72rem; color: #ff00aa; letter-spacing: 1px; }
+        .piano-pillar h4 { margin: 10px 0 10px; color: #fff; font-size: 1.05rem; }
+        .piano-pillar p { font-size: 0.88rem; color: #b0b0b0; line-height: 1.6; margin: 0; }
+
+        .piano-chips { display: flex; flex-wrap: wrap; gap: 10px; }
+        .piano-chip {
+            font-size: 0.8rem; padding: 8px 14px; border-radius: 20px;
+            background: rgba(0,255,204,0.06); border: 1px solid rgba(0,255,204,0.25); color: #cfeee8;
+        }
+
+        .piano-divider {
+            margin-top: 64px; padding-top: 34px; border-top: 1px dashed #383838; text-align: center;
+        }
+        .piano-divider .pd-tag {
+            display: inline-block; font-family: 'Courier New', monospace;
+            font-size: 0.72rem; letter-spacing: 2px; color: #ff00aa;
+            border: 1px solid rgba(255,0,170,0.4); border-radius: 20px; padding: 6px 16px; margin-bottom: 16px;
+        }
+        .piano-divider h3 { font-size: 1.6rem; color: #fff; margin: 0 0 10px; }
+        .piano-divider p { color: #aaa; max-width: 640px; margin: 0 auto; line-height: 1.7; font-size: 0.95rem; }
+
+        .piano-code-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; margin-top: 28px; }
+        .piano-code-card {
+            background: #0c0c0e; border: 1px solid #2a2a2a; border-left: 3px solid #00ffcc;
+            border-radius: 8px; padding: 22px;
+        }
+        .piano-code-card .cc-file { font-family: 'Courier New', monospace; font-size: 0.72rem; color: #00ffcc; margin-bottom: 12px; word-break: break-all; }
+        .piano-code-card h4 { margin: 0 0 12px; color: #fff; font-size: 1rem; }
+        .piano-code-card ul { margin: 0; padding-left: 16px; }
+        .piano-code-card li { color: #b0b0b0; font-size: 0.85rem; line-height: 1.6; margin-bottom: 8px; }
+        .piano-code-card code {
+            background: rgba(255,255,255,0.08); padding: 1px 5px; border-radius: 3px;
+            font-size: 0.8rem; color: #ff6ec7; font-family: 'Courier New', monospace;
+        }
+
+        .piano-pdf-wrap {
+            margin-top: 32px; border: 1px solid #333; border-radius: 8px; overflow: hidden; background: #111;
+        }
+        .piano-pdf-wrap embed { width: 100%; height: 620px; display: block; }
+        .piano-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 22px; }
+        .piano-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 13px 26px; border-radius: 6px; font-weight: 700; font-size: 0.85rem;
+            text-decoration: none; text-transform: uppercase; letter-spacing: 1px;
+            transition: all 0.2s; cursor: pointer; border: none;
+        }
+        .piano-btn.primary { background: #ff00aa; color: #fff; }
+        .piano-btn.primary:hover { box-shadow: 0 0 24px rgba(255,0,170,0.5); transform: translateY(-2px); }
+        .piano-btn.ghost { background: transparent; border: 1px solid #444; color: #fff; }
+        .piano-btn.ghost:hover { border-color: #00ffcc; color: #00ffcc; }
+
+        @media (max-width: 800px) {
+            .piano-videos, .piano-pillars, .piano-code-grid { grid-template-columns: 1fr; }
+            .piano-body { padding: 24px 20px 40px; }
+            .piano-pdf-wrap embed { height: 440px; }
+            .piano-hero-title { font-size: 1.8rem; }
         }
 
         /* --- CONTENU DÉFILANT --- */
@@ -542,12 +850,23 @@
             </div>
         </div>
         
-        <div id="joystick-zone"><div id="joystick-knob"></div></div>
+        <div id="joystick-zone" class="hint-active">
+            <div id="joystick-knob"></div>
+            <span class="joystick-hint-label">Glissez pour<br>vous déplacer</span>
+        </div>
         <div id="content-card">
             <span class="badge" id="card-badge">Stack</span>
             <h2 id="card-title">Projet</h2>
             <p id="card-desc" style="color: #aaa; line-height: 1.5; font-size: 0.9rem;">...</p>
             <button class="btn-action" id="card-link">ACCÉDER</button>
+        </div>
+
+        <div id="minimap">
+            <div class="minimap-header">
+                <span>CARTE // RADAR</span>
+                <span class="dot-live"></span>
+            </div>
+            <canvas id="minimap-canvas" width="200" height="200"></canvas>
         </div>
     </div>
 
@@ -577,6 +896,155 @@
                 <div class="iframe-wrapper">
                     <div class="iframe-placeholder">CHARGEMENT DU FLUX...</div>
                     <iframe id="modal-iframe" src="" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALE DÉDIÉE : PIANOSCALIER -->
+    <div id="piano-modal">
+        <div class="piano-box">
+            <div class="piano-header">
+                <h2>PIANO<span>SCALIER</span></h2>
+                <button class="piano-close" id="piano-close" aria-label="Fermer">&times;</button>
+            </div>
+            <div class="piano-body">
+                <div class="piano-meta">SAE 303 — Création d'application interactive (IoT) // Projet d'équipe (5 étudiants) // Janvier 2024</div>
+                <div class="piano-hero-title">Un escalier transformé en piano géant.</div>
+                <p class="piano-lead">
+                    Et si monter un escalier devenait un jeu&nbsp;? Le <strong>Pianoscalier</strong> transforme un escalier
+                    ordinaire en instrument de musique&nbsp;: chaque marche détecte votre passage grâce à un faisceau laser
+                    et déclenche une note. Derrière la magie, un système complet qui mêle <strong>électronique</strong>,
+                    un <strong>serveur Node.js</strong> et une <strong>interface web en temps réel</strong> pour reconfigurer
+                    les sons à la volée.
+                </p>
+
+                <div class="piano-role">
+                    <span class="role-tag">// Mon rôle dans le projet</span>
+                    <p>Un projet mené <strong>en équipe, à cinq</strong>. Je me suis impliquée sur <strong>toutes les étapes</strong>&nbsp;: la conception et l'écriture du code, le montage et le câblage du dispositif, ainsi que la réalisation des vidéos — une participation de bout en bout, de l'électronique à la production.</p>
+                </div>
+
+                <div class="piano-section">
+                    <h3>Le concept</h3>
+                    <p>
+                        Dans le cadre de la <strong>SAE 303 « Création d'application interactive »</strong>, le défi était de
+                        concevoir de A à Z un objet connecté piloté par une application web. Parmi les sujets proposés, nous
+                        avons choisi en équipe de relever celui de l'<strong>escalier-piano</strong> — un classique qui paraît
+                        simple, mais qui cache une vraie chaîne technique&nbsp;: capter un pas, déclencher un son, et rendre le
+                        tout configurable depuis le navigateur. Une semaine de développement intensif (24h) pour passer de
+                        l'idée au prototype fonctionnel.
+                    </p>
+                </div>
+
+                <div class="piano-section">
+                    <h3>En vidéo</h3>
+                    <div class="piano-videos">
+                        <div class="piano-video-card">
+                            <div class="video-frame">
+                                <iframe src="https://www.youtube-nocookie.com/embed/7o9-mmufm38" title="Démonstration du Pianoscalier" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                            </div>
+                            <p class="vid-label"><b>La démonstration</b> — le Pianoscalier en action.</p>
+                        </div>
+                        <div class="piano-video-card">
+                            <div class="video-frame">
+                                <iframe src="https://www.youtube-nocookie.com/embed/__22HXT8OAU" title="Montage du Pianoscalier" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                            </div>
+                            <p class="vid-label"><b>Les coulisses</b> — le montage et le câblage pas à pas.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="piano-section">
+                    <h3>Comment ça marche</h3>
+                    <div class="piano-pillars">
+                        <div class="piano-pillar">
+                            <div class="p-num">01 — DÉTECTION</div>
+                            <h4>Laser + photorésistance</h4>
+                            <p>Chaque marche possède un laser pointé sur une photorésistance (LDR). Quand un pied coupe le faisceau, la luminosité chute brutalement&nbsp;: l'Arduino détecte le pas instantanément.</p>
+                        </div>
+                        <div class="piano-pillar">
+                            <div class="p-num">02 — AUDIO</div>
+                            <h4>Module MP3 DFPlayer</h4>
+                            <p>L'Arduino pilote un module DFPlayer Mini qui lit le son associé à la marche depuis une carte micro-SD, puis l'envoie vers un haut-parleur.</p>
+                        </div>
+                        <div class="piano-pillar">
+                            <div class="p-num">03 — CONTRÔLE WEB</div>
+                            <h4>Node.js + Socket.io</h4>
+                            <p>Une interface web dialogue avec un serveur Node.js qui relaie les commandes à l'Arduino par liaison série. On réassigne les notes en direct, sans retoucher au code.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="piano-section">
+                    <h3>Le matériel</h3>
+                    <div class="piano-chips">
+                        <span class="piano-chip">Arduino Uno / Mega</span>
+                        <span class="piano-chip">Module DFPlayer Mini</span>
+                        <span class="piano-chip">Photorésistances (LDR)</span>
+                        <span class="piano-chip">Lasers basse conso</span>
+                        <span class="piano-chip">Haut-parleur 8&nbsp;Ω</span>
+                        <span class="piano-chip">Carte micro-SD (FAT32)</span>
+                        <span class="piano-chip">Supports imprimés en 3D (SolidWorks)</span>
+                    </div>
+                </div>
+
+                <div class="piano-section">
+                    <h3>La stack technique</h3>
+                    <div class="piano-chips">
+                        <span class="piano-chip">Arduino (C++)</span>
+                        <span class="piano-chip">Node.js</span>
+                        <span class="piano-chip">Socket.io</span>
+                        <span class="piano-chip">Express</span>
+                        <span class="piano-chip">SerialPort</span>
+                        <span class="piano-chip">HTML / CSS / JS</span>
+                        <span class="piano-chip">Modélisation 3D</span>
+                    </div>
+                </div>
+
+                <!-- POUR ALLER PLUS LOIN -->
+                <div class="piano-divider">
+                    <span class="pd-tag">// POUR ALLER PLUS LOIN</span>
+                    <h3>L'explication technique en détail</h3>
+                    <p>Tout le projet est documenté dans notre compte rendu&nbsp;: schéma de câblage, installation, et surtout les choix de code que nous avons faits et justifiés. En voici les points clés, puis le document complet.</p>
+                </div>
+
+                <div class="piano-code-grid">
+                    <div class="piano-code-card">
+                        <div class="cc-file">arduino / Piano-stairs.ino</div>
+                        <h4>Le firmware</h4>
+                        <ul>
+                            <li><b>Deux ports série</b> séparés&nbsp;: USB à <code>115200</code> bauds (PC) et SoftwareSerial à <code>9600</code> (module MP3), pour éviter les conflits de données.</li>
+                            <li><b>Détection de changement d'état</b>&nbsp;: le son n'est joué qu'<i>une fois</i> par appui, au lieu d'être relancé des centaines de fois tant que le pied reste posé.</li>
+                            <li><b>Config dynamique</b> via le protocole <code>M{marche}:{piste}</code> — changer les sons sans re-téléverser le code.</li>
+                        </ul>
+                    </div>
+                    <div class="piano-code-card">
+                        <div class="cc-file">server.js</div>
+                        <h4>Le middleware Node.js</h4>
+                        <ul>
+                            <li>Le navigateur ne peut pas accéder au port USB (sécurité)&nbsp;: ce serveur fait le <b>pont</b>.</li>
+                            <li><b>Socket.io</b> maintient un canal ouvert en permanence — pas de rechargement de page.</li>
+                            <li>Il convertit le JSON <code>{step:1, track:5}</code> en chaîne optimisée <code>M1:5</code> envoyée à l'Arduino.</li>
+                        </ul>
+                    </div>
+                    <div class="piano-code-card">
+                        <div class="cc-file">index.html</div>
+                        <h4>L'interface web</h4>
+                        <ul>
+                            <li><b>Génération procédurale du DOM</b>&nbsp;: passer de 4 à 20 marches = changer une seule variable.</li>
+                            <li>Un dictionnaire <code>noteToTrack</code> traduit le musical («&nbsp;Do2&nbsp;») en piste machine.</li>
+                            <li>Des <b>presets</b> reconfigurent toutes les marches d'un clic (ex.&nbsp;«&nbsp;Rat Dance&nbsp;»).</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="piano-pdf-wrap">
+                    <embed src="../assets/Projet Dev Pianoscalier/Compte Rendu du Pianoscalier.pdf" type="application/pdf">
+                </div>
+
+                <div class="piano-actions">
+                    <a class="piano-btn primary" href="../assets/Projet Dev Pianoscalier/Compte Rendu du Pianoscalier.pdf" target="_blank" rel="noopener">Ouvrir le compte rendu (PDF) ↗</a>
+                    <a class="piano-btn ghost" href="https://github.com/kai733/pianoscalier" target="_blank" rel="noopener">Voir le code sur GitHub ↗</a>
                 </div>
             </div>
         </div>
@@ -619,6 +1087,36 @@
             <footer style="text-align: center; margin-top: 100px; color: #555; font-size: 0.8rem;">
                 © 2024 DEV.ZONE SYSTEM - ALL RIGHTS RESERVED
             </footer>
+        </div>
+    </div>
+
+    <!-- NOTIFICATION ZONE SECRÈTE -->
+    <div id="unlock-notification">
+        <span class="notif-label">// ZONE DÉVERROUILLÉE</span>
+        <span class="notif-title">✦ FICHIER CONFIDENTIEL ACCESSIBLE ✦</span>
+    </div>
+
+    <!-- MODAL ZONE SECRÈTE -->
+    <div id="secret-modal">
+        <div class="secret-modal-content">
+            <button class="secret-close-btn" id="secret-close">FERMER [X]</button>
+            <div class="secret-pdf-side">
+                <embed src="../assets/CV_Medelys_Seux.pdf" type="application/pdf">
+            </div>
+            <div class="secret-info-side">
+                <span class="secret-tag">// ACCÈS ACCORDÉ — EXPLORATEUR COMPLET</span>
+                <h2 class="secret-title">DOSSIER<br>PERSONNEL</h2>
+                <div class="secret-message">
+                    <p>Vous avez exploré toutes les zones. <strong>Merci.</strong></p>
+                    <p>Je m'appelle <strong>Medelys Seux</strong>, étudiante en BUT MMI à Chambéry. Ce portfolio, c'est autant une vitrine qu'un terrain de jeu — j'ai voulu montrer que je sais créer des expériences qui sortent de l'ordinaire.</p>
+                    <p>Graphisme, communication, audiovisuel, développement... je n'aime pas être enfermée dans une seule case. Ce qui m'intéresse, c'est avoir une vision complète d'un projet et le porter de bout en bout.</p>
+                    <p>Si vous cherchez un profil <strong>curieux, polyvalent, et qui aime construire des choses qui ont vraiment une âme</strong> — je suis disponible pour une alternance.</p>
+                </div>
+                <div class="secret-signature">
+                    — Medelys Seux<br>
+                    <a href="mailto:seuxmedelys2006@gmail.com">seuxmedelys2006@gmail.com</a>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -742,22 +1240,23 @@
                         "https://placehold.co/600x400/222/00ffcc?text=Maquette+Desktop",
                         "https://placehold.co/400x600/222/00ffcc?text=Mobile+View"
                     ],
-                    longDesc: "Réalisation complète d'un site vitrine pour une agence de voyage. Intégration d'un système de réservation et optimisation SEO pour le marché francophone."
+                    longDesc: "Refonte complète, de A à Z, du site web d'un <strong style=\"color:#fff;\">guide de haute montagne au Maroc</strong> avec 30 ans d'expérience. Objectif : transformer un site obsolète qui ne reflétait plus son professionnalisme en une véritable vitrine moderne, rassurante et taillée pour convertir les familles en réservation.<br><br>Sur ce projet collectif, j'ai participé à <strong style=\"color:#fff;\">chaque étape</strong> : <em>stratégie de marque, positionnement face aux agences \"usines\", définition du persona (\"Maman Organisatrice\" CSP+, 35-45 ans), copywriting du site, création des assets graphiques, participation au développement, réunions clients et présentations.</em><br><br>Un vrai exercice end-to-end : de l'analyse concurrentielle initiale jusqu'à la mise en ligne, en passant par l'audit SEO, l'arborescence, la rédaction de chaque page et l'intégration. Résultat : un site pro, lisible et pensé pour rassurer une cible exigeante.<br><br>👉 <a href=\"https://trek-berbere.com\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"color:#00bfff; text-decoration:underline; font-weight:600;\">Voir le site en ligne : trek-berbere.com ↗</a>"
                 }
             },
             {
                 id: 2,
-                title: "A VENIR",
-                desc: "Projet en cours de développement.",
-                tech: "EN COURS",
-                color: 0xff00ff,
-                link: "#",
+                title: "PIANOSCALIER",
+                desc: "Un escalier transformé en piano géant. Arduino + Web temps réel.",
+                tech: "ARDUINO • NODE.JS • SOCKET.IO",
+                color: 0xff00aa,
+                link: "https://github.com/kai733/pianoscalier",
                 pos: { x: -20, z: 5 },
                 visited: false,
+                custom: 'piano',
                 details: {
                     iframe: "",
-                    images: ["https://placehold.co/600x400/222/ff00ff?text=Projet+A+Venir"],
-                    longDesc: "Ce projet est actuellement en construction. Revenez plus tard pour découvrir de nouvelles réalisations."
+                    images: [],
+                    longDesc: "Projet d'équipe (SAE 303) : un escalier ordinaire transformé en piano géant grâce à des capteurs laser, un Arduino et une interface web temps réel."
                 }
             },
             {
@@ -944,6 +1443,21 @@
         let holograms = []; 
         let modalOpen = false; // Etat de la modale
 
+        // --- ZONE SECRÈTE ---
+        const secretZoneData = {
+            id: 'secret', isSecret: true,
+            title: '// FICHIER CONFIDENTIEL',
+            desc: 'Zone secrète déverrouillée. Dossier personnel accessible.',
+            tech: 'ACCÈS ACCORDÉ',
+            pos: { x: 0, z: -32 },
+            color: 0xffd700,
+            visited: false
+        };
+        let secretHologramGroup = null;
+        let secretEmerging = false;
+        let secretUnlocked = false;
+        let minimapCtx = null;
+
         const keys = { w: false, a: false, s: false, d: false, shift: false };
         const joystick = { active: false, x: 0, y: 0 };
         let isLoaded = false;
@@ -991,10 +1505,13 @@
             initJoystick();
 
             document.getElementById('audio-toggle').addEventListener('click', () => { audioManager.toggleMute(); });
+            minimapCtx = document.getElementById('minimap-canvas').getContext('2d');
             
             // MODAL EVENTS
             document.getElementById('card-link').addEventListener('click', openModal);
             document.getElementById('modal-close').addEventListener('click', closeModal);
+            document.getElementById('secret-close').addEventListener('click', closeSecretModal);
+            document.getElementById('piano-close').addEventListener('click', closePianoModal);
 
             animate();
         }
@@ -1002,21 +1519,58 @@
         // --- LOGIQUE MODALE ---
         function openModal() {
             if (!currentZone) return;
-            
+            if (currentZone.data.isSecret) { openSecretModal(); return; }
+            if (currentZone.data.custom === 'piano') { openPianoModal(); return; }
+
             modalOpen = true;
             controls.enabled = false; // Désactiver la caméra
             
             const data = currentZone.data;
             document.getElementById('modal-title').innerText = data.title;
-            document.getElementById('modal-long-desc').innerText = data.details.longDesc;
+            document.getElementById('modal-long-desc').innerHTML = data.details.longDesc;
             
             // Galerie
             const gallery = document.getElementById('modal-gallery');
             gallery.innerHTML = '';
-            data.details.images.forEach(imgSrc => {
+            data.details.images.forEach((imgSrc, index) => {
                 const img = document.createElement('img');
                 img.src = imgSrc;
                 img.className = 'gallery-img';
+                if (index === 0) img.classList.add('active');
+
+                // Détecter si c'est une vue mobile ou desktop
+                const isMobile = imgSrc.toLowerCase().includes('mobile');
+
+                img.addEventListener('click', () => {
+                    // Mettre à jour l'état actif visuellement
+                    document.querySelectorAll('.gallery-img').forEach(i => i.classList.remove('active'));
+                    img.classList.add('active');
+
+                    const iframe = document.getElementById('modal-iframe');
+                    const wrapper = document.querySelector('.iframe-wrapper');
+                    if (!iframe || iframe.style.display === 'none') return;
+
+                    if (isMobile) {
+                        // Vue mobile : 375px naturels, centré dans le wrapper, sans zoom
+                        const mobileWidth = 375;
+                        const wrapperW = wrapper.clientWidth;
+                        iframe.style.width     = `${mobileWidth}px`;
+                        iframe.style.height    = `${wrapper.clientHeight}px`;
+                        iframe.style.transform = 'none';
+                        iframe.style.left      = `${Math.max(0, (wrapperW - mobileWidth) / 2)}px`;
+                        iframe.style.top       = '0';
+                    } else {
+                        // Vue desktop : 1280px réduits pour tenir dans le wrapper
+                        const desktopWidth = 1280;
+                        const scale = wrapper.clientWidth / desktopWidth;
+                        iframe.style.left      = '0';
+                        iframe.style.top       = '0';
+                        iframe.style.width     = `${desktopWidth}px`;
+                        iframe.style.height    = `${wrapper.clientHeight / scale}px`;
+                        iframe.style.transform = `scale(${scale})`;
+                    }
+                });
+
                 gallery.appendChild(img);
             });
 
@@ -1061,10 +1615,27 @@
             
             // Reset iframe
             const iframe = document.getElementById('modal-iframe');
-            iframe.src = ""; 
+            iframe.src = "";
             iframe.style.transform = "none";
             iframe.style.width = "100%";
             iframe.style.height = "100%";
+        }
+
+        // --- MODALE PIANOSCALIER ---
+        function openPianoModal() {
+            modalOpen = true;
+            controls.enabled = false;
+            const modal = document.getElementById('piano-modal');
+            modal.classList.add('open');
+            modal.scrollTop = 0;
+        }
+
+        function closePianoModal() {
+            modalOpen = false;
+            controls.enabled = true;
+            document.getElementById('piano-modal').classList.remove('open');
+            // Stoppe la lecture des vidéos YouTube en rechargeant les iframes
+            document.querySelectorAll('#piano-modal .video-frame iframe').forEach(f => { f.src = f.src; });
         }
 
         function createEnvironment() {
@@ -1077,6 +1648,7 @@
             plane.rotation.x = -Math.PI / 2; plane.receiveShadow = true; scene.add(plane);
 
             myProjects.forEach(proj => createHologram(proj));
+            createSecretHologram();
 
             const particlesGeo = new THREE.BufferGeometry();
             const particlesCount = 400;
@@ -1144,6 +1716,105 @@
             zones.push({ pos: grp.position.clone(), radius: 4, data: data });
         }
 
+        function createSecretHologram() {
+            const grp = new THREE.Group();
+            grp.position.set(secretZoneData.pos.x, -15, secretZoneData.pos.z);
+            const gold = 0xffd700;
+            const darkMat  = new THREE.MeshStandardMaterial({ color: 0x0c0a06, metalness: 1, roughness: 0.25 });
+            const goldMat  = new THREE.MeshBasicMaterial({ color: gold });
+            const richMat  = new THREE.MeshBasicMaterial({ color: 0xb8860b });
+
+            // --- PLATEFORME HEXAGONALE ---
+            const platform = new THREE.Mesh(new THREE.CylinderGeometry(3.4, 4, 0.5, 6), darkMat);
+            platform.position.y = 0.25; grp.add(platform);
+            const platformRim = new THREE.Mesh(new THREE.CylinderGeometry(3.4, 3.4, 0.1, 6), goldMat);
+            platformRim.position.y = 0.55; grp.add(platformRim);
+
+            // --- ANNEAUX TOURNANTS ---
+            const ring1 = new THREE.Mesh(new THREE.TorusGeometry(2.9, 0.07, 16, 6), goldMat);
+            ring1.rotation.x = Math.PI / 2; ring1.position.y = 0.65; grp.add(ring1);
+            const ring2 = new THREE.Mesh(new THREE.TorusGeometry(2.2, 0.05, 16, 6), richMat);
+            ring2.rotation.x = Math.PI / 2; ring2.position.y = 0.67; grp.add(ring2);
+
+            // --- CORPS DU COFFRE ---
+            const body = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.5, 1.6), darkMat);
+            body.position.y = 1.25; grp.add(body);
+            // Bandes dorées horizontales
+            const hb1 = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.1, 1.7), goldMat);
+            hb1.position.y = 1.05; grp.add(hb1);
+            const hb2 = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.1, 1.7), goldMat);
+            hb2.position.y = 1.65; grp.add(hb2);
+            // Montants verticaux
+            [-1.15, 1.15].forEach(x => {
+                const v = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1.55, 1.7), goldMat);
+                v.position.set(x, 1.27, 0); grp.add(v);
+            });
+            // Serrure centrale
+            const lockPlate = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.4, 0.1), goldMat);
+            lockPlate.position.set(0, 1.35, 0.85); grp.add(lockPlate);
+
+            // --- COUVERCLE ARTICULÉ ---
+            const lidPivot = new THREE.Group();
+            lidPivot.position.set(0, 2.0, -0.8); // charnière : arrière-haut du corps
+            grp.add(lidPivot);
+            const lidBody = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.35, 1.6), darkMat);
+            lidBody.position.set(0, 0.175, 0.8); lidPivot.add(lidBody);
+            const lidTrim = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.12, 1.7), goldMat);
+            lidTrim.position.set(0, 0.175, 0.8); lidPivot.add(lidTrim);
+            const knob = new THREE.Mesh(new THREE.SphereGeometry(0.13, 8, 6), goldMat);
+            knob.position.set(0, 0.38, 0.8); lidPivot.add(knob);
+
+            // --- LUMIÈRES ---
+            const innerLight = new THREE.PointLight(gold, 0, 12); // s'allume à l'ouverture
+            innerLight.position.set(0, 1.8, 0); grp.add(innerLight);
+            const gndLight = new THREE.PointLight(gold, 2, 16);
+            gndLight.position.set(0, 0.5, 0); grp.add(gndLight);
+
+            // --- SPRITE "???" ---
+            const canvas = document.createElement('canvas');
+            canvas.width = 512; canvas.height = 128;
+            const ctx2d = canvas.getContext('2d');
+            ctx2d.font = 'bold 68px Courier New'; ctx2d.fillStyle = '#ffd700'; ctx2d.textAlign = 'center';
+            ctx2d.fillText('? ? ?', 256, 82);
+            ctx2d.strokeStyle = '#ffd700'; ctx2d.lineWidth = 2;
+            ctx2d.beginPath(); ctx2d.moveTo(60, 100); ctx2d.lineTo(452, 100); ctx2d.stroke();
+            const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+                map: new THREE.CanvasTexture(canvas), transparent: true
+            }));
+            sprite.scale.set(6, 1.5, 1); sprite.position.y = 5.5; grp.add(sprite);
+
+            scene.add(grp);
+            secretHologramGroup = grp;
+            secretHologramGroup.userData = {
+                lidPivot, ring1, ring2, innerLight, gndLight, sprite,
+                lidAngle: 0, speed: 0.4
+            };
+        }
+
+        function unlockSecretZone() {
+            if (secretUnlocked) return;
+            secretUnlocked = true;
+            secretEmerging = true;
+            audioManager.playSuccess();
+
+            // Notification dorée
+            const notif = document.getElementById('unlock-notification');
+            notif.style.opacity = '1';
+            setTimeout(() => { notif.style.opacity = '0'; }, 5000);
+        }
+
+        function openSecretModal() {
+            document.getElementById('secret-modal').classList.add('open');
+            controls.enabled = false;
+            modalOpen = true;
+        }
+
+        function closeSecretModal() {
+            document.getElementById('secret-modal').classList.remove('open');
+            controls.enabled = true;
+            modalOpen = false;
+        }
+
         function markProjectAsVisited(projData) {
             const index = myProjects.findIndex(p => p.id === projData.id);
             if (myProjects[index].visited) return;
@@ -1165,7 +1836,10 @@
             const total = myProjects.length;
             const percent = (visitedCount / total) * 100;
             document.getElementById('sync-fill').style.width = percent + '%';
-            if (percent === 100) document.getElementById('sync-msg').style.opacity = 1;
+            if (percent === 100) {
+                document.getElementById('sync-msg').style.opacity = 1;
+                unlockSecretZone();
+            }
         }
 
         function onKey(e, pressed) {
@@ -1194,7 +1868,7 @@
                 knob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
                 joystick.x = dx / maxDist; joystick.y = dy / maxDist;
             };
-            zone.addEventListener('touchstart', (e) => { e.preventDefault(); joystick.active = true; handleMove(e.touches[0].clientX, e.touches[0].clientY); }, {passive:false});
+            zone.addEventListener('touchstart', (e) => { e.preventDefault(); zone.classList.remove('hint-active'); joystick.active = true; handleMove(e.touches[0].clientX, e.touches[0].clientY); }, {passive:false});
             zone.addEventListener('touchmove', (e) => { e.preventDefault(); if(joystick.active) handleMove(e.touches[0].clientX, e.touches[0].clientY); }, {passive:false});
             const end = (e) => { e.preventDefault(); joystick.active = false; joystick.x=0; joystick.y=0; knob.style.transform = `translate(-50%, -50%)`; };
             zone.addEventListener('touchend', end); zone.addEventListener('touchcancel', end);
@@ -1297,7 +1971,119 @@
                 holo.sprite.lookAt(camera.position);
             });
 
+            // Secret hologram : émergence du sol + animation
+            if (secretHologramGroup) {
+                if (secretEmerging) {
+                    secretHologramGroup.position.y += (0 - secretHologramGroup.position.y) * 0.03;
+                    if (Math.abs(secretHologramGroup.position.y) < 0.05) {
+                        secretHologramGroup.position.y = 0;
+                        secretEmerging = false;
+                        // Ajouter la zone de détection une fois émergée
+                        const sPos = new THREE.Vector3(secretZoneData.pos.x, 0, secretZoneData.pos.z);
+                        zones.push({ pos: sPos, radius: 5, data: secretZoneData });
+                    }
+                }
+                const ud = secretHologramGroup.userData;
+                if (ud && ud.ring1) {
+                    // Anneaux qui tournent en sens opposés
+                    ud.ring1.rotation.z =  time * ud.speed;
+                    ud.ring2.rotation.z = -time * ud.speed * 1.8;
+                    // Lumière sol qui pulse doucement
+                    ud.gndLight.intensity = 1.5 + Math.sin(time * 2.5) * 0.5;
+                    // Couvercle s'ouvre progressivement après émergence
+                    if (!secretEmerging && ud.lidAngle < Math.PI * 0.85) {
+                        ud.lidAngle += 0.005;
+                        ud.lidPivot.rotation.x = -ud.lidAngle;
+                        // Lueur intérieure croît avec l'ouverture
+                        ud.innerLight.intensity = (ud.lidAngle / (Math.PI * 0.85)) * 10;
+                    }
+                    ud.sprite.lookAt(camera.position);
+                }
+            }
+
+            if (minimapCtx && playerObj) drawMinimap();
+
             composer.render();
+        }
+
+        function drawMinimap() {
+            const ctx = minimapCtx;
+            const size = ctx.canvas.width;      // 200
+            const c = size / 2;
+            const RANGE = 45;                   // unités monde du centre vers le bord
+            const usable = c - 12;
+            const t = clock.elapsedTime;
+
+            ctx.clearRect(0, 0, size, size);
+
+            // Fond radial
+            const grad = ctx.createRadialGradient(c, c, 0, c, c, c);
+            grad.addColorStop(0, 'rgba(0, 45, 40, 0.4)');
+            grad.addColorStop(1, 'rgba(0, 10, 14, 0.1)');
+            ctx.fillStyle = grad;
+            ctx.beginPath(); ctx.arc(c, c, c - 2, 0, Math.PI * 2); ctx.fill();
+
+            // Anneaux + croix radar
+            ctx.strokeStyle = 'rgba(0, 255, 204, 0.15)';
+            ctx.lineWidth = 1;
+            [0.4, 0.7, 1].forEach(r => {
+                ctx.beginPath(); ctx.arc(c, c, usable * r, 0, Math.PI * 2); ctx.stroke();
+            });
+            ctx.beginPath();
+            ctx.moveTo(c, c - usable); ctx.lineTo(c, c + usable);
+            ctx.moveTo(c - usable, c); ctx.lineTo(c + usable, c);
+            ctx.stroke();
+
+            const toCanvas = (wx, wz) => {
+                let dx = (wx / RANGE) * usable;
+                let dy = (wz / RANGE) * usable;
+                const d = Math.hypot(dx, dy);
+                if (d > usable) { dx = dx / d * usable; dy = dy / d * usable; }
+                return [c + dx, c + dy];
+            };
+
+            // Zones projets
+            myProjects.forEach(p => {
+                const [px, py] = toCanvas(p.pos.x, p.pos.z);
+                const col = '#' + new THREE.Color(p.color).getHexString();
+                if (p.visited) {
+                    ctx.fillStyle = col;
+                    ctx.beginPath(); ctx.arc(px, py, 4.5, 0, Math.PI * 2); ctx.fill();
+                } else {
+                    const pulse = 5 + Math.sin(t * 3) * 2.5;
+                    ctx.globalAlpha = 0.85;
+                    ctx.strokeStyle = col; ctx.lineWidth = 1.5;
+                    ctx.beginPath(); ctx.arc(px, py, pulse, 0, Math.PI * 2); ctx.stroke();
+                    ctx.globalAlpha = 1;
+                    ctx.fillStyle = col;
+                    ctx.beginPath(); ctx.arc(px, py, 2, 0, Math.PI * 2); ctx.fill();
+                }
+            });
+
+            // Zone secrète (visible seulement une fois débloquée)
+            if (secretUnlocked) {
+                const [sx, sy] = toCanvas(secretZoneData.pos.x, secretZoneData.pos.z);
+                const pulse = 5 + Math.sin(t * 4) * 3;
+                ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 1.5;
+                ctx.beginPath(); ctx.arc(sx, sy, pulse, 0, Math.PI * 2); ctx.stroke();
+                ctx.fillStyle = '#ffd700';
+                ctx.beginPath(); ctx.arc(sx, sy, 3, 0, Math.PI * 2); ctx.fill();
+            }
+
+            // Joueur (flèche directionnelle)
+            const [px, py] = toCanvas(playerObj.position.x, playerObj.position.z);
+            const ry = playerObj.rotation.y;
+            const fx = -Math.sin(ry), fy = -Math.cos(ry);   // vecteur "devant" sur le canvas
+            const perpx = -fy, perpy = fx;
+            const s = 8;
+            ctx.shadowColor = '#00ffcc'; ctx.shadowBlur = 8;
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.moveTo(px + fx * s, py + fy * s);
+            ctx.lineTo(px - fx * s * 0.5 + perpx * s * 0.6, py - fy * s * 0.5 + perpy * s * 0.6);
+            ctx.lineTo(px - fx * s * 0.5 - perpx * s * 0.6, py - fy * s * 0.5 - perpy * s * 0.6);
+            ctx.closePath(); ctx.fill();
+            ctx.shadowBlur = 0;
         }
 
         function checkZones() {
@@ -1310,7 +2096,14 @@
             const title = document.getElementById('card-title');
             
             if (nearby) {
-                if (!nearby.data.visited) markProjectAsVisited(nearby.data);
+                // Zone secrète : ouverture directe du modal confidentiel
+                if (nearby.data.isSecret && !nearby.data.visited) {
+                    nearby.data.visited = true;
+                    currentZone = nearby;
+                    openSecretModal();
+                    return;
+                }
+                if (!nearby.data.visited && !nearby.data.isSecret) markProjectAsVisited(nearby.data);
 
                 if (currentZone !== nearby) {
                     audioManager.playHover();

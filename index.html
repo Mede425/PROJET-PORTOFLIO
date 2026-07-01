@@ -30,60 +30,167 @@
 
         a { text-decoration: none; color: white; }
 
-        /* --- STYLES DE L'INTRO --- */
+        /* --- STYLES DE L'INTRO (harmonisé avec la page d'accueil) --- */
         #intro-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9999; background-color: #050505;
-            background-image: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #000000 60%);
+            background-image:
+                radial-gradient(circle at 30% 20%, rgba(112, 0, 255, 0.18), transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(0, 240, 255, 0.12), transparent 55%),
+                radial-gradient(circle at 50% 50%, #0a0a1a 0%, #000000 70%);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             user-select: none;
         }
         .intro-grid-bg {
             position: absolute; width: 100%; height: 100%;
             background-size: 50px 50px;
-            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                              linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
             pointer-events: none; z-index: 0;
+            mask-image: radial-gradient(circle at 50% 50%, black 40%, transparent 90%);
+            -webkit-mask-image: radial-gradient(circle at 50% 50%, black 40%, transparent 90%);
         }
+        /* Titre + instruction en haut */
+        .intro-header {
+            position: absolute; top: 8%; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 640px; text-align: center; z-index: 2;
+        }
+        .intro-title {
+            font-family: 'Syncopate', sans-serif; font-weight: 700;
+            font-size: clamp(1.6rem, 4vw, 2.6rem);
+            text-transform: uppercase; letter-spacing: 6px;
+            background: linear-gradient(45deg, var(--accent), var(--accent-sec));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            animation: introTitleFade 1s ease-out both;
+        }
+        .intro-instruction {
+            font-family: 'Space Grotesk', sans-serif; font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+            color: rgba(255,255,255,0.85); line-height: 1.5;
+            animation: introTitleFade 1s ease-out 0.3s both;
+        }
+        .intro-highlight {
+            color: var(--accent); font-weight: 700;
+            text-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
+        }
+        @keyframes introTitleFade {
+            from { opacity: 0; transform: translateY(-15px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Flèche animée entre le dossier et la zone de drop */
+        .drop-arrow {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3.5rem; color: var(--accent);
+            opacity: 0.55; pointer-events: none; z-index: 1;
+            text-shadow: 0 0 20px rgba(0, 240, 255, 0.7);
+            animation: dropArrowBounce 1.4s ease-in-out infinite;
+        }
+        @keyframes dropArrowBounce {
+            0%, 100% { transform: translate(-50%, -50%); opacity: 0.4; }
+            50%      { transform: translate(-50%, calc(-50% + 15px)); opacity: 0.9; }
+        }
+
         .system-loader {
-            position: absolute; bottom: 20%; width: 320px; max-width: 90%; height: 100px;
-            border: 2px dashed #333; border-radius: 12px;
+            position: absolute; bottom: 15%; width: 360px; max-width: 90%; height: 130px;
+            border: 2.5px dashed var(--accent); border-radius: 16px;
             display: flex; align-items: center; justify-content: center;
-            transition: all 0.4s ease; background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(5px); z-index: 1;
+            transition: all 0.35s ease;
+            background: rgba(0, 240, 255, 0.06); backdrop-filter: blur(6px); z-index: 1;
+            animation: dropZonePulse 1.8s ease-in-out infinite;
+        }
+        @keyframes dropZonePulse {
+            0%, 100% {
+                box-shadow: 0 0 25px rgba(0, 240, 255, 0.25), inset 0 0 15px rgba(0, 240, 255, 0.05);
+                border-color: rgba(0, 240, 255, 0.55);
+            }
+            50% {
+                box-shadow: 0 0 55px rgba(0, 240, 255, 0.55), 0 0 90px rgba(112, 0, 255, 0.25), inset 0 0 25px rgba(0, 240, 255, 0.12);
+                border-color: var(--accent);
+            }
         }
         .system-loader.active {
-            border-color: #00f0ff; box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
-            background: rgba(0, 240, 255, 0.05); transform: scale(1.05);
+            border-color: #fff; border-style: solid;
+            box-shadow: 0 0 60px rgba(0, 240, 255, 0.7), 0 0 120px rgba(112, 0, 255, 0.35), inset 0 0 30px rgba(0, 240, 255, 0.2);
+            background: rgba(0, 240, 255, 0.15); transform: scale(1.07);
+            animation: none;
         }
         .loader-text {
-            font-family: 'Syne', sans-serif; font-weight: 700; color: #555;
-            text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem;
-            pointer-events: none; transition: color 0.3s; text-align: center;
+            font-family: 'Syncopate', sans-serif; font-weight: 700;
+            color: #fff;
+            text-transform: uppercase; letter-spacing: 3px; font-size: 0.85rem;
+            pointer-events: none; transition: color 0.3s, text-shadow 0.3s; text-align: center;
+            text-shadow: 0 0 15px rgba(0, 240, 255, 0.7);
+            padding: 0 1rem;
+        }
+        .system-loader.active .loader-text {
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
         }
         .data-folder {
-            width: 140px; height: 100px; background: rgba(20, 20, 20, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;
-            position: absolute; top: 25%; left: calc(50% - 70px);
+            width: 150px; height: 110px;
+            background: linear-gradient(160deg, rgba(30, 30, 45, 0.9), rgba(15, 15, 25, 0.9));
+            border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 14px;
+            position: absolute; top: 32%; left: calc(50% - 75px);
             cursor: grab; z-index: 10;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transition: transform 0.1s linear, box-shadow 0.3s;
+            box-shadow:
+                0 10px 30px rgba(0,0,0,0.6),
+                0 0 25px rgba(0, 240, 255, 0.15),
+                inset 0 1px 0 rgba(255,255,255,0.06);
+            transition: transform 0.1s linear, box-shadow 0.3s, border-color 0.3s;
+            animation: folderPulse 2.8s ease-in-out infinite;
         }
-        .data-folder:active { cursor: grabbing; transform: scale(1.05); }
+        @keyframes folderPulse {
+            0%, 100% { box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 25px rgba(0, 240, 255, 0.15), inset 0 1px 0 rgba(255,255,255,0.06); }
+            50%      { box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 45px rgba(0, 240, 255, 0.35), 0 0 80px rgba(112, 0, 255, 0.2), inset 0 1px 0 rgba(255,255,255,0.08); }
+        }
+        .data-folder:active {
+            cursor: grabbing; transform: scale(1.05);
+            border-color: var(--accent);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7), 0 0 60px rgba(0, 240, 255, 0.5), 0 0 100px rgba(112, 0, 255, 0.3);
+            animation: none;
+        }
+        .data-folder:active .folder-tag { opacity: 0; transition: opacity 0.2s; }
         .folder-icon {
-            width: 40px; height: 30px; background: linear-gradient(135deg, #00f0ff, #4e4eff);
-            border-radius: 4px; margin-bottom: 10px; position: relative;
+            width: 44px; height: 32px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-sec));
+            border-radius: 5px; margin-bottom: 12px; position: relative;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
         }
         .folder-icon::before {
-            content: ''; position: absolute; top: -5px; left: 0; width: 15px; height: 5px;
-            background: #00f0ff; border-radius: 4px 4px 0 0; opacity: 0.8;
+            content: ''; position: absolute; top: -5px; left: 0; width: 18px; height: 5px;
+            background: var(--accent); border-radius: 4px 4px 0 0; opacity: 0.9;
         }
-        .folder-label { font-size: 0.75rem; color: #fff; font-weight: 600; letter-spacing: 0.5px; }
+        .folder-label {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 0.7rem; color: #fff; font-weight: 700; letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .folder-tag {
+            position: absolute; top: -34px; left: 50%; transform: translateX(-50%);
+            font-family: 'Space Grotesk', sans-serif; font-size: 0.7rem;
+            color: #050505; background: var(--accent);
+            padding: 5px 12px; border-radius: 50px;
+            font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+            white-space: nowrap; pointer-events: none;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+            animation: folderTagBounce 1.6s ease-in-out infinite;
+        }
+        .folder-tag::after {
+            content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%) rotate(45deg);
+            width: 8px; height: 8px; background: var(--accent);
+        }
+        @keyframes folderTagBounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50%      { transform: translateX(-50%) translateY(-5px); }
+        }
         .ghost-cursor {
             position: absolute; top: 25%; left: 50%; width: 20px; height: 20px;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' stroke='black' stroke-width='2'%3E%3Cpath d='M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z'/%3E%3C/svg%3E");
             background-size: contain; background-repeat: no-repeat; pointer-events: none; z-index: 5;
             opacity: 0; animation: guideMotion 3s infinite ease-in-out;
+            filter: drop-shadow(0 0 4px rgba(0, 240, 255, 0.6));
         }
         @keyframes guideMotion {
             0% { opacity: 0; transform: translate(10px, 10px); }
@@ -94,29 +201,52 @@
         }
         .welcome-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 100;
+            background: #050505;
+            background-image:
+                radial-gradient(circle at 30% 20%, rgba(112, 0, 255, 0.2), transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(0, 240, 255, 0.15), transparent 55%);
+            z-index: 100;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             clip-path: circle(0% at 50% 80%); transition: clip-path 1.2s cubic-bezier(0.77, 0, 0.175, 1);
         }
         .welcome-overlay.reveal { clip-path: circle(150% at 50% 80%); }
         .welcome-text {
-            font-family: 'Syne', sans-serif; font-weight: 800; font-size: 4rem;
-            text-transform: uppercase; color: transparent; -webkit-text-stroke: 2px white;
-            opacity: 0; transform: translateY(50px); transition: all 0.5s ease 0.4s; text-align: center;
+            font-family: 'Syncopate', sans-serif; font-weight: 700;
+            font-size: clamp(2.2rem, 6vw, 5rem);
+            line-height: 1; text-transform: uppercase;
+            color: transparent; -webkit-text-stroke: 1.5px rgba(255,255,255,0.9);
+            opacity: 0; transform: translateY(50px);
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.4s;
+            text-align: center; letter-spacing: 2px;
         }
         .welcome-sub {
-            font-family: 'Inter', sans-serif; margin-top: 10px; color: #00f0ff;
-            font-weight: 600; opacity: 0; transform: translateY(20px); transition: all 0.5s ease 0.6s;
+            font-family: 'Space Grotesk', sans-serif; margin-top: 1.2rem; color: var(--accent);
+            font-weight: 500; font-size: 0.85rem; letter-spacing: 4px; text-transform: uppercase;
+            opacity: 0; transform: translateY(20px);
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.6s;
         }
-        .welcome-overlay.reveal .welcome-text, .welcome-overlay.reveal .welcome-sub {
-            opacity: 1; transform: translateY(0); -webkit-text-stroke: 0; color: white;
+        .welcome-overlay.reveal .welcome-text {
+            opacity: 1; transform: translateY(0);
+            -webkit-text-stroke: 0; color: white;
+        }
+        .welcome-overlay.reveal .welcome-sub {
+            opacity: 1; transform: translateY(0);
         }
         .gradient-text {
-            background: linear-gradient(90deg, #00f0ff, #4e4eff);
+            background: linear-gradient(45deg, var(--accent), var(--accent-sec));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
         @media (max-width: 768px) {
-            .welcome-text { font-size: 2.2rem; }
+            .intro-header { top: 6%; }
+            .intro-title { letter-spacing: 3px; }
+            .intro-instruction { font-size: 0.85rem; padding: 0 1rem; }
+            .drop-arrow { font-size: 2.5rem; }
+            .system-loader { width: 280px; height: 110px; bottom: 12%; }
+            .loader-text { font-size: 0.7rem; letter-spacing: 2px; }
+            .data-folder { width: 130px; height: 95px; left: calc(50% - 65px); top: 30%; }
+            .folder-tag { font-size: 0.62rem; top: -30px; padding: 4px 10px; }
+            .welcome-text { font-size: clamp(1.8rem, 9vw, 2.6rem); letter-spacing: 1px; }
+            .welcome-sub { font-size: 0.7rem; letter-spacing: 3px; }
             @keyframes guideMotion {
                 60% { transform: translate(10px, 250px); }
                 80% { transform: translate(10px, 250px); }
@@ -131,13 +261,20 @@
         .cursor-dot { width: 8px; height: 8px; background-color: var(--accent); }
         .cursor-outline { width: 40px; height: 40px; border: 1px solid var(--accent); transition: width 0.2s, height 0.2s; }
 
+        /* Désactivation du curseur custom sur écrans tactiles ou petits écrans */
+        @media (hover: none) and (pointer: coarse), (max-width: 768px) {
+            .cursor-dot, .cursor-outline { display: none !important; }
+            * { cursor: auto !important; }
+            a, button, [onclick], [role="button"], .card, .about-btn, .btn-download { cursor: pointer !important; }
+        }
+
         /* --- HERO --- */
         section {
             min-height: 100vh; padding: 4rem 10%; display: flex; flex-direction: column;
             justify-content: center; position: relative;
         }
         .hero h1 {
-            font-family: 'Syncopate', sans-serif; font-size: 6vw; line-height: 1;
+            font-family: 'Syncopate', sans-serif; font-size: clamp(2.4rem, 6vw, 6vw); line-height: 1;
             text-transform: uppercase; mix-blend-mode: difference; position: relative; z-index: 2;
         }
         .hero span {
@@ -148,6 +285,34 @@
             position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
             font-size: 0.8rem; letter-spacing: 2px; opacity: 0.7; animation: bounce 2s infinite;
         }
+
+        /* --- TICKER --- */
+        .ticker-wrap {
+            overflow: hidden; padding: 22px 0;
+            margin: 80px 0;
+            border-top: 1px solid rgba(255,255,255,0.07);
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            position: relative; z-index: 1;
+        }
+        .ticker-track {
+            display: flex; width: max-content;
+            animation: ticker 40s linear infinite;
+        }
+        @keyframes ticker {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+        .ticker-item {
+            white-space: nowrap; font-size: 1rem;
+            font-family: 'Space Grotesk', sans-serif;
+            text-transform: uppercase; letter-spacing: 0.12em; color: #fff;
+            padding: 0 24px;
+        }
+        .ticker-item.accent {
+            color: var(--accent); font-style: italic;
+            font-family: 'Syne', sans-serif; font-weight: 700;
+        }
+        .ticker-sep { color: rgba(255,255,255,0.25); padding: 0 4px; font-size: 1rem; }
 
         /* --- BACKGROUND --- */
         .gradient-bg {
@@ -307,6 +472,8 @@
         @media (max-width: 900px) {
             #about { flex-direction: column; justify-content: flex-start; height: auto; min-height: 100vh; padding: 6rem 5% 0 5%; }
             .about-content { width: 100%; text-align: center; margin-bottom: 2rem; padding: 1.5rem; }
+            .about-content h2 { font-size: clamp(1.8rem, 8vw, 3rem); }
+            .about-content p { text-align: left; }
             .about-visual { position: relative; width: 100%; height: 50vh; align-items: flex-end; justify-content: center; }
             .photo-frame { height: 100%; width: 100%; justify-content: center; }
             .photo-frame img { height: 100%; width: auto; max-width: 100%; margin-right: 0; }
@@ -314,19 +481,96 @@
             .floating-dock { width: 90%; justify-content: space-between; }
             .floating-dock:hover { width: 90%; }
         }
+
+        /* ========== NAV MOBILE — pill MENU qui s'ouvre en panneau vertical ========== */
+        @media (max-width: 768px) {
+            /* Reset compact + bouton "+" indicateur d'ouverture */
+            .floating-dock {
+                width: auto; max-width: calc(100vw - 30px);
+                justify-content: center; padding: 0.7rem 1.2rem;
+                bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+                gap: 0; cursor: pointer; overflow: visible;
+            }
+            /* Compact : les liens sont vraiment retirés du flux (sinon ils gonflent la pill) */
+            .floating-dock .dock-links { display: none; }
+
+            /* Pulse discret sur la pill fermée pour indiquer qu'elle est tappable */
+            @keyframes dockPulse {
+                0%, 100% { box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 0 0 rgba(0, 240, 255, 0); }
+                50%      { box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 0 7px rgba(0, 240, 255, 0.18); }
+            }
+            .floating-dock:not(.open) { animation: dockPulse 2.6s ease-in-out infinite; }
+
+            /* Neutralise totalement les effets de hover (pas pertinents en tactile) */
+            .floating-dock:hover {
+                width: auto; gap: 0;
+                border-color: rgba(255, 255, 255, 0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            }
+            .floating-dock:hover .dock-label { border-right: none; }
+            .floating-dock:hover .dock-links { display: none; }
+
+            /* Indicateur ouvert/fermé après le label */
+            .dock-label { padding-right: 0; }
+            .dock-label::after {
+                content: '+'; margin-left: 12px; font-size: 1.1rem; color: var(--accent);
+                font-weight: 400; line-height: 1; transition: transform 0.3s;
+            }
+            .floating-dock.open .dock-label::after { content: '✕'; }
+
+            /* État ouvert : pill devient un mini-panneau vertical, centré, qui pousse vers le haut */
+            .floating-dock.open {
+                width: min(78vw, 280px);
+                flex-direction: column; align-items: stretch;
+                gap: 0.9rem; padding: 1.2rem 1.4rem; border-radius: 22px;
+                border-color: var(--accent); box-shadow: 0 0 25px rgba(0, 240, 255, 0.2);
+            }
+            .floating-dock.open .dock-label {
+                justify-content: center; border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+                padding: 0 0 0.75rem 0;
+            }
+            .floating-dock.open .dock-links {
+                display: flex;
+                opacity: 1; transform: none; pointer-events: auto;
+                flex-direction: column; gap: 0.9rem; align-items: center; width: 100%;
+            }
+            .floating-dock.open .dock-links a {
+                font-size: 1rem; padding: 0.35rem 0; color: rgba(255, 255, 255, 0.85);
+            }
+        }
+
+        /* Très petits écrans (≤ 360px) : on resserre un peu plus */
+        @media (max-width: 360px) {
+            .floating-dock { padding: 0.6rem 1rem; }
+            .dock-label { font-size: 0.8rem; }
+            .floating-dock.open { width: min(85vw, 260px); padding: 1rem 1.1rem; }
+            .floating-dock.open .dock-links a { font-size: 0.95rem; }
+        }
     </style>
 </head>
 <body>
 
     <div id="intro-overlay">
         <div class="intro-grid-bg"></div>
+
+        <div class="intro-header">
+            <h2 class="intro-title">Bienvenue</h2>
+            <p class="intro-instruction">
+                Attrapez le dossier <span class="intro-highlight">PORTFOLIO</span> et glissez-le dans la zone en bas
+            </p>
+        </div>
+
         <div class="data-folder" id="draggable">
+            <div class="folder-tag">Cliquer &amp; glisser</div>
             <div class="folder-icon"></div>
             <div class="folder-label">PORTFOLIO</div>
         </div>
         <div class="ghost-cursor" id="guide"></div>
+
+        <div class="drop-arrow" aria-hidden="true">↓</div>
+
         <div class="system-loader" id="dropZone">
-            <span class="loader-text">/// INITIALISER LE SYSTÈME ///</span>
+            <span class="loader-text">Déposez le dossier ici</span>
         </div>
         <div class="welcome-overlay" id="transitionScreen">
             <h1 class="welcome-text">MEDELYS <span class="gradient-text">SEUX</span></h1>
@@ -345,10 +589,38 @@
             Medelys SEUX
         </h1>
         <p style="margin-top: 2rem; font-size: 1.2rem; max-width: 600px; opacity: 0.8; line-height: 1.6;">
-            Étudiant MMI polyvalent. Je conçois des identités visuelles uniques, j'élabore des stratégies de contenu, et je fusionne le <strong>Design UI/UX avec le Code</strong> pour donner vie à des expériences web immersives. Je recherche actuellement un STAGE.
+            Étudiant MMI polyvalent. Je conçois des identités visuelles uniques, j'élabore des stratégies de contenu, et je fusionne le <strong>Design UI/UX avec le Code</strong> pour donner vie à des expériences web immersives. Je recherche actuellement une ALTERNANCE.
         </p>
         <div class="scroll-indicator">DÉFILER POUR EXPLORER</div>
     </section>
+
+    <!-- TICKER COMPÉTENCES -->
+    <div class="ticker-wrap">
+        <div class="ticker-track">
+            <span class="ticker-item accent">Motion design</span><span class="ticker-sep">·</span>
+            <span class="ticker-item">UI / UX</span><span class="ticker-sep">·</span>
+            <span class="ticker-item accent">Creative dev</span><span class="ticker-sep">·</span>
+            <span class="ticker-item">Audiovisuel</span><span class="ticker-sep">·</span>
+            <span class="ticker-item accent">Photographie</span><span class="ticker-sep">·</span>
+            <span class="ticker-item">Branding</span><span class="ticker-sep">·</span>
+            <span class="ticker-item accent">Montage vidéo</span><span class="ticker-sep">·</span>
+            <span class="ticker-item">Print</span><span class="ticker-sep">·</span>
+            <span class="ticker-item accent">Direction artistique</span><span class="ticker-sep">·</span>
+            <span class="ticker-item">Stratégie</span><span class="ticker-sep">·</span>
+            <span class="ticker-item accent">Illustration</span><span class="ticker-sep">·</span>
+            <span class="ticker-item accent">Motion design</span><span class="ticker-sep">·</span>
+            <span class="ticker-item">UI / UX</span><span class="ticker-sep">·</span>
+            <span class="ticker-item accent">Creative dev</span><span class="ticker-sep">·</span>
+            <span class="ticker-item">Audiovisuel</span><span class="ticker-sep">·</span>
+            <span class="ticker-item accent">Photographie</span><span class="ticker-sep">·</span>
+            <span class="ticker-item">Branding</span><span class="ticker-sep">·</span>
+            <span class="ticker-item accent">Montage vidéo</span><span class="ticker-sep">·</span>
+            <span class="ticker-item">Print</span><span class="ticker-sep">·</span>
+            <span class="ticker-item accent">Direction artistique</span><span class="ticker-sep">·</span>
+            <span class="ticker-item">Stratégie</span><span class="ticker-sep">·</span>
+            <span class="ticker-item accent">Illustration</span><span class="ticker-sep">·</span>
+        </div>
+    </div>
 
     <section id="about">
         <div class="about-content">
@@ -360,9 +632,9 @@
                 Mon approche repose sur un équilibre simple : la sensibilité du créatif
                 et la précision du technicien.
                 <br><br>
-                Passionné par l'audiovisuel et le graphisme, je ne me contente pas de créer des images.
+                Passionné par l'audiovisuel, le graphisme et la communication, je ne me contente pas de créer des images.
                 J'analyse chaque besoin pour concevoir des projets où la stratégie donne du sens à l'esthétique.
-                Mon objectif est d'apporter des solutions visuelles innovantes et performantes pour le monde digital.
+                Ma valeur ajoutée : une maîtrise créative à 360°, renforcée par une capacité à passer du concept au code quand le projet l'exige.
             </p>
             <a href="pages/about-me.html" class="about-btn">En savoir plus</a>
         </div>
@@ -404,7 +676,7 @@
         <div class="footer-cta" style="margin-bottom: 4rem;">
             <h2 style="font-family: 'Syncopate', sans-serif; font-size: 2rem; margin-bottom: 1rem;">Un projet en tête ?</h2>
             <p style="opacity: 0.6; max-width: 600px; margin: 0 auto; line-height: 1.6;">
-                Je suis actuellement à la recherche d'un <strong>stage</strong>.<br>
+                Je suis actuellement à la recherche d'une <strong>alternance</strong>.<br>
                 Pour apporter une vision neuve et stratégique à vos projets.
             </p>
             <a href="assets/CV_Medelys_Seux.pdf" target="_blank" class="btn-download">TÉLÉCHARGER MON CV</a>
@@ -413,11 +685,11 @@
         <h2 style="font-size: 1.5rem; margin-bottom: 1rem; opacity: 0.8; font-family: 'Syncopate';">Me Contacter</h2>
         <p>Email: seuxmedelys2006@gmail.com</p>
         <div style="margin-top: 3rem; opacity: 0.5; font-size: 0.8rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
-            <a href="pages/mentions.html" style="text-decoration: underline;">Mentions Légales</a> - © 2025 Medelys Seux
+            <a href="pages/mentions.html" style="text-decoration: underline;">Mentions Légales</a> - © 2026 Medelys Seux
         </div>
     </footer>
 
-    <div class="floating-dock">
+    <div class="floating-dock" id="floating-dock">
         <div class="dock-label">
             <div class="dock-dot"></div>
             MENU
@@ -532,10 +804,12 @@
                     sessionStorage.setItem('introPlayed', 'true');
 
                     setTimeout(() => {
-                        overlay.style.transition = "opacity 0.8s ease"; 
+                        overlay.style.transition = "opacity 0.8s ease";
                         overlay.style.opacity = "0";
                         setTimeout(() => {
-                            overlay.style.display = "none"; 
+                            overlay.style.display = "none";
+                            // Déclenche l'anim scramble + fade du hero maintenant que l'intro est terminée
+                            if (window.__playHeroIntro) window.__playHeroIntro();
                         }, 800);
                     }, 2800);
                 }, 300);
@@ -594,14 +868,82 @@
 
         gsap.registerPlugin(ScrollTrigger);
 
-        gsap.from(".hero h1", {
-            y: 100, opacity: 0, duration: 1.5, ease: "power4.out", stagger: 0.2
+        // --- 1) GLITCH / SCRAMBLE + FADE-IN DU TITRE HERO ---
+        // Exposé sur window pour être déclenché soit immédiatement (intro déjà vue)
+        // soit après la fin de l'intro drag & drop
+        window.__playHeroIntro = function playHeroIntro() {
+            const h1 = document.querySelector('.hero .reveal-text');
+            if (h1) {
+                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*';
+                const textNodes = [];
+                (function walk(node) {
+                    node.childNodes.forEach(n => {
+                        if (n.nodeType === 3 && n.textContent.trim()) {
+                            textNodes.push({ node: n, final: n.textContent });
+                        } else if (n.nodeType === 1 && n.tagName !== 'BR') {
+                            walk(n);
+                        }
+                    });
+                })(h1);
+                textNodes.forEach(t => {
+                    t.node.textContent = t.final.split('').map(ch =>
+                        ch.trim() ? chars[Math.floor(Math.random() * chars.length)] : ch
+                    ).join('');
+                });
+                let round = 0;
+                const maxRounds = 14;
+                const interval = setInterval(() => {
+                    round++;
+                    textNodes.forEach(t => {
+                        const fc = t.final.split('');
+                        t.node.textContent = fc.map((ch, i) => {
+                            if (!ch.trim()) return ch;
+                            return round > maxRounds * (i / fc.length) + 2 ? ch : chars[Math.floor(Math.random() * chars.length)];
+                        }).join('');
+                    });
+                    if (round >= maxRounds + 3) clearInterval(interval);
+                }, 55);
+            }
+            gsap.from(".hero h1", {
+                y: 100, opacity: 0, duration: 1.5, ease: "power4.out", stagger: 0.2
+            });
+        };
+
+        // Si l'intro est déjà passée (sessionStorage) l'overlay a été mis en display:none plus haut
+        // → on joue l'anim tout de suite. Sinon on attend le launchSequence.
+        const introOverlayEl = document.getElementById('intro-overlay');
+        if (!introOverlayEl || introOverlayEl.style.display === 'none') {
+            window.__playHeroIntro();
+        }
+
+        // --- 2) PARALLAX SUR LA SECTION QUI SUIS-JE ---
+        gsap.to(".about-visual", {
+            scrollTrigger: {
+                trigger: "#about",
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 1
+            },
+            y: -80,
+            ease: "none"
+        });
+        gsap.to(".about-content", {
+            scrollTrigger: {
+                trigger: "#about",
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 1
+            },
+            y: -30,
+            ease: "none"
         });
 
-        gsap.utils.toArray('.card').forEach((card, i) => {
+        // --- 3) STAGGER AMÉLIORÉ SUR LES CARTES ---
+        gsap.utils.toArray('.poles-grid .card').forEach((card, i) => {
             gsap.from(card, {
-                scrollTrigger: { trigger: card, start: "top 85%" },
-                y: 50, opacity: 0, duration: 1, ease: "power3.out", delay: i * 0.1
+                scrollTrigger: { trigger: card, start: "top 90%" },
+                y: 60, opacity: 0, scale: 0.92,
+                duration: 0.9, ease: "back.out(1.2)", delay: i * 0.12
             });
         });
 
@@ -609,7 +951,7 @@
             scrollTrigger: { trigger: "#about", start: "top 75%" },
             x: -50, opacity: 0, duration: 1, ease: "power3.out"
         });
-        
+
         gsap.from(".about-visual", {
             scrollTrigger: { trigger: "#about", start: "top 75%" },
             x: 100, opacity: 0, duration: 1.2, ease: "power3.out", delay: 0.2
@@ -622,6 +964,97 @@
                 x: x * 50, y: y * 50, duration: 2, ease: 'power2.out'
             });
         });
+
+        // --- 4) CURSEUR MAGNÉTIQUE SUR LES BOUTONS (desktop) ---
+        (function magneticCursor() {
+            if (window.matchMedia('(hover: none)').matches) return;
+            const targets = document.querySelectorAll('.about-btn, .tag, .btn-download, .dock-label');
+            targets.forEach(el => {
+                el.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                el.addEventListener('mousemove', (e) => {
+                    const r = el.getBoundingClientRect();
+                    const cx = r.left + r.width / 2;
+                    const cy = r.top + r.height / 2;
+                    const dx = (e.clientX - cx) * 0.3;
+                    const dy = (e.clientY - cy) * 0.3;
+                    el.style.transform = `translate(${dx}px, ${dy}px)`;
+                });
+                el.addEventListener('mouseleave', () => {
+                    el.style.transform = 'translate(0, 0)';
+                });
+            });
+        })();
+
+        // --- NAV MOBILE : toggle du dock au tap (uniquement en dessous de 768px) ---
+        (function () {
+            const dock = document.getElementById('floating-dock');
+            if (!dock) return;
+            const mq = window.matchMedia('(max-width: 768px)');
+
+            dock.addEventListener('click', (e) => {
+                if (!mq.matches) return;
+                // Si on tape sur un lien on le laisse naviguer mais on referme aussi
+                if (e.target.closest('.dock-links a')) {
+                    dock.classList.remove('open');
+                    return;
+                }
+                dock.classList.toggle('open');
+            });
+
+            // Fermer en tappant hors du dock
+            document.addEventListener('click', (e) => {
+                if (!mq.matches) return;
+                if (!dock.contains(e.target)) dock.classList.remove('open');
+            });
+
+            // Si on repasse en desktop par resize, on nettoie l'état
+            mq.addEventListener('change', (ev) => {
+                if (!ev.matches) dock.classList.remove('open');
+            });
+        })();
+
+        // --- TILT 3D AU SCROLL (mobile/tactile uniquement) ---
+        // Sur desktop : vanilla-tilt s'occupe du hover. Sur mobile : les cartes se penchent
+        // selon leur position dans le viewport au scroll → effet 3D visible passivement.
+        (function initScrollTilt() {
+            const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+            if (!isTouch) return;
+
+            const cards = document.querySelectorAll('.poles-grid .card');
+            if (!cards.length) return;
+
+            // On désactive vanilla-tilt pour ne pas qu'il interfère sur mobile
+            cards.forEach(c => {
+                if (c.vanillaTilt) c.vanillaTilt.destroy();
+                c.style.willChange = 'transform';
+            });
+
+            let ticking = false;
+            function update() {
+                const vh = window.innerHeight;
+                const vw = window.innerWidth;
+                cards.forEach(card => {
+                    const r = card.getBoundingClientRect();
+                    const centerY = r.top + r.height / 2;
+                    const centerX = r.left + r.width / 2;
+                    const ty = Math.max(-1, Math.min(1, (centerY - vh / 2) / (vh / 2)));
+                    const tx = (centerX - vw / 2) / (vw / 2);
+                    const rotateX = -ty * 24;
+                    const rotateY = tx * 16;
+                    const scale = 1 - Math.abs(ty) * 0.07;
+                    card.style.transform = `perspective(700px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(${scale})`;
+                });
+                ticking = false;
+            }
+
+            window.addEventListener('scroll', () => {
+                if (!ticking) { requestAnimationFrame(update); ticking = true; }
+            }, { passive: true });
+            window.addEventListener('resize', () => {
+                if (!ticking) { requestAnimationFrame(update); ticking = true; }
+            });
+            update();
+        })();
     </script>
 </body>
 </html>
