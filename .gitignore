@@ -1,2 +1,6 @@
 # Fichiers volumineux (dépassent la limite GitHub)
 *.mp4
+
+# Fichiers sources de travail — inutiles pour le site en ligne
+*.psd
+**/Brouillion/

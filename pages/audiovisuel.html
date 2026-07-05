@@ -259,6 +259,92 @@
         }
 
         footer { position: relative; z-index: 4; padding: 6rem 10%; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); background: var(--bg); }
+
+        /* ============================
+           RESPONSIVE MOBILE / TABLETTE
+           ============================ */
+        @media (max-width: 900px) {
+            /* Titre de page */
+            h1 { font-size: clamp(2.4rem, 10vw, 5rem); line-height: 1.05; }
+            .title-section { padding: 0 6%; min-height: 40vh; margin-bottom: 2.5rem; }
+            p.intro { font-size: 1rem; padding: 1.1rem; max-width: 100%; }
+
+            /* Header */
+            header { padding: 1.8rem 5%; }
+            .back-link { padding: 8px 14px; font-size: 0.85rem; }
+
+            /* Cartes projets */
+            .gallery-section { padding: 3rem 5%; margin-top: -6vh; }
+            .cards-grid { gap: 2rem; }
+            .project-card { height: 320px; }
+            .card-content { padding: 2rem 1.6rem; }
+            .card-title { font-size: 1.8rem; margin-top: 8px; }
+            .card-meta { font-size: 0.75rem; letter-spacing: 1.5px; }
+            .btn-open { opacity: 1; transform: none; font-size: 0.85rem; margin-top: 1.2rem; }
+
+            /* Catégorie divider */
+            .category-divider { padding: 1.8rem !important; }
+            .category-divider h2 { font-size: 1.5rem !important; }
+            .category-divider p { font-size: 0.95rem !important; }
+
+            /* Overlay projet */
+            .modal-container { padding: 90px 5% 60px 5%; }
+            .close-btn { top: 15px; right: 15px; padding: 8px 14px; font-size: 0.72rem; letter-spacing: 1px; }
+            .modal-header { margin-bottom: 2rem; }
+            .modal-title { font-size: 1.9rem; }
+            .modal-meta { font-size: 0.72rem; letter-spacing: 1.5px; }
+
+            /* Vidéos, infos, sections */
+            .video-block { margin-bottom: 2.8rem; }
+            .video-info h3 { font-size: 1.15rem !important; padding-left: 12px; }
+            .video-info p { font-size: 0.95rem !important; }
+            .motion-section { padding-top: 2.5rem; margin-top: 1rem; }
+
+            /* Titres inline en 2rem (CASE STUDY, WORKFLOW…) */
+            .video-info h3[style*="2rem"] { font-size: 1.35rem !important; }
+
+            /* Vidéo verticale */
+            .vertical-row { gap: 1.5rem; margin-top: 1.5rem; }
+            .vertical-wrapper { width: 100%; max-width: 240px; margin: 0 auto; }
+            .vertical-text { min-width: 100%; flex: 1 1 100%; }
+
+            /* Grille des déclinaisons de logo */
+            .logo-video-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 1rem; }
+            .lv-label { font-size: 0.65rem; }
+
+            /* Galerie photos */
+            .ph-gallery.photos { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.9rem; }
+
+            /* Shorts */
+            .shorts-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-top: 2rem; }
+
+            /* Tags pill (inline .45rem 1.1rem) trop grands sur mobile */
+            [style*="border-radius:50px"][style*="letter-spacing:1.5px"] {
+                font-size: 0.62rem !important;
+                padding: 0.35rem 0.85rem !important;
+            }
+
+            /* Grilles inline (workflow, etc.) */
+            [style*="grid-template-columns: repeat(auto-fit, minmax(200px"] {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
+                gap: 1rem !important;
+            }
+
+            footer { padding: 3rem 5%; }
+        }
+
+        /* Très petits écrans */
+        @media (max-width: 420px) {
+            .title-section { padding: 0 5%; }
+            p.intro { font-size: 0.92rem; padding: 1rem; }
+            .project-card { height: 260px; }
+            .card-content { padding: 1.5rem 1.2rem; }
+            .card-title { font-size: 1.5rem; }
+            .modal-title { font-size: 1.6rem; }
+            .vertical-wrapper { max-width: 200px; }
+            .logo-video-grid { grid-template-columns: repeat(2, 1fr); }
+            .shorts-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+        }
     </style>
 </head>
 
@@ -287,6 +373,15 @@
 
     <div class="gallery-section">
         <div class="cards-grid">
+            <div class="project-card" id="card-camby">
+                <img src="../assets/Projet Stage Camby/tournage-comedie-des-alpes.png" class="card-bg" alt="Cover Stage Camby — en tournage, Sony A7 IV en main">
+                <div class="card-content">
+                    <span class="card-meta">Stage Professionnel // 2 mois et demi en entreprise</span>
+                    <h2 class="card-title">Camby — Création de Contenu</h2>
+                    <span class="btn-open">Voir le dossier complet →</span>
+                </div>
+            </div>
+
             <div class="project-card" id="card-justice">
                 <img src="https://images.unsplash.com/photo-1595769816263-9b910be24d5f?q=80&w=2679&auto=format&fit=crop" class="card-bg" alt="Cover Justice">
                 <div class="card-content">
@@ -371,6 +466,172 @@
                     <span class="card-meta">Vulgarisation Scientifique // Vidéo Générée par IA</span>
                     <h2 class="card-title">Le Biais de Statu Quo</h2>
                     <span class="btn-open">Voir le dossier complet →</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="project-overlay" id="overlay-camby" data-lenis-prevent>
+        <div class="close-btn">FERMER ✕</div>
+        <div class="modal-container">
+            <div class="modal-header">
+                <span class="modal-meta">Stage Professionnel // Avril – Juin 2026</span>
+                <h2 class="modal-title">Camby — Création de Contenu</h2>
+            </div>
+
+            <div class="video-info" style="text-align:center; max-width:800px; margin-bottom:3rem;">
+                <h3 style="font-size: 2rem; margin-bottom:1rem; color:var(--accent);">2 MOIS ET DEMI EN ENTREPRISE</h3>
+                <p>
+                    <strong>Camby</strong> est une carte d'avantages locale (Chambéry, Aix-les-Bains, Annecy et les deux Savoies) très présente sur les réseaux sociaux.
+                    Au sein de son pôle création de contenu, ma mission : <strong>concevoir, tourner et monter des vidéos courtes</strong> pour Instagram et TikTok,
+                    afin de mettre en valeur les commerçants partenaires et faire grandir la communauté de la marque.
+                    <br><br>
+                    Un poste volontairement polyvalent, qui m'a fait toucher à <strong>toute la chaîne de production</strong> — de la première idée jusqu'à l'export final.
+                </p>
+            </div>
+
+            <div class="video-info" style="text-align:center; max-width:800px; margin-bottom:1rem;">
+                <h3 style="font-size:1.6rem; margin-bottom:0.5rem; color:white;">Des vidéos que j'ai réalisées</h3>
+                <p style="font-size:0.9rem; color:#aaa;">Tournées chez les partenaires, montées sur DaVinci Resolve.</p>
+            </div>
+            <div class="shorts-grid">
+                <div class="short-wrapper">
+                    <iframe src="https://www.youtube-nocookie.com/embed/x6rRGK3kAP8" title="Vidéo réalisée pendant mon stage chez Camby" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                </div>
+                <div class="short-wrapper">
+                    <iframe src="https://www.youtube-nocookie.com/embed/YHZT3xVIKds" title="Vidéo réalisée pendant mon stage chez Camby" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                </div>
+                <div class="short-wrapper">
+                    <iframe src="https://www.youtube-nocookie.com/embed/7jkCU6M_m_w" title="Vidéo réalisée pendant mon stage chez Camby" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                </div>
+                <div class="short-wrapper">
+                    <iframe src="https://www.youtube-nocookie.com/embed/vKmc2O88VQ8" title="Vidéo réalisée pendant mon stage chez Camby" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                </div>
+            </div>
+
+            <div class="motion-section" style="width:100%; max-width:1000px; border-top:1px solid rgba(255,255,255,0.1); padding-top:4rem; margin-top:4rem;">
+                <div class="video-info" style="margin-bottom:2rem;">
+                    <h3 style="font-size:1.6rem; margin-bottom:1.2rem; color:white; border-left:4px solid var(--accent); padding-left:15px;">TOUTE LA CHAÎNE DE PRODUCTION</h3>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7;">Plutôt que d'être cantonné à une seule tâche, j'ai participé à chaque étape de la vie d'une vidéo — réparties en cinq pôles :</p>
+                </div>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:1.2rem;">
+                    <div style="background:#0d0d0d; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.5rem;">
+                        <div style="color:var(--accent); font-size:0.75rem; letter-spacing:2px; text-transform:uppercase; margin-bottom:10px;">01 — VEILLE &amp; ANALYSE</div>
+                        <p style="font-size:0.9rem; color:#aaa; line-height:1.5;">Tendances, analyse des concurrents, suivi des statistiques des publications pour ajuster la ligne éditoriale</p>
+                    </div>
+                    <div style="background:#0d0d0d; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.5rem;">
+                        <div style="color:var(--accent); font-size:0.75rem; letter-spacing:2px; text-transform:uppercase; margin-bottom:10px;">02 — SCRIPTS &amp; VOIX OFF</div>
+                        <p style="font-size:0.9rem; color:#aaa; line-height:1.5;">Écriture des scripts et des hooks, passage par un vrai circuit de validation avant chaque tournage</p>
+                    </div>
+                    <div style="background:#0d0d0d; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.5rem;">
+                        <div style="color:var(--accent); font-size:0.75rem; letter-spacing:2px; text-transform:uppercase; margin-bottom:10px;">03 — TOURNAGE &amp; CAPTATION</div>
+                        <p style="font-size:0.9rem; color:#aaa; line-height:1.5;">Sur le terrain chez les partenaires : cadreur, acteur et force de proposition sur les idées de plans</p>
+                    </div>
+                    <div style="background:#0d0d0d; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.5rem;">
+                        <div style="color:var(--accent); font-size:0.75rem; letter-spacing:2px; text-transform:uppercase; margin-bottom:10px;">04 — MONTAGE &amp; POST-PROD</div>
+                        <p style="font-size:0.9rem; color:#aaa; line-height:1.5;">DaVinci Resolve : derush, rythme, SFX, musiques calées sur les drops, étalonnage</p>
+                    </div>
+                    <div style="background:#0d0d0d; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.5rem;">
+                        <div style="color:var(--accent); font-size:0.75rem; letter-spacing:2px; text-transform:uppercase; margin-bottom:10px;">05 — SOUS-TITRAGE</div>
+                        <p style="font-size:0.9rem; color:#aaa; line-height:1.5;">Génération sur Submagic, correction, codes maison, incrustation propre via le mode Fusion</p>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:1.2rem; margin-top:2.5rem;">
+                    <figure style="margin:0;">
+                        <img src="../assets/Projet Stage Camby/tournage-vb.png" alt="Tournage chez V&B — Sony A7 IV en main devant la planche apéro" style="width:100%; height:300px; object-fit:cover; border-radius:12px; border:1px solid rgba(255,255,255,0.1);" loading="lazy">
+                        <figcaption style="font-size:0.75rem; color:#666; margin-top:8px; text-align:center;">Sur le terrain — tournage V&amp;B</figcaption>
+                    </figure>
+                    <figure style="margin:0;">
+                        <img src="../assets/Projet Stage Camby/tournage-pachamama.png" alt="Tournage chez Pachamama — captation en intérieur" style="width:100%; height:300px; object-fit:cover; border-radius:12px; border:1px solid rgba(255,255,255,0.1);" loading="lazy">
+                        <figcaption style="font-size:0.75rem; color:#666; margin-top:8px; text-align:center;">Sur le terrain — tournage Pachamama</figcaption>
+                    </figure>
+                    <figure style="margin:0;">
+                        <img src="../assets/Projet Stage Camby/davinci-timeline.png" alt="Interface DaVinci Resolve — derush et timeline d'un projet Camby" style="width:100%; height:300px; object-fit:cover; object-position:left center; border-radius:12px; border:1px solid rgba(255,255,255,0.1);" loading="lazy">
+                        <figcaption style="font-size:0.75rem; color:#666; margin-top:8px; text-align:center;">Au bureau — montage sur DaVinci Resolve</figcaption>
+                    </figure>
+                </div>
+            </div>
+
+            <div class="motion-section" style="width:100%; max-width:1000px; margin-top:3.5rem;">
+                <div class="video-info" style="margin-bottom:1.5rem;">
+                    <h3 style="font-size:1.6rem; margin-bottom:1.2rem; color:white; border-left:4px solid var(--accent); padding-left:15px;">MATÉRIEL &amp; OUTILS PROFESSIONNELS</h3>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7;">Caméra principale : une <strong style="color:white;">Sony A7 IV</strong>, en 4K et en <strong>LOG</strong> — un profil de couleur "plat" qui impose un vrai travail d'étalonnage en post-production. À cela s'ajoutaient une caméra d'action DJI et un iPhone dédié : trois caméras qui n'interprètent pas les couleurs de la même façon, d'où un travail systématique d'<strong style="color:white;">harmonisation colorimétrique</strong> au montage — l'un des aspects sur lesquels j'ai le plus progressé.</p>
+                </div>
+                <div style="display:flex; flex-wrap:wrap; gap:0.7rem;">
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Sony A7 IV — 4K LOG</span>
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Caméra d'action DJI</span>
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Micro canon &amp; cravate</span>
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">DaVinci Resolve</span>
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Mode Fusion</span>
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Submagic</span>
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Notion</span>
+                </div>
+                <figure style="margin:2rem 0 0;">
+                    <img src="../assets/Projet Stage Camby/fusion-deltakeyer.png" alt="Mode Fusion de DaVinci Resolve — incrustation des sous-titres avec le DeltaKeyer" style="width:100%; border-radius:12px; border:1px solid rgba(255,255,255,0.1);" loading="lazy">
+                    <figcaption style="font-size:0.75rem; color:#666; margin-top:8px; text-align:center;">Ma méthode d'incrustation des sous-titres : le DeltaKeyer dans le mode Fusion de DaVinci — un fond vert retiré sans aucune imperfection</figcaption>
+                </figure>
+            </div>
+
+            <div class="motion-section" style="width:100%; max-width:1000px; margin-top:3.5rem;">
+                <div class="video-info" style="margin-bottom:1rem;">
+                    <h3 style="font-size:1.6rem; margin-bottom:1.2rem; color:white; border-left:4px solid var(--accent); padding-left:15px;">FOCUS : « BREF », MA PREMIÈRE VIDÉO</h3>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7;">Pour l'after movie de la <strong style="color:white;">Food's Week</strong> (l'événement phare de Camby), j'ai proposé autre chose qu'un after movie classique : un montage ultra rythmé, avec une voix off au débit rapide, dans le style de la série <strong style="color:white;">« Bref »</strong>. Grande liberté créative, très peu de retours de l'équipe — et une fois publiée sur le compte de Camby, la vidéo a dépassé les <strong style="color:white;">10 000 vues</strong>. Montrer ma créativité et mon autonomie dès la première vidéo du stage, c'était exactement ce que je voulais.</p>
+                </div>
+            </div>
+
+            <div class="motion-section" style="width:100%; max-width:1000px; margin-top:2.5rem;">
+                <div class="video-info" style="margin-bottom:1rem;">
+                    <h3 style="font-size:1.6rem; margin-bottom:1.2rem; color:white; border-left:4px solid var(--accent); padding-left:15px;">FOCUS TECHNIQUE : LE CORSAIRE &amp; O DWICH</h3>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7;">Mes deux vidéos les plus abouties techniquement. <strong style="color:white;">Le Corsaire</strong> : un tournage en soirée, avec des contraintes de lumière exigeantes — le rendu final, notamment l'étalonnage et l'ambiance, est ma plus belle réussite du stage. <strong style="color:white;">O Dwich</strong> : colorimétrie et dynamisme de montage. Entre mes premières vidéos et celles-ci, la progression est visible à l'écran — et c'est très satisfaisant de pouvoir la mesurer concrètement.</p>
+                </div>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:1.2rem;">
+                    <figure style="margin:0;">
+                        <img src="../assets/Projet Stage Camby/etalonnage-avant.png" alt="Rush brut en LOG avant étalonnage — Le Corsaire" style="width:100%; height:340px; object-fit:cover; border-radius:12px; border:1px solid rgba(255,255,255,0.1);" loading="lazy">
+                        <figcaption style="font-size:0.75rem; color:#666; margin-top:8px; text-align:center;">Avant étalonnage — rush brut</figcaption>
+                    </figure>
+                    <figure style="margin:0;">
+                        <img src="../assets/Projet Stage Camby/etalonnage-apres.png" alt="Le même plan après mon étalonnage — Le Corsaire" style="width:100%; height:340px; object-fit:cover; border-radius:12px; border:1px solid rgba(0,255,136,0.35);" loading="lazy">
+                        <figcaption style="font-size:0.75rem; color:var(--accent); margin-top:8px; text-align:center;">Après mon étalonnage</figcaption>
+                    </figure>
+                    <figure style="margin:0;">
+                        <img src="../assets/Projet Stage Camby/plan-corsaire.png" alt="Plan final de la vidéo Le Corsaire" style="width:100%; height:340px; object-fit:cover; border-radius:12px; border:1px solid rgba(255,255,255,0.1);" loading="lazy">
+                        <figcaption style="font-size:0.75rem; color:#666; margin-top:8px; text-align:center;">Plan final — Le Corsaire</figcaption>
+                    </figure>
+                    <figure style="margin:0;">
+                        <img src="../assets/Projet Stage Camby/plan-odwich.png" alt="Plan final de la vidéo O Dwich" style="width:100%; height:340px; object-fit:cover; border-radius:12px; border:1px solid rgba(255,255,255,0.1);" loading="lazy">
+                        <figcaption style="font-size:0.75rem; color:#666; margin-top:8px; text-align:center;">Plan final — O Dwich</figcaption>
+                    </figure>
+                </div>
+            </div>
+
+            <div class="motion-section" style="width:100%; max-width:1000px; margin-top:2.5rem;">
+                <div class="video-info" style="margin-bottom:1.5rem;">
+                    <h3 style="font-size:1.6rem; margin-bottom:1.2rem; color:white; border-left:4px solid var(--accent); padding-left:15px;">DANS LES COULISSES</h3>
+                </div>
+                <div class="vertical-row">
+                    <div class="vertical-wrapper">
+                        <iframe src="https://www.youtube-nocookie.com/embed/TxKoHYyP_cY" title="Coulisses de tournage — stage Camby" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                    <div class="vertical-text">
+                        <p style="font-size:0.95rem; color:#aaa; line-height:1.7;">Le quotidien du stage : départ en voiture chez les partenaires (<strong style="color:white;">Aix'Périence, Pachamama, Le Corsaire, O Dwich, Fitness Park, Flunch, V&amp;B</strong>…), échange avec le commerçant, captation du "process" en images — puis retour au bureau pour monter. Des journées rythmées, jamais identiques.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="motion-section" style="width:100%; max-width:1000px; border-top:1px solid rgba(255,255,255,0.1); padding-top:3rem; margin-top:3.5rem;">
+                <div class="video-info" style="margin-bottom:1.5rem;">
+                    <h3 style="font-size:1.6rem; margin-bottom:1.2rem; color:white; border-left:4px solid var(--accent); padding-left:15px;">CE QUE J'EN RETIRE</h3>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7; margin-bottom:1.2rem;">La captation en conditions réelles, l'étalonnage de rushs en LOG, et un circuit de validation exigeant — chaque vidéo passait par l'équipe, puis la directrice de la communication, puis la validation finale du CEO, avec parfois jusqu'à <strong style="color:white;">cinq allers-retours de corrections</strong>. Apprendre à recevoir et intégrer ces retours sans les prendre personnellement, c'est une compétence à part entière.</p>
+                    <p style="font-size:0.95rem; color:#aaa; line-height:1.7;">Et l'échange a fonctionné dans les deux sens : mon expérience de créateur de contenu (des millions de vues cumulées sur mes propres chaînes) a servi l'équipe — notamment le <strong style="color:white;">sound design</strong>, que j'ai introduit dans les montages et qui a été adopté.</p>
+                </div>
+                <div style="display:flex; flex-wrap:wrap; gap:0.7rem;">
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Captation pro</span>
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Étalonnage LOG</span>
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Sound design</span>
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Validation client</span>
+                    <span style="border:1px solid rgba(0,255,136,0.4); color:var(--accent); padding:0.45rem 1.1rem; border-radius:50px; font-size:0.7rem; letter-spacing:1.5px; text-transform:uppercase;">Esprit d'équipe</span>
                 </div>
             </div>
 
@@ -495,6 +756,49 @@
                 </div>
                 <div class="short-wrapper">
                     <iframe src="https://www.youtube.com/embed/Okhrle9k57Y" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <div style="width:100%; max-width:1000px; border-top:1px solid rgba(255,255,255,0.1); padding-top:4rem; margin-top:4rem;">
+                <div class="video-info" style="text-align:center; margin-bottom:2.5rem;">
+                    <h3 style="font-size:2rem; margin-bottom:1rem; color:var(--accent);">LA PREUVE EN CHIFFRES</h3>
+                    <p style="max-width:700px; margin:0 auto;">
+                        Chaque badge ci-dessous est un <strong>vrai compteur de vues</strong> capturé sur la chaîne.
+                        Et en dessous, la page vidéos de la chaîne elle-même : des millions de vues, vidéo après vidéo,
+                        sur une seule et même niche.
+                    </p>
+                </div>
+
+                <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:0.8rem; margin-bottom:3rem;">
+                    <div style="background:#0d0d0d; border:1px solid rgba(0,255,136,0.35); border-radius:50px; padding:0.55rem 1.2rem; display:flex; align-items:center;">
+                        <img src="../assets/Projet Perosnnel Creation de contnus niche/Capture d'écran 2026-07-05 034107.png" alt="Compteur de vues : 7,6 millions" style="height:30px; width:auto; display:block;">
+                    </div>
+                    <div style="background:#0d0d0d; border:1px solid rgba(0,255,136,0.35); border-radius:50px; padding:0.55rem 1.2rem; display:flex; align-items:center;">
+                        <img src="../assets/Projet Perosnnel Creation de contnus niche/Capture d'écran 2026-07-05 034209.png" alt="Compteur de vues en millions" style="height:30px; width:auto; display:block;">
+                    </div>
+                    <div style="background:#0d0d0d; border:1px solid rgba(0,255,136,0.35); border-radius:50px; padding:0.55rem 1.2rem; display:flex; align-items:center;">
+                        <img src="../assets/Projet Perosnnel Creation de contnus niche/Capture d'écran 2026-07-05 034211.png" alt="Compteur de vues en millions" style="height:30px; width:auto; display:block;">
+                    </div>
+                    <div style="background:#0d0d0d; border:1px solid rgba(0,255,136,0.35); border-radius:50px; padding:0.55rem 1.2rem; display:flex; align-items:center;">
+                        <img src="../assets/Projet Perosnnel Creation de contnus niche/Capture d'écran 2026-07-05 034214.png" alt="Compteur de vues en millions" style="height:30px; width:auto; display:block;">
+                    </div>
+                    <div style="background:#0d0d0d; border:1px solid rgba(0,255,136,0.35); border-radius:50px; padding:0.55rem 1.2rem; display:flex; align-items:center;">
+                        <img src="../assets/Projet Perosnnel Creation de contnus niche/Capture d'écran 2026-07-05 034217.png" alt="Compteur de vues en millions" style="height:30px; width:auto; display:block;">
+                    </div>
+                    <div style="background:#0d0d0d; border:1px solid rgba(0,255,136,0.35); border-radius:50px; padding:0.55rem 1.2rem; display:flex; align-items:center;">
+                        <img src="../assets/Projet Perosnnel Creation de contnus niche/Capture d'écran 2026-07-05 034219.png" alt="Compteur de vues en millions" style="height:30px; width:auto; display:block;">
+                    </div>
+                    <div style="background:#0d0d0d; border:1px solid rgba(0,255,136,0.35); border-radius:50px; padding:0.55rem 1.2rem; display:flex; align-items:center;">
+                        <img src="../assets/Projet Perosnnel Creation de contnus niche/Capture d'écran 2026-07-05 034222.png" alt="Compteur de vues en millions" style="height:30px; width:auto; display:block;">
+                    </div>
+                    <div style="background:#0d0d0d; border:1px solid rgba(0,255,136,0.35); border-radius:50px; padding:0.55rem 1.2rem; display:flex; align-items:center;">
+                        <img src="../assets/Projet Perosnnel Creation de contnus niche/Capture d'écran 2026-07-05 034224.png" alt="Compteur de vues en millions" style="height:30px; width:auto; display:block;">
+                    </div>
+                </div>
+
+                <div style="display:flex; flex-direction:column; align-items:center;">
+                    <img src="../assets/Projet Perosnnel Creation de contnus niche/Capture d'écran 2026-07-05 034233.png" alt="Page vidéos de la chaîne YouTube : une grille de Shorts à plusieurs millions de vues chacun" style="width:100%; max-width:620px; border-radius:12px; border:1px solid rgba(255,255,255,0.12); box-shadow:0 10px 40px rgba(0,0,0,0.5);">
+                    <span style="font-size:0.8rem; color:#666; margin-top:12px;">La page vidéos de la chaîne — capture brute, aucun montage.</span>
                 </div>
             </div>
 
@@ -838,7 +1142,7 @@
 
     <footer>
         <h2 style="font-size: 4vw; margin-bottom: 2rem;">TRAVAILLONS ENSEMBLE</h2>
-        <p>Email: seuxmedelys2006@gmail.com</p>
+        <p>Email: seuxmedelys42@gmail.com</p>
         <div style="margin-top: 3rem; opacity: 0.5; font-size: 0.8rem;">
             <a href="mentions.html" style="text-decoration: underline;">Mentions Légales - © 2026 Medelys Seux</a>
         </div>
@@ -877,6 +1181,7 @@
             }
         }
 
+        setupModal('card-camby', 'overlay-camby');
         setupModal('card-justice', 'overlay-justice');
         setupModal('card-rallye', 'overlay-rallye');
         setupModal('card-ia', 'overlay-ia');
@@ -948,5 +1253,6 @@
         });
 
     </script>
+    <script src="../assets/grain.js" defer></script>
 </body>
 </html>

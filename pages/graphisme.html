@@ -126,6 +126,40 @@
         
         .pdf-viewer { width: 100%; height: 100%; border: none; }
 
+        /* --- Onglets pour basculer entre 2 PDFs dans un même modal (utilisé sur Capvie) --- */
+        .modal-media--tabs {
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: flex-start;
+        }
+        .pdf-tabs {
+            display: flex;
+            width: 100%;
+            background: #050505;
+            border-bottom: 1px solid #222;
+            flex-shrink: 0;
+        }
+        .pdf-tab {
+            flex: 1;
+            background: none;
+            border: none;
+            color: #888;
+            padding: 12px 14px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            transition: color 0.3s, background 0.3s, border-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .pdf-tab:hover { color: white; }
+        .pdf-tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+            background: rgba(0, 240, 255, 0.05);
+        }
+
         .modal-text {
             flex: 1; padding: 50px; overflow-y: auto;
             font-family: 'Space Grotesk', sans-serif;
@@ -243,10 +277,26 @@
         </div>
         
         <div class="project-card" onclick="openModal('videolan')">
-            <img src="../assets/charte_vlc_miniature.png" alt="Charte Graphique VLC">
+            <img src="../assets/icones-illustration-vignette.png" alt="Set d'icônes et illustration — style fait main" style="object-position: center top;">
             <div class="project-info">
-                <h3>VIDEOLAN (VLC)</h3>
-                <p>Design System & Identité</p>
+                <h3>ICÔNES &amp; ILLUSTRATION</h3>
+                <p>Design d'interface — style "fait main"</p>
+            </div>
+        </div>
+
+        <div class="project-card" onclick="openModal('capvie')">
+            <img src="../assets/Projet Capvie/miniature-capvie.png" alt="Charte Graphique CAPVIE" style="object-position: 28% center;">
+            <div class="project-info">
+                <h3>CAPVIE</h3>
+                <p>Charte Graphique — Client réel</p>
+            </div>
+        </div>
+
+        <div class="project-card" onclick="openModal('cocernes')">
+            <img src="../assets/Projet CO-CERNES/Shéma_Infographie_CO-CERNE_SEUX_Medelys V2 (juste infographie).png" alt="Infographie CO-CERNES">
+            <div class="project-info">
+                <h3>CO-CERNES</h3>
+                <p>Infographie — Client associatif réel</p>
             </div>
         </div>
 
@@ -331,34 +381,33 @@
             <button class="close-modal" onclick="closeModal('modal-videolan')">×</button>
             
             <div class="modal-media">
-                <embed src="../assets/charte graphique vlc.pdf" class="pdf-viewer" type="application/pdf">
+                <embed src="../assets/icones-illustration-site-web.pdf?v=2" class="pdf-viewer" type="application/pdf">
             </div>
-            
+
             <div class="modal-text">
-                <h2>VideoLAN (VLC)</h2>
-                <p style="color: var(--accent-vlc); margin-bottom: 30px;"><em>Design System & Identité Visuelle</em></p>
-                
-                <h3>Le Projet</h3>
+                <h2>Icônes &amp; Illustration</h2>
+                <p style="color: var(--accent-vlc); margin-bottom: 30px;"><em>Design d'interface — set d'icônes "fait main" pour un site web</em></p>
+
+                <h3>Le Brief</h3>
                 <p>
-                    Proposition de refonte et normalisation de l'identité graphique de <strong>VideoLAN</strong> (VLC Media Player). 
-                    L'objectif était de créer un système cohérent (Design System) pour harmoniser les supports de communication.
+                    Donner une vraie personnalité graphique à un site web : concevoir un <strong>set d'icônes</strong> et une <strong>illustration originale</strong> dans un style <strong>"fait main"</strong>, au trait organique — à l'opposé des banques d'icônes génériques et lisses qu'on voit partout.
                 </p>
 
-                <h3>Identité Visuelle & Couleurs</h3>
-                <p>
-                    La charte s'articule autour de l'orange iconique de VLC (#FA930B), associé à un bleu nuit profond (#202548) pour le contraste et le sérieux institutionnel.
-                </p>
-                
-                <h3>Iconographie & Illustration</h3>
-                <p>Création d'un set d'icônes et d'illustrations originales pour humaniser l'interface :</p>
+                <h3>Le Set d'icônes</h3>
                 <ul>
-                    <li><strong>Style :</strong> Trait "dessiné main" vectoriel pour un aspect organique et collaboratif.</li>
-                    <li><strong>Usage :</strong> Pictogrammes pour les actions clés (Collaborer, Donner, Lire une vidéo).</li>
+                    <li><strong>6 pictogrammes</strong> dessinés pour les actions clés du site : collaborer, faire un don, vidéos, contribuer, profil utilisateur et ses déclinaisons.</li>
+                    <li><strong>Cohérence du trait</strong> — mêmes épaisseurs, mêmes formes organiques, même langage visuel sur tout le set.</li>
+                    <li><strong>Lisibilité</strong> — chaque icône reste identifiable aux petites tailles réelles d'une interface.</li>
                 </ul>
 
-                <h3>Typographie</h3>
+                <h3>L'Illustration</h3>
                 <p>
-                    Utilisation de la police <strong>Cascadia Code</strong> pour évoquer l'aspect open-source et développement, couplée à <strong>Raleway</strong> pour la modernité des titres.
+                    Une illustration principale dans le même langage graphique, pensée pour accompagner les contenus du site et renforcer son côté chaleureux et communautaire.
+                </p>
+
+                <h3>La Palette</h3>
+                <p>
+                    Un duo simple et contrasté : <strong>orange chaleureux (#FA930B)</strong> pour l'énergie, <strong>bleu nuit profond (#202548)</strong> pour l'assise — appliqué en aplats francs, fidèle à l'esprit dessiné main.
                 </p>
 
                 </div>
@@ -396,6 +445,127 @@
                 <h3>Visuel & Stratégie</h3>
                 <p>
                     Cette affiche m'a appris à penser un visuel comme un <strong>maillon d'un dispositif</strong> : chaque choix (couleurs, accroche, emplacement du QR code) sert un objectif précis — capter l'attention dans un lieu de passage, déclencher une action, puis transformer la curiosité en abonné·e. Une façon concrète de relier graphisme et réflexion stratégique.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-capvie">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('modal-capvie')">×</button>
+
+            <div class="modal-media modal-media--tabs">
+                <div class="pdf-tabs">
+                    <button class="pdf-tab active" onclick="switchCapviePdf(this, '../assets/Projet Capvie/Charte_Graphique_CAPVIE_SEUX_Medelys.pdf')">V1 — Ma proposition</button>
+                    <button class="pdf-tab" onclick="switchCapviePdf(this, '../assets/Projet Capvie/RETOUR_CAPVIE_SEUX_Medelys.pdf')">V2 — Retours client appliqués</button>
+                </div>
+                <embed id="capvie-pdf" src="../assets/Projet Capvie/Charte_Graphique_CAPVIE_SEUX_Medelys.pdf" class="pdf-viewer" type="application/pdf">
+            </div>
+
+            <div class="modal-text">
+                <h2>CAPVIE</h2>
+                <p style="color: var(--accent); margin-bottom: 30px;"><em>Charte graphique complète — Mission client réel</em></p>
+
+                <h3>Le Contexte</h3>
+                <p>
+                    Dans le cadre d'une <strong>SAE à l'Université Savoie Mont Blanc</strong>, chaque étudiant devait proposer, seul et de bout en bout, sa propre <strong>charte graphique complète</strong> pour <strong>CAPVIE</strong> — un vrai client, entreprise reconnue implantée un peu partout en France. Une vraie mission, avec de vrais échanges avec le client et de vrais retours : loin de l'exercice d'école théorique, c'est un livrable qui devait convaincre une direction.
+                </p>
+
+                <h3>Le Brief</h3>
+                <p>
+                    CAPVIE souhaitait <strong>moderniser et harmoniser</strong> son identité visuelle. L'ancien logo était perçu comme <strong>daté</strong>, et l'ancienne palette — trop vive, trop marquée dans le temps — ne reflétait plus les valeurs de l'entreprise. L'objectif : proposer une identité plus <strong>contemporaine</strong>, plus <strong>propre</strong>, plus <strong>institutionnelle</strong>, sans perdre l'ADN humain de la marque.
+                </p>
+
+                <h3>Ma Proposition (V1)</h3>
+                <p>
+                    J'ai livré une <strong>charte graphique complète, conçue de A à Z</strong> : construction du logo, palette repensée, système typographique, règles d'usage, mises en page, tonalité de marque. Le document est un vrai <em>brand book</em> qui pose les fondations d'une identité cohérente et exploitable par n'importe quelle équipe interne ou agence.
+                </p>
+                <img src="../assets/Projet Capvie/Screen environnement de travail.png" class="process-img" alt="Environnement de travail Adobe Illustrator — construction du logo et des planches de la charte CAPVIE">
+                <span style="font-size: 0.8rem; color: #666;">Construction du logo et mise en page des planches — Adobe Illustrator.</span>
+
+                <h3>Retours Client & Itération (V2)</h3>
+                <p>
+                    Après présentation, deux ajustements ont été demandés par le client :
+                </p>
+                <ul>
+                    <li><strong>Le logo</strong> — faire évoluer la forme initiale (un cœur) vers une <strong>fusion des lettres C et V</strong>, plus explicite sur le nom de la marque et plus lisible en petite taille.</li>
+                    <li><strong>La palette</strong> — <strong>adoucir les couleurs</strong>, jugées un peu trop saturées pour un secteur institutionnel.</li>
+                </ul>
+                <p>
+                    J'ai appliqué ces retours et livré la V2 avec le logo et les couleurs mis à jour (modifications signalées en rouge dans le second PDF). Cliquez sur l'onglet <em>« V2 — Retours client appliqués »</em> pour voir le résultat.
+                </p>
+
+                <h3>Ce que j'en retire</h3>
+                <p>
+                    Ce projet a été mon premier vrai <strong>exercice client</strong> de bout en bout : recevoir un brief, défendre des choix graphiques face à une direction, encaisser des retours, itérer proprement et livrer une seconde version alignée. Autant de compétences directement transposables en agence ou en équipe design — et une expérience qui compte double, parce qu'elle vient d'un vrai client, pas d'un cas fictif.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-cocernes">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('modal-cocernes')">×</button>
+
+            <div class="modal-media modal-media--tabs">
+                <div class="pdf-tabs">
+                    <button class="pdf-tab active" onclick="switchCocernesMedia(this, 'image', '../assets/Projet CO-CERNES/Shéma_Infographie_CO-CERNE_SEUX_Medelys V2 (juste infographie).png')">V2 — Version finale (validée)</button>
+                    <button class="pdf-tab" onclick="switchCocernesMedia(this, 'image', '../assets/Projet CO-CERNES/Shéma_Infographie_CO-CERNE_SEUX_Medelys V1 (juste infographie).svg')">V1 — Première version</button>
+                    <button class="pdf-tab" onclick="switchCocernesMedia(this, 'pdf', '../assets/Projet CO-CERNES/Shéma_Infographie_CO-CERNE_SEUX_Medelys V1 Doc complet.pdf')">Doc complet & justifications</button>
+                </div>
+                <img id="cocernes-img" src="../assets/Projet CO-CERNES/Shéma_Infographie_CO-CERNE_SEUX_Medelys V2 (juste infographie).png" alt="Infographie CO-CERNES — V2 finale" style="width:100%; height:100%; object-fit:contain; background:#0a0a0a;">
+                <embed id="cocernes-pdf" src="" type="application/pdf" class="pdf-viewer" style="display:none;">
+            </div>
+
+            <div class="modal-text">
+                <h2>CO-CERNES</h2>
+                <p style="color: var(--accent); margin-bottom: 30px;"><em>Infographie de sensibilisation — Mission client associatif</em></p>
+
+                <h3>Le Contexte</h3>
+                <p>
+                    Deuxième mission de la même SAE que <strong>CAPVIE</strong> à l'<strong>Université Savoie Mont Blanc</strong> : nous avions deux clients réels, et j'ai eu la chance de travailler pour les deux. <strong>CO-CERNES</strong> est une <strong>association réelle</strong> mobilisée contre un projet de tunnel dont elle redoute l'impact environnemental — pollution de l'air, dégradation des paysages et des cultures agricoles alentour. L'association avait besoin d'un support visuel fort pour porter son combat auprès de la presse, des élus locaux et du grand public.
+                </p>
+
+                <h3>Le Brief</h3>
+                <p>
+                    Concevoir une <strong>infographie complète</strong> qui traduise, en un seul visuel, les <strong>dégâts environnementaux redoutés</strong> par l'association. L'objectif : rendre lisible, en un coup d'œil, un enjeu politique et environnemental complexe, pour qu'un lecteur non-initié comprenne immédiatement ce qui est en jeu.
+                </p>
+
+                <h3>Ma Proposition (V1)</h3>
+                <p>
+                    J'ai livré une <strong>première infographie complète</strong> (format vectoriel SVG) accompagnée d'un <strong>document PDF de justification</strong> détaillant tous mes choix : palette, composition, hiérarchie de lecture, symbolique, message. Un vrai dossier de designer, pour que le client comprenne <em>pourquoi</em> chaque élément est là — pas seulement <em>ce que</em> j'ai fait.
+                </p>
+                <img src="../assets/Projet CO-CERNES/Projet Illustrator.png" class="process-img" alt="Environnement de travail Adobe Illustrator — construction manuelle de l'infographie CO-CERNES">
+                <span style="font-size: 0.8rem; color: #666;">Composition, illustration et travail de la palette — <strong>100% Adobe Illustrator</strong>.</span>
+
+                <h3>Retours Client & Itération (V2)</h3>
+                <p>
+                    Le client a validé la direction mais a demandé une chose forte : <strong>durcir le message visuellement</strong> pour maximiser l'impact émotionnel. J'ai appliqué toute une série de modifications :
+                </p>
+                <ul>
+                    <li><strong>Palette ternie</strong> — teintes désaturées pour installer une ambiance plus lourde, moins "édulcorée".</li>
+                    <li><strong>Champs de blé abîmés</strong> — la V1 montrait des cultures saines, la V2 les montre visiblement contaminées, ce qui rend concret le propos de l'association.</li>
+                    <li><strong>Pollution rendue visible</strong> dans l'air.</li>
+                    <li><strong>Ajout de l'usine industrielle</strong> en arrière-plan — celle liée au projet contesté — pour ancrer visuellement la source du problème.</li>
+                    <li><strong>Mise à jour de plusieurs données</strong> chiffrées et informations textuelles pour coller à la version la plus à jour de leur communication.</li>
+                </ul>
+                <p>
+                    Cliquez sur l'onglet <em>« V1 — Première version »</em> pour comparer les deux versions et voir l'écart de ton entre les deux.
+                </p>
+
+                <h3>Résultat</h3>
+                <p>
+                    <strong>Le client a validé la V2 et retenu mon projet.</strong> L'infographie est utilisée par l'association dans sa communication réelle. C'est le genre de retour qui, à mon niveau d'étude, vaut plus que n'importe quelle note.
+                </p>
+
+                <h3>Une précision qui compte : ce n'est PAS de l'IA</h3>
+                <p>
+                    L'infographie a été <strong>entièrement conçue et dessinée à la main sur Adobe Illustrator</strong> — chaque forme, chaque texture, chaque nuance de couleur, chaque courbe. Aucun outil d'IA générative n'a été utilisé, ni pour l'illustration, ni pour la composition. Le screenshot ci-dessus montre l'environnement de travail réel dans Illustrator. Je précise parce que la question m'a été posée, et j'y tiens : le travail créatif et technique est intégralement le mien.
+                </p>
+
+                <h3>Ce que j'en retire</h3>
+                <p>
+                    Ce projet montre trois choses essentielles pour une équipe de design : je sais <strong>traduire un enjeu complexe en visuel clair</strong>, <strong>accueillir un retour client et le transformer en amélioration réelle</strong> (pas juste cosmétique), et surtout <strong>livrer un projet qui sert vraiment</strong> — et pas seulement un exercice qui finit dans un dossier scolaire.
                 </p>
             </div>
         </div>
@@ -465,6 +635,30 @@
                 }
             });
         });
+
+        // --- SWITCH PDF (modal Capvie : V1 / V2 avec retours) ---
+        function switchCapviePdf(btn, pdfPath) {
+            document.querySelectorAll('#modal-capvie .pdf-tab').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            const embed = document.getElementById('capvie-pdf');
+            if (embed) embed.setAttribute('src', pdfPath);
+        }
+
+        // --- SWITCH MEDIA (modal CO-CERNES : V2 image / V1 image / Doc PDF) ---
+        function switchCocernesMedia(btn, type, path) {
+            document.querySelectorAll('#modal-cocernes .pdf-tab').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            const img = document.getElementById('cocernes-img');
+            const pdf = document.getElementById('cocernes-pdf');
+            if (type === 'image') {
+                if (img) { img.src = path; img.style.display = ''; }
+                if (pdf) pdf.style.display = 'none';
+            } else {
+                if (pdf) { pdf.src = path; pdf.style.display = ''; }
+                if (img) img.style.display = 'none';
+            }
+        }
     </script>
+    <script src="../assets/grain.js" defer></script>
 </body>
 </html>

@@ -90,18 +90,26 @@
         .stat-item h4 { font-family: 'Syncopate'; font-size: 2.5rem; color: var(--accent-sec); margin-bottom: 0.5rem; }
         .stat-item p { font-size: 0.9rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* PHOTO */
+        /* PHOTO — volontairement discrète : réduite, adoucie (opacité + léger flou),
+           le recruteur devine plus qu'il ne voit */
         .photo-container {
-            width: 100%; position: relative; border-radius: 20px; overflow: hidden;
+            width: 70%; max-width: 320px; margin: 0 auto;
+            position: relative; border-radius: 20px; overflow: hidden;
             background: var(--glass); border: 1px solid var(--border); padding: 10px;
         }
         .my-photo {
             width: 100%; height: auto; display: block; border-radius: 15px;
-            filter: grayscale(20%) contrast(1.1); transition: 0.5s ease;
+            opacity: 0.7;
+            filter: grayscale(30%) contrast(1.05) blur(0.8px);
+            transition: 0.5s ease;
             -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
             mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+            /* Anti "enregistrer sous" : pas de drag, pas de sélection (le clic droit est bloqué en JS) */
+            -webkit-user-drag: none;
+            user-select: none;
         }
-        .photo-container:hover .my-photo { filter: grayscale(0%) contrast(1); transform: scale(1.02); }
+        /* Au survol elle se révèle un peu, sans être 100% nette */
+        .photo-container:hover .my-photo { opacity: 0.8; filter: grayscale(10%) contrast(1) blur(0.5px); transform: scale(1.02); }
 
         /* --- TITRES --- */
         .section-title {
@@ -313,7 +321,7 @@
                 </div>
 
                 <div class="photo-container" data-tilt>
-                    <img src="../assets/Photo moi.png" alt="Portrait Medelys" class="my-photo">
+                    <img src="../assets/Photo moi.png?v=2" alt="Portrait Medelys" class="my-photo">
                 </div>
             </div>
         </section>
@@ -634,6 +642,14 @@
             });
         })();
 
+        // --- PROTECTION PHOTO : bloque le clic droit ("Enregistrer l'image sous")
+        //     et le glisser-déposer sur le portrait. Dissuasif, pas infaillible. ---
+        document.querySelectorAll('.photo-container, .my-photo').forEach(el => {
+            el.addEventListener('contextmenu', e => e.preventDefault());
+            el.addEventListener('dragstart', e => e.preventDefault());
+        });
+
     </script>
+    <script src="../assets/grain.js" defer></script>
 </body>
 </html>
