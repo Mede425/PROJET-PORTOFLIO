@@ -530,7 +530,16 @@
         .gallery-img:hover { transform: scale(1.02); border-color: #00ffcc; }
         .gallery-img { cursor: pointer; }
         .gallery-img.active { border-color: #00ffcc; box-shadow: 0 0 12px rgba(0,255,204,0.5); }
-        
+
+        /* Projet sans preview live : la galerie prend toute la largeur, images plus grandes */
+        .modal-body.no-iframe .iframe-wrapper { display: none; }
+        .modal-body.no-iframe .modal-column { flex: 1 1 100%; }
+        .modal-body.no-iframe .gallery-grid {
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px;
+        }
+        .modal-body.no-iframe .gallery-img { height: 230px; }
+
         .iframe-wrapper {
             flex: 2; 
             min-width: 300px;
@@ -1261,17 +1270,25 @@
             },
             {
                 id: 3,
-                title: "A VENIR",
-                desc: "Projet en cours de développement.",
-                tech: "EN COURS",
+                title: "CE PORTFOLIO",
+                desc: "Le site sur lequel vous naviguez en ce moment.",
+                tech: "HTML • CSS • JS • GSAP • THREE.JS • VERCEL",
                 color: 0x00ffcc,
-                link: "#",
+                link: "../../index.html",
                 pos: { x: 20, z: 5 },
                 visited: false,
                 details: {
                     iframe: "",
-                    images: ["https://placehold.co/600x400/222/00ffcc?text=Projet+A+Venir"],
-                    longDesc: "Ce projet est actuellement en construction. Revenez plus tard pour découvrir de nouvelles réalisations."
+                    images: [
+                        "../assets/Portfolio%202026/Screen%20site%20web%201.png",
+                        "../assets/Portfolio%202026/Screen%20site%20web%202.png",
+                        "../assets/Portfolio%202026/Screen%20site%20web%203.png",
+                        "../assets/Portfolio%202026/Screen%20site%20web%204.png",
+                        "../assets/Portfolio%202026/Screen%20site%20web%205.png",
+                        "../assets/Portfolio%202026/Screen%20site%20web%206.png",
+                        "../assets/Portfolio%202026/Screen%20site%20web%207.png"
+                    ],
+                    longDesc: "Le portfolio sur lequel vous naviguez en ce moment — <strong style=\"color:#fff;\">pensé, designé, rédigé et déployé de A à Z.</strong><br><br><strong style=\"color:#fff;\">Direction artistique &amp; univers</strong> — une expérience volontairement narrative plutôt qu'un simple CV en ligne : glisser un dossier dans une machine pour \"initialiser\" l'accueil, un univers 3D pour explorer les projets dev, un personnage animé qui se balance sur la carte \"Qui suis-je ?\", du grain de film sur l'ensemble du site pour casser l'aspect trop lisse.<br><br><strong style=\"color:#fff;\">Contenu &amp; hiérarchie</strong> — chaque fiche projet a été pensée, écrite et structurée pour raconter le brief, le processus et le résultat. Les vraies missions client (Camby, CAPVIE, CO-CERNES) sont placées en priorité, dans la logique d'une candidature alternance.<br><br><strong style=\"color:#fff;\">Mise en production</strong> — versionnage Git, dépôt sur GitHub, déploiement continu via Vercel : chaque modification poussée redéploie automatiquement le site en ligne.<br><br>Un projet qui condense mes envies : mélanger création, narration et outils techniques pour construire quelque chose qu'on n'oublie pas."
                 }
             },
             {
@@ -1577,6 +1594,8 @@
             // Iframe avec Auto-Scale
             const iframe = document.getElementById('modal-iframe');
             const wrapper = document.querySelector('.iframe-wrapper');
+            // Sans preview live : bascule le body en mode "galerie plein cadre"
+            document.querySelector('.modal-body').classList.toggle('no-iframe', !data.details.iframe);
 
             if (data.details.iframe) {
                 iframe.style.display = 'block';

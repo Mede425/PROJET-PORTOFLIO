@@ -1016,12 +1016,13 @@
                         <div class="skill-header">// MODULE 01: STRATÉGIE</div>
                         <h2 class="skill-title">PLAN DE COM'</h2>
                         <p class="skill-desc">
-                            Analyse de l'existant, définition des cibles (Personas) et choix des canaux de diffusion. 
+                            Analyse de l'existant, définition des cibles (Personas) et choix des canaux de diffusion.
                             Je conçois des stratégies globales pour positionner une marque sur son marché.
                         </p>
                         <div class="skill-tags">
                             <span class="tag">SWOT</span>
                             <span class="tag">Benchmark</span>
+                            <span class="tag">Personas</span>
                             <span class="tag">Positionnement</span>
                         </div>
                     </div>
@@ -1030,24 +1031,63 @@
                 <div class="skill-row">
                     <div class="skill-content">
                         <div class="skill-header">// MODULE 02: SOCIAL MEDIA</div>
-                        <h2 class="skill-title">COMMUNITY MGMT</h2>
+                        <h2 class="skill-title">CONTENU & COMMUNITY</h2>
                         <p class="skill-desc">
-                            Gestion et animation de communautés. Création de calendriers éditoriaux et rédaction de posts engageants pour Instagram, LinkedIn et TikTok.
+                            La com' qui vit sur les réseaux : ligne éditoriale, vidéos courtes pensées pour les algorithmes,
+                            planning de publication, copywriting des posts, animation et modération de la communauté.
+                            Des millions de vues cumulées sur mes propres chaînes, et un stage en entreprise dédié au sujet.
                         </p>
                         <div class="skill-tags">
+                            <span class="tag">Reels & TikTok</span>
+                            <span class="tag">Hooks & tendances</span>
                             <span class="tag">Planning</span>
                             <span class="tag">Copywriting</span>
                             <span class="tag">Modération</span>
+                            <span class="tag">Analyse de stats</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="skill-row">
                     <div class="skill-content">
-                        <div class="skill-header">// MODULE 03: VISIBILITÉ</div>
+                        <div class="skill-header">// MODULE 03: NARRATION</div>
+                        <h2 class="skill-title">STORYTELLING & COPY</h2>
+                        <p class="skill-desc">
+                            Écrire pour capter : scripts, voix off, accroches et vulgarisation.
+                            Adapter le ton à la marque et le message à la cible — du post Instagram
+                            à la vidéo de vulgarisation bilingue.
+                        </p>
+                        <div class="skill-tags">
+                            <span class="tag">Scripts & voix off</span>
+                            <span class="tag">Vulgarisation</span>
+                            <span class="tag">Ton de marque</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="skill-row">
+                    <div class="skill-content">
+                        <div class="skill-header">// MODULE 04: ÉVÉNEMENTIEL</div>
+                        <h2 class="skill-title">COM' TERRAIN</h2>
+                        <p class="skill-desc">
+                            Faire vivre une marque dans le réel : couverture d'événements en aftermovie,
+                            projections immersives en mapping vidéo, opérations spéciales et street marketing.
+                        </p>
+                        <div class="skill-tags">
+                            <span class="tag">Aftermovie</span>
+                            <span class="tag">Mapping vidéo</span>
+                            <span class="tag">Street marketing</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="skill-row">
+                    <div class="skill-content">
+                        <div class="skill-header">// MODULE 05: VISIBILITÉ</div>
                         <h2 class="skill-title">SEO & DATA</h2>
                         <p class="skill-desc">
-                            Optimisation du référencement naturel. Choix des mots-clés pertinents et structuration du contenu web pour plaire aux algorithmes.
+                            Optimisation du référencement naturel, choix des mots-clés et structuration du contenu.
+                            Audits UX / performance et analytics pour mesurer ce qui fonctionne vraiment.
                         </p>
                         <div class="skill-tags">
                             <span class="tag">Audit SEO</span>
@@ -1236,12 +1276,12 @@
                         bootText.appendChild(div);
                     }
                     document.getElementById(`line-${lineIndex}`).innerHTML += lines[lineIndex].charAt(charIndex);
-                    charIndex++; setTimeout(typeWriter, 20);
+                    charIndex++; setTimeout(typeWriter, 14);
                 } else {
-                    lineIndex++; charIndex = 0; setTimeout(typeWriter, 100);
+                    lineIndex++; charIndex = 0; setTimeout(typeWriter, 70);
                 }
             } else {
-                setTimeout(finishBoot, 800);
+                setTimeout(finishBoot, 550);
             }
         }
 
@@ -1252,7 +1292,10 @@
             setTimeout(initExperience, 0);
         } else {
             bootScreen.addEventListener('click', finishBoot);
-            window.addEventListener('load', typeWriter);
+            // Démarre tout de suite (le script est en fin de body, le DOM est prêt).
+            // Avant on attendait `window.load` — polices/images = jusqu'à 1-2s d'attente
+            // pendant lesquelles seul le curseur bleu s'affichait → confusion.
+            typeWriter();
         }
 
         // --- 2. SMOOTH SCROLL ---
