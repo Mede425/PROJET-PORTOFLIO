@@ -99,6 +99,48 @@
         .hero { height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; perspective: 1000px; }
         .hero h1 { font-family: var(--font-display); font-size: clamp(3rem, 8vw, 8rem); line-height: 0.8; text-align: center; transform: translateZ(0); }
         .hero p { margin-top: 20px; color: var(--cyan); letter-spacing: 0.5em; font-family: var(--font-code); font-size: 0.8rem; }
+        .hero-cta {
+            display: inline-flex; align-items: center;
+            gap: clamp(10px, 1.5vw, 16px);
+            margin-top: clamp(28px, 4.5vw, 50px);
+            padding: clamp(12px, 2vw, 20px) clamp(22px, 4.5vw, 44px);
+            border: 2px solid var(--cyan); color: var(--cyan);
+            font-family: var(--font-display);
+            font-size: clamp(0.7rem, 1.4vw, 0.95rem); font-weight: 700;
+            letter-spacing: 0.3em; text-transform: uppercase; text-decoration: none;
+            white-space: nowrap;
+            transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
+            cursor: pointer;
+            background: rgba(0, 243, 255, 0.05);
+            animation: cta-pulse 2.6s ease-in-out infinite;
+            position: relative;
+        }
+        @keyframes cta-pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(0, 243, 255, 0.35),
+                            inset 0 0 12px rgba(0, 243, 255, 0.02);
+            }
+            50% {
+                box-shadow: 0 0 28px 3px rgba(0, 243, 255, 0.35),
+                            inset 0 0 15px rgba(0, 243, 255, 0.08);
+            }
+        }
+        .hero-cta:hover {
+            background: var(--cyan); color: #000;
+            box-shadow: 0 0 32px rgba(0, 243, 255, 0.65);
+            transform: translateY(-2px);
+            animation: none;
+        }
+        .hero-cta .arrow {
+            font-size: 1.15em;
+            transition: transform 0.3s ease;
+            animation: cta-arrow-bob 1.8s ease-in-out infinite;
+        }
+        @keyframes cta-arrow-bob {
+            0%, 100% { transform: translateY(0); }
+            50%      { transform: translateY(4px); }
+        }
+        .hero-cta:hover .arrow { transform: translateY(3px); animation: none; }
 
         .manifesto {
             padding: 100px 10%; text-align: center; font-family: var(--font-display); font-size: clamp(1.5rem, 4vw, 3rem);
@@ -1000,6 +1042,7 @@
                 <p>> PROTOCOL: CONNECTED</p>
                 <h1 class="glitch-text" data-text="COMMUNICATION">COMMUNICATION</h1>
                 <p>STRATEGY // SOCIAL // CONTENT</p>
+                <button type="button" class="hero-cta" id="cta-projets">Accéder aux projets <span class="arrow">↓</span></button>
             </section>
 
             <section class="manifesto">
@@ -1099,7 +1142,7 @@
 
             </div>
 
-            <h2 class="archives-title">/// PROJETS ///</h2>
+            <h2 id="projets" class="archives-title" style="scroll-margin-top: 40px;">/// PROJETS ///</h2>
             <section class="archives">
                 <div class="archive-card" id="btn-open-camby">
                     <div class="scan-line"></div>
@@ -1310,7 +1353,20 @@
         window.addEventListener('scroll', () => { target = window.scrollY; });
         window.addEventListener('resize', setHeight);
 
-        function initExperience() { setHeight(); animate(); }
+        function initExperience() {
+            setHeight();
+            animate();
+            // CTA "Accéder aux projets" — scroll manuel qui respecte le smooth-scroll custom.
+            // On évite href="#projets" : le jump natif du navigateur casse le scroll manuel.
+            const ctaProjets = document.getElementById('cta-projets');
+            const cibleProjets = document.getElementById('projets');
+            if (ctaProjets && cibleProjets) {
+                ctaProjets.addEventListener('click', () => {
+                    const y = cibleProjets.offsetTop - 40;
+                    window.scrollTo({ top: y, behavior: 'smooth' });
+                });
+            }
+        }
 
         function animate() {
             if(document.body.style.overflow === 'hidden') {
