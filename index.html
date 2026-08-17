@@ -850,6 +850,13 @@
         const loaderText = document.querySelector('.loader-text');
         const overlay = document.getElementById('intro-overlay');
 
+        // Libellés de la zone de dépôt (l'état "repos" sert aussi de reset)
+        const DROP_LABELS = {
+            idle: "Déposez le dossier ici",
+            dragging: "Continuez jusqu'ici",
+            over: "C'est bon, lâchez !"
+        };
+
         // 1. VÉRIFICATION : Est-ce que l'utilisateur a déjà vu l'intro ?
         if (sessionStorage.getItem('introPlayed')) {
             // OUI -> On cache l'intro immédiatement
@@ -859,6 +866,13 @@
             
             let isDragging = false;
             let startX, startY;
+            // Un simple clic (pointeur qui ne bouge quasi pas) doit aussi ouvrir le portfolio :
+            // la bulle promet "CLIQUER & GLISSER", et tout le monde ne maîtrise pas le glisser-déposer.
+            let hasMoved = false;
+            let launched = false;
+            let sequenceStarted = false;
+            let pressX = 0, pressY = 0;
+            const MOVE_THRESHOLD = 8; // px avant de considérer que c'est un vrai glissement
 
             draggable.addEventListener('mousedown', startDrag);
             draggable.addEventListener('touchstart', startDrag, {passive: false});
@@ -868,17 +882,21 @@
             document.addEventListener('touchend', endDrag);
 
             function startDrag(e) {
+                if (launched) return;
                 isDragging = true;
+                hasMoved = false;
                 guide.style.display = 'none';
                 const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
                 const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
                 const rect = draggable.getBoundingClientRect();
                 startX = clientX - rect.left;
                 startY = clientY - rect.top;
+                pressX = clientX;
+                pressY = clientY;
                 draggable.style.cursor = 'grabbing';
                 dropZone.classList.add('active');
                 loaderText.style.color = "#00f0ff";
-                loaderText.innerText = "PRÊT POUR UPLOAD";
+                loaderText.innerText = DROP_LABELS.dragging;
                 draggable.style.transition = "box-shadow 0.3s";
             }
 
@@ -887,6 +905,9 @@
                 e.preventDefault();
                 const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
                 const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+                if (Math.abs(clientX - pressX) > MOVE_THRESHOLD || Math.abs(clientY - pressY) > MOVE_THRESHOLD) {
+                    hasMoved = true;
+                }
                 draggable.style.left = (clientX - startX) + 'px';
                 draggable.style.top = (clientY - startY) + 'px';
                 checkCollision();
@@ -898,15 +919,35 @@
                 draggable.style.cursor = 'grab';
                 if (checkCollision()) {
                     launchSequence();
+                } else if (!hasMoved) {
+                    // C'était un clic, pas un glissement : on fait le trajet à sa place.
+                    autoDrop();
                 } else {
                     dropZone.classList.remove('active');
                     dropZone.style.background = "rgba(255, 255, 255, 0.02)";
                     loaderText.style.color = "#555";
-                    loaderText.innerText = "/// INITIALISER LE SYSTÈME ///";
+                    loaderText.innerText = DROP_LABELS.idle;
                     draggable.style.transition = "all 0.5s ease";
                     draggable.style.top = "25%";
                     draggable.style.left = "calc(50% - 70px)";
                 }
+            }
+
+            // Amène le dossier jusqu'au centre de la zone, puis enchaîne comme un dépôt réussi.
+            function autoDrop() {
+                if (launched) return;
+                launched = true;
+                const zone = dropZone.getBoundingClientRect();
+                const folder = draggable.getBoundingClientRect();
+                draggable.style.animation = 'none';
+                draggable.style.transition = "left 0.75s cubic-bezier(0.22, 1, 0.36, 1), top 0.75s cubic-bezier(0.22, 1, 0.36, 1)";
+                draggable.style.left = (zone.left + zone.width / 2 - folder.width / 2) + 'px';
+                draggable.style.top = (zone.top + zone.height / 2 - folder.height / 2) + 'px';
+                dropZone.classList.add('active');
+                dropZone.style.background = "rgba(0, 240, 255, 0.2)";
+                loaderText.style.color = "#00f0ff";
+                loaderText.innerText = DROP_LABELS.over;
+                setTimeout(launchSequence, 780);
             }
 
             function checkCollision() {
@@ -915,16 +956,19 @@
                 const isInside = !(r1.right < r2.left || r1.left > r2.right || r1.bottom < r2.top || r1.top > r2.bottom);
                 if (isInside) {
                     dropZone.style.background = "rgba(0, 240, 255, 0.2)";
-                    loaderText.innerText = "RELÂCHER POUR OUVRIR";
+                    loaderText.innerText = DROP_LABELS.over;
                     return true;
                 } else {
                     dropZone.style.background = "rgba(255, 255, 255, 0.02)";
-                    if(isDragging) loaderText.innerText = "PRÊT POUR UPLOAD";
+                    if(isDragging) loaderText.innerText = DROP_LABELS.dragging;
                     return false;
                 }
             }
 
             function launchSequence() {
+                if (sequenceStarted) return;
+                sequenceStarted = true;
+                launched = true;
                 dropZone.style.borderColor = "#fff";
                 draggable.style.transition = "all 0.3s ease";
                 draggable.style.opacity = "0";
